@@ -41,6 +41,7 @@ FanboxやPatreonのAPIを使って、文章とコンテンツの一覧を作り�
 ### 動作環境
 
 * Windows 8 以降
+* [.NET Framework 4.7.1](https://www.microsoft.com/ja-jp/download/details.aspx?id=56116)
 
 開発者 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) は Windows 10 でのみ動作確認を行っております。
 
@@ -84,9 +85,11 @@ FanboxやPatreonのAPIを使って、文章とコンテンツの一覧を作り�
 ### 运行环境
 
 * Windows 8 以后
+* [.NET Framework 4.7.1](https://www.microsoft.com/zh-CN/download/details.aspx?id=56116)
 
 我 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) 只在Windows 10 上运行确认过。
 
+----
 
 ### 使用ライブラリ
 
