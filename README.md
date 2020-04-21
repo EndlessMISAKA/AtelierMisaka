@@ -1,3 +1,47 @@
+# 欢迎来到御坂的~炼精工房~炼金工房
+
+在这里可以查看Fanbox或Patreon上指定作者的文章，以及下载其中的内容。
+
+### 关于本工房
+
+目前还没决定是否要实装【登录】功能，所以现在是由您自己去获取Cookies输入到程序中。
+
+然后通过Fanbox或Patreon的API，生成并显示文章和下载内容的列表，进行下载。
+
+**这个工具只能下载已支援的和免费公开的内容，**
+
+**如果有喜欢的作者，请尽量支援。**
+
+【喜欢】和【评论】功能我也想尽量实装。
+
+### 主要功能
+
+* 获取支援列表
+* 获取支援等级
+* 显示文章
+* 代理设置
+* 根据发表时间和价格过滤显示和下载
+* 下载文件
+
+### 开发进度
+
+* Fanbox部分已经完成
+
+### 尚未实装的功能
+
+* Patreon的下载
+* 改善记录功能
+* 【喜欢】和【评论】功能
+
+### 运行环境
+
+* Windows 8 以后
+* [.NET Framework 4.7.1](https://www.microsoft.com/zh-CN/download/details.aspx?id=56116)
+
+我 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) 只在Windows 10 上运行确认过。
+
+----
+
 # 御坂のアトリエ！ (AtelierMisaka)
 
 御坂のアトリエへようこそ！
@@ -44,50 +88,6 @@ FanboxやPatreonのAPIを使って、文章とコンテンツの一覧を作り�
 * [.NET Framework 4.7.1](https://www.microsoft.com/ja-jp/download/details.aspx?id=56116)
 
 開発者 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) は Windows 10 でのみ動作確認を行っております。
-
-----
-
-# 欢迎来到御坂的炼~精~金工房
-
-在这里可以查看Fanbox或Patreon上指定作者的文章，以及下载其中的内容。
-
-### 关于本工房
-
-目前还没决定是否要实装【登录】功能，所以现在是由您自己去获取Cookies输入到程序中。
-
-然后通过Fanbox或Patreon的API，生成并显示文章和下载内容的列表，进行下载。
-
-**这个工具只能下载已支援的和免费公开的内容，**
-
-**如果有喜欢的作者，请尽量支援。**
-
-【喜欢】和【评论】功能我也想尽量实装。
-
-### 主要功能
-
-* 获取支援列表
-* 获取支援等级
-* 显示文章
-* 代理设置
-* 根据发表时间和价格过滤显示和下载
-* 下载文件
-
-### 开发进度
-
-* Fanbox部分已经完成
-
-### 尚未实装的功能
-
-* Patreon的下载
-* 改善记录功能
-* 【喜欢】和【评论】功能
-
-### 运行环境
-
-* Windows 8 以后
-* [.NET Framework 4.7.1](https://www.microsoft.com/zh-CN/download/details.aspx?id=56116)
-
-我 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) 只在Windows 10 上运行确认过。
 
 ----
 
