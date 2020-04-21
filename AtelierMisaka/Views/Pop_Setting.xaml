@@ -1,0 +1,164 @@
+﻿<UserControl x:Class="AtelierMisaka.Views.Pop_Setting"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AtelierMisaka.Views"
+             xmlns:basens="clr-namespace:AtelierMisaka"
+             PreviewMouseDown="UserControl_PreviewMouseDown"
+             PreviewKeyDown="UserControl_PreviewKeyDown"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <Storyboard x:Key="sb_path" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)">
+            <DoubleAnimation RepeatBehavior="Forever" From="360" To="0" Duration="0:0:2" Storyboard.TargetName="p1"/>
+            <DoubleAnimation RepeatBehavior="Forever" From="0" To="360" Duration="0:0:3" Storyboard.TargetName="p2"/>
+            <DoubleAnimation RepeatBehavior="Forever" From="360" To="0" Duration="0:0:4" Storyboard.TargetName="p3"/>
+        </Storyboard>
+    </UserControl.Resources>
+    <Grid Background="#2D2D30">
+        <StackPanel Orientation="Vertical" Width="800" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center" Width="600">
+                <RadioButton Content="Fanbox" Style="{StaticResource RB_Setting}"
+                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fanbox}}"/>
+                <RadioButton Content="Patreon" Style="{StaticResource RB_Setting}"
+                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Patreon}}"/>
+            </StackPanel>
+            <Grid Height="60">
+                <TextBlock Text="作者链接" Style="{StaticResource TBL_Setting}">
+                    <!--<TextBlock.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding GetArtistListCommand}"/>
+                    </TextBlock.InputBindings>-->
+                </TextBlock>
+                <TextBox Name="popt" Style="{StaticResource TB_Setting}" Tag="以post结尾的http链接" Text="{Binding Artist.PostUrl}"/>
+                <TextBlock Background="#2D2D30" Visibility="{Binding HasSelected, Converter={StaticResource btvc}}" Padding="10,0"
+                           HorizontalAlignment="Right" Width="626" Margin="22,0" FontSize="28" Foreground="White" VerticalAlignment="Center">
+                    <Run Text="{Binding Artist.AName}"/>
+                    <Run Text="--"/>
+                    <Run Text="{Binding Artist.Id}"/>
+                </TextBlock>
+                <ToggleButton Template="{StaticResource ComboBoxToggleButton}" HorizontalAlignment="Right" MouseEnter="Togb_MouseEnter" MouseLeave="Togb_MouseLeave"
+                              x:Name="togb" Focusable="false" ClickMode="Press" Margin="{Binding ElementName=popt, Path=Margin}"
+                              Width="{Binding Artist.AName, Converter={StaticResource ntwc}}" Height="{Binding ElementName=popt, Path=Height}"
+                              Visibility="{Binding ArtistList.Count, Converter={StaticResource itvc}, Mode=OneWay}"/>
+                <local:PopupEx IsOpen="{Binding ElementName=togb, Path=IsChecked}" Placement="Bottom" x:Name="popup" Width="{Binding ElementName=popt, Path=Width}"
+                       Focusable="True" AllowsTransparency="True" PopupAnimation="Slide" PlacementTarget="{Binding ElementName=popt}" StaysOpen="False">
+                    <Border x:Name="DropDown" Background="Black" BorderBrush="Gray" BorderThickness="1,0,1,1" SnapsToDevicePixels="True" MaxHeight="205">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="0" Opacity="0.5"/>
+                        </Border.Effect>
+                        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="Lst" Focusable="True"
+                                 ItemsSource="{Binding ArtistList}" SelectedItem="{Binding Artist}"
+                                 SelectionChanged="Lst_SelectionChanged">
+                            <ListBox.Style>
+                                <Style TargetType="ListBox">
+                                    <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Artist}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBox">
+                                                <Grid Margin="0">
+                                                    <ScrollViewer Style="{StaticResource for_scrollviewer}">
+                                                        <ItemsPresenter/>
+                                                    </ScrollViewer>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="ItemTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <Grid Height="40">
+                                                    <TextBlock FontSize="25" Foreground="White" Margin="10,0" VerticalAlignment="Center">
+                                                        <Run Text="{Binding AName}"/>
+                                                        <Run Text="--"/>
+                                                        <Run Text="{Binding Id}"/>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Style>
+                        </ListBox>
+                    </Border>
+                </local:PopupEx>
+            </Grid>
+            <Grid Height="60">
+                <TextBlock Text="付费区间" Style="{StaticResource TBL_Setting}"/>
+                <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="150,0" HorizontalAlignment="Left" Tag="0" Text="{Binding Artist.PayLow}"/>
+                <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="320,0"/>
+                <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="0,0,290,0" Tag="0" Text="{Binding Artist.PayHigh}"/>
+            </Grid>
+            <Grid Height="60">
+                <TextBlock Text="保存路径" Style="{StaticResource TBL_Setting}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="例：E:\Setu" Text="{Binding SavePath}"/>
+            </Grid>
+            <Grid Height="60">
+                <TextBlock Text="Cookies" Style="{StaticResource TBL_Setting}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="浏览器F12查看网络数据包，从中获取Cookies" Text="{Binding Cookies}"/>
+            </Grid>
+            <Grid Height="60">
+                <CheckBox Style="{StaticResource CB_Setting}" Content="代理设置" IsChecked="{Binding UseProxy}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="例：127.0.0.1:1080" IsEnabled="{Binding UseProxy}" Text="{Binding Proxy}"/>
+            </Grid>
+            <Grid Height="60">
+                <CheckBox Style="{StaticResource CB_Setting}" Content="截止日期" IsChecked="{Binding UseDate}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="例：2020/01/01" IsEnabled="{Binding UseDate}" Text="{Binding Date}"/>
+            </Grid>
+            <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="更新支援列表"/>
+                <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="确定" Margin="20,0"/>
+                <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="退出"/>
+            </StackPanel>
+        </StackPanel>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White" Margin="10,5">
+            <Run Text="Produced By: "/>
+            <Hyperlink Command="{x:Static basens:GlobalData.OpenBrowserCommand}" CommandParameter="https://github.com/EndlessMISAKA">EndlessMISAKA</Hyperlink>
+        </TextBlock>
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="3" Focusable="False"
+                Command="{x:Static basens:GlobalData.BackCommand}" CommandParameter="{x:Static basens:BackType.Pop}"
+                Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Ellipse Width="27" Height="27" Fill="Gray"/>
+                        <Path Data="M16,6L10,13L13.5,13 A6,6 0 0 1 5,19 A14,33 0 0 0 18.5,13 L22,13Z"
+                              Width="27" Height="27" Fill="#2D2D30">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterX="13.5" CenterY="13.5" ScaleX="-1" ScaleY="1"/>
+                                    <RotateTransform CenterX="13.5" CenterY="13.5" Angle="270"/>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <Grid Visibility="{Binding ShowLoad, Converter={StaticResource btvc}}">
+            <Border Background="Black" Opacity="0.5" BorderThickness="0"/>
+            <Path x:Name="p1" Style="{StaticResource Pa_Load}" Data="M15,100 A85,85 0 1 0 100,15" Stroke="Yellow"/>
+            <Path x:Name="p2" Style="{StaticResource Pa_Load}" Data="M155,100 A55,55 0 1 0 100,155" Stroke="DeepSkyBlue"/>
+            <Path x:Name="p3" Style="{StaticResource Pa_Load}" Data="M75,100 A25,25 0 1 0 100,75" Stroke="Red"/>
+        </Grid>
+        <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}">
+            <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
+            <Grid Width="400" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
+                  MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
+                  MouseLeave="Grid_MouseLeave">
+                <Grid.Effect>
+                    <DropShadowEffect/>
+                </Grid.Effect>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
+                    <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
+                </StackPanel>
+            </Grid>
+        </Canvas>
+    </Grid>
+</UserControl>
