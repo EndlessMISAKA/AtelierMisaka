@@ -93,7 +93,6 @@ namespace AtelierMisaka.ViewModels
         private bool _showCheck = false;
         private bool _showLoad = false;
         private bool _isStarted = false;
-        private int _aIndex = -1;
         private double _mLeft = 0d;
         private double _mTop = 0d;
         private Regex _regex = new Regex(@"^\d+\.\d+\.\d+\.\d+:\d+$");
@@ -247,7 +246,7 @@ namespace AtelierMisaka.ViewModels
                     }
                     else
                     {
-                        LastDate = DateTime.Parse(_date);
+                        DateTime.TryParse(_date, out LastDate);
                     }
                 }
             }

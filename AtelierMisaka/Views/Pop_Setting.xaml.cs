@@ -70,6 +70,14 @@ namespace AtelierMisaka.Views
                     ShowLoading(false);
                     return;
                 }
+
+                if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
+                {
+                    await GetCheck("保存路径不能为空");
+                    _checkResult = null;
+                    ShowLoading(false);
+                    return;
+                }
                 Directory.CreateDirectory(GlobalData.VM_MA.SavePath);
                 if (!Directory.Exists(GlobalData.VM_MA.SavePath))
                 {
@@ -171,6 +179,13 @@ namespace AtelierMisaka.Views
                     if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
                     {
                         await GetCheck("Cookies不能为空");
+                        _checkResult = null;
+                        ShowLoading(false);
+                        return;
+                    }
+                    if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
+                    {
+                        await GetCheck("保存路径不能为空");
                         _checkResult = null;
                         ShowLoading(false);
                         return;
@@ -467,6 +482,10 @@ namespace AtelierMisaka.Views
                 File.WriteAllText(fn, GlobalData.ConverToJson(GlobalData.VM_MA.ArtistList));
                 fn = flag ? "Setting_Fanbox.ini" : "Setting_Patreon.ini";
                 File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.Cookies, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
+                if (!string.IsNullOrEmpty(GlobalData.VM_MA.ArtistList.Last().Id))
+                {
+                    GlobalData.VM_MA.ArtistList.Add(new ArtistInfo());
+                }
             }
             catch
             {
@@ -533,7 +552,7 @@ namespace AtelierMisaka.Views
             }
             else
             {
-                if (null == GlobalData.VM_MA.Artist)
+                if (null == GlobalData.VM_MA.Artist && GlobalData.VM_MA.ArtistList.Count > 0)
                 {
                     GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 }
