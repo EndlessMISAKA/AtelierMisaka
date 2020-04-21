@@ -43,15 +43,17 @@ namespace AtelierMisaka.Views
             CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, MaximizeWindow, CanResizeWindow));
             CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, MinimizeWindow, CanMinimizeWindow));
             CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, RestoreWindow, CanResizeWindow));
-            VM_DD.IsLoading = true;
+            //VM_DD.IsLoading = true;
         }
 
         public async void LoadData()
         {
+            VM_DD.CompletedList = new ObservableCollection<DownloadItem>();
+            var _downLoadItemList = new ObservableCollection<DownloadItem>();
             await Task.Run(() =>
             {
-                VM_DD.DownLoadItemList = new ObservableCollection<DownloadItem>();
-                VM_DD.CompletedList = new ObservableCollection<DownloadItem>();
+                //VM_DD.DownLoadItemList = new ObservableCollection<DownloadItem>();
+                //var _completedList = new ObservableCollection<DownloadItem>();
                 VM_DD.PostCount = _baseItems.Count;
                 DownloadItem di = null;
                 foreach (var bi in _baseItems)
@@ -71,7 +73,7 @@ namespace AtelierMisaka.Views
                             CTime = bi.CreateDate,
                             SourceDocu = bi
                         };
-                        VM_DD.DownLoadItemList.Add(di);
+                        _downLoadItemList.Add(di);
                     }
                     for (int i = 0; i < bi.ContentUrls.Count; i++)
                     {
@@ -83,7 +85,7 @@ namespace AtelierMisaka.Views
                             CTime = bi.CreateDate,
                             SourceDocu = bi
                         };
-                        VM_DD.DownLoadItemList.Add(di);
+                        _downLoadItemList.Add(di);
                     }
                     for (int i = 0; i < bi.MediaUrls.Count; i++)
                     {
@@ -95,17 +97,19 @@ namespace AtelierMisaka.Views
                             CTime = bi.CreateDate,
                             SourceDocu = bi
                         };
-                        VM_DD.DownLoadItemList.Add(di);
+                        _downLoadItemList.Add(di);
                     }
                     Directory.CreateDirectory(sp);
                     if (bi.Comments.Count > 0)
                     {
                         File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
                     }
-                    VM_DD.LoadCount++;
+                    //VM_DD.LoadCount++;
                 }
             });
-            VM_DD.IsLoading = false;
+
+            VM_DD.DownLoadItemList = _downLoadItemList;
+            //VM_DD.IsLoading = false;
         }
 
         private void ThreadCountChanged(object sender, SelectionChangedEventArgs e)
