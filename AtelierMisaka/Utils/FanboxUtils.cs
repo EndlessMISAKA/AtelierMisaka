@@ -297,7 +297,7 @@ namespace AtelierMisaka
                 if (null != jd)
                 {
                     var jj = jd.First.First.First.First;
-                    var ai = new ArtistInfo() { Id = jj["userId"].ToString(), AName = GlobalData.ReplacePath(jj["name"].ToString()) };
+                    var ai = new ArtistInfo() { Id = jj["userId"].ToString(), AName = GlobalData.ReplacePath(jj["name"].ToString().Trim()) };
                     return ai;
                 }
             }
@@ -356,7 +356,7 @@ namespace AtelierMisaka
                             ai.PayHigh = jt["fee"].ToString();
                             var jtd = jt["user"];
                             ai.Id = jtd["userId"].ToString();
-                            ai.AName = GlobalData.ReplacePath(jtd["name"].ToString());
+                            ai.AName = GlobalData.ReplacePath(jtd["name"].ToString().Trim());
                             ai.PostUrl = $"https://www.pixiv.net/fanbox/creator/{ai.Id}/post";
 
                             var index = tais.IndexOf(ai);
@@ -378,7 +378,7 @@ namespace AtelierMisaka
             }
             catch (Exception ex)
             {
-                return new List<ArtistInfo>();
+                return new List<ArtistInfo>() { new ArtistInfo() };
             }
         }
 
