@@ -167,13 +167,13 @@ namespace AtelierMisaka.Models
         {
             get
             {
-                if (_contentLength == -1)
-                {
-                    return "未知大小";
-                }
                 if (_contentLength == 0)
                 {
                     return "---";
+                }
+                if (_contentLength == -1)
+                {
+                    return "未知大小";
                 }
                 var re = _contentLength / 1024d;
                 var dw = "KB";
@@ -187,7 +187,7 @@ namespace AtelierMisaka.Models
                         dw = "GB";
                     }
                 }
-                return $"{re.ToString("#0.00")}{dw}";
+                return $"{Math.Round(re)}{dw}";
             }
         }
 
@@ -209,7 +209,7 @@ namespace AtelierMisaka.Models
                     re /= 1024d;
                     dw = "MB/s";
                 }
-                var res = $"{re.ToString("#0.00")}{dw}";
+                var res = $"{Math.Round(re, 2)}{dw}";
                 Interlocked.Add(ref _receviedCount, speed);
                 return res;
             }
@@ -280,6 +280,7 @@ namespace AtelierMisaka.Models
                     _dClient.DownloadDataAsync(new Uri(_link), this);
                     _receviedCount = 0;
                     _totalRC = 0;
+                    Percent = 0;
                     DLStatus = DownloadStatus.Downloading;
                     //RaisePropertyChanged("DLStatus");
                 }
