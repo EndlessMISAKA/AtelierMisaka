@@ -64,6 +64,40 @@ namespace AtelierMisaka.Views
                     MainBody.Inlines.Add(new LineBreak());
                 }
             }
+
+            if (bi.ContentUrls.Count > 0)
+            {
+                MainBody.Inlines.Add(new Run("文件列表: "));
+                MainBody.Inlines.Add(new LineBreak());
+
+                for (int i = 0; i< bi.ContentUrls.Count; i++)
+                {
+                    Hyperlink hl = new Hyperlink(new Run(bi.FileNames[i]))
+                    {
+                        Command = GlobalData.DownloadCommand,
+                        CommandParameter = new object[] { true, bi, i }
+                    };
+                    MainBody.Inlines.Add(hl);
+                    MainBody.Inlines.Add(new LineBreak());
+                }
+            }
+
+            if (bi.MediaUrls.Count > 0)
+            {
+                MainBody.Inlines.Add(new Run("图片列表: "));
+                MainBody.Inlines.Add(new LineBreak());
+
+                for (int i = 0; i < bi.MediaUrls.Count; i++)
+                {
+                    Hyperlink hl = new Hyperlink(new Run(bi.MediaNames[i]))
+                    {
+                        Command = GlobalData.DownloadCommand,
+                        CommandParameter = new object[] { true, bi, i }
+                    };
+                    MainBody.Inlines.Add(hl);
+                    MainBody.Inlines.Add(new LineBreak());
+                }
+            }
         }
     }
 }
