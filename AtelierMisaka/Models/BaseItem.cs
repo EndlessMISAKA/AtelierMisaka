@@ -9,6 +9,7 @@ namespace AtelierMisaka.Models
 {
     public class BaseItem : NotifyModel
     {
+        protected string _id = string.Empty;
         protected string _title = string.Empty;
         protected string _coverPic = string.Empty;
         protected string _fee = string.Empty;
@@ -24,6 +25,11 @@ namespace AtelierMisaka.Models
         protected List<string> _mediaUrls = new List<string>();
         protected List<string> _fileNames = new List<string>();
         protected List<string> _mediaNames = new List<string>();
+
+        public string ID
+        {
+            get => _id;
+        }
 
         public bool IsZero
         {

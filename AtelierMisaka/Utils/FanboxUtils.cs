@@ -74,9 +74,9 @@ namespace AtelierMisaka
                 {
                     var pi = new FanboxItem()
                     {
-                        ID = jt["id"].ToString(),
+                        PID = jt["id"].ToString(),
                         Fee = jt["feeRequired"].ToString(),
-                        Title = GlobalData.ReplacePath(jt["title"].ToString()),
+                        Title = GlobalData.ReplacePath(jt["title"].ToString().Trim()),
                         CreateDate = DateTime.Parse(jt["publishedDatetime"].ToString()),
                         UpdateDate = DateTime.Parse(jt["updatedDatetime"].ToString()),
                         CoverPic = jt["coverImageUrl"].ToString()

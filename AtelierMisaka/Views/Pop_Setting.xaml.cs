@@ -113,6 +113,7 @@ namespace AtelierMisaka.Views
                     }
                 }
                 Task.Run(() => SaveSetting());
+                GlobalData.DownloadLogs = await Task.Run(() => GlobalData.Dbl.GetLog(GlobalData.VM_MA.Artist.Id));
                 var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Id, out _tempBis));
                 if (ret != ErrorType.NoError)
                 {
@@ -224,6 +225,7 @@ namespace AtelierMisaka.Views
                         }
                     }
                     Task.Run(() => SaveSetting());
+                    GlobalData.DownloadLogs = await Task.Run(() => GlobalData.Dbl.GetLog(GlobalData.VM_MA.Artist.Id));
                     var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Id, out _tempBis));
                     if (ret != ErrorType.NoError)
                     {
@@ -538,10 +540,10 @@ namespace AtelierMisaka.Views
             {
                 ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
                 //GlobalData.VM_MA.Artist = ai;
-                string fn = $"Temp\\{ai.Id}";
-                if (File.Exists(fn))
+                //string fn = $"Temp\\{ai.Id}";
+                if (GlobalData.Dbl.GetLastDate(ai.Id, out DateTime dt) == true)
                 {
-                    GlobalData.VM_MA.Date = File.ReadAllText(fn);
+                    GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm");
                     GlobalData.VM_MA.UseDate = true;
                 }
                 else

@@ -68,6 +68,7 @@
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\NameToWidthConverter.cs" />
     <Compile Include="Models\ArtistInfo.cs" />
+    <Compile Include="Models\DLSP.cs" />
     <Compile Include="Models\DownloadItem.cs" />
     <Compile Include="Utils\BaseUtils.cs" />
     <Compile Include="Utils\DataBase.cs" />

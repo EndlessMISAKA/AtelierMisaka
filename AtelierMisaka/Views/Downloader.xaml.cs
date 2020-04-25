@@ -22,7 +22,8 @@ namespace AtelierMisaka.Views
         IList<BaseItem> _baseItems = null;
         int _changedCount = 0;
         string _tempAI = string.Empty;
-        DateTime _tempDt = DateTime.MinValue;
+        DateTime _tempDt = DateTime.Parse("1900/01/01");
+        bool _tflag = true;
         
         static readonly object lock_Wc = new object();
         static readonly object lock_Ft = new object();
@@ -34,10 +35,23 @@ namespace AtelierMisaka.Views
             _tempAI = GlobalData.VM_MA.Artist.Id;
             GlobalData.VM_DL = VM_DD;
             VM_DD.SavePath = savepath;
-            Directory.CreateDirectory("Temp");
-            if (File.Exists($"Temp\\{_tempAI}"))
+            //Directory.CreateDirectory("Temp");
+            var ft = GlobalData.Dbl.GetLastDate(_tempAI, out DateTime dt);
+            if (ft == true)
             {
-                _tempDt = DateTime.Parse(File.ReadAllText($"Temp\\{_tempAI}"));
+                _tempDt = dt;
+                //_tempDt = DateTime.Parse(File.ReadAllText($"Temp\\{_tempAI}"));
+            }
+            else
+            {
+                if (ft == false)
+                {
+                    _tflag = false;
+                }
+                else if (!GlobalData.Dbl.InsertDate(_tempAI, _tempDt))
+                {
+                    _tflag = false;
+                }
             }
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));
             CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, MaximizeWindow, CanResizeWindow));
@@ -49,13 +63,15 @@ namespace AtelierMisaka.Views
         public async void LoadData()
         {
             VM_DD.CompletedList = new ObservableCollection<DownloadItem>();
-            var _downLoadItemList = new ObservableCollection<DownloadItem>();
             await Task.Run(() =>
             {
                 //VM_DD.DownLoadItemList = new ObservableCollection<DownloadItem>();
                 //var _completedList = new ObservableCollection<DownloadItem>();
+                var _downLoadItemList = new ObservableCollection<DownloadItem>();
                 VM_DD.PostCount = _baseItems.Count;
                 DownloadItem di = null;
+                List<DLSP> temdl = null;
+                bool haslog = false;
                 foreach (var bi in _baseItems)
                 {
                     if (bi.Skip)
@@ -63,52 +79,78 @@ namespace AtelierMisaka.Views
                         continue;
                     }
                     string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{(bi.Title)}";
+                    Directory.CreateDirectory(sp);
+                    if (!Directory.Exists(sp))
+                    {
+                        sp = GlobalData.ReplacePath(sp);
+                        Directory.CreateDirectory(sp);
+                    }
+                    haslog = GlobalData.DownloadLogs.TryGetValue(bi.ID, out temdl);
                     if (!string.IsNullOrEmpty(bi.CoverPic))
                     {
-                        di = new DownloadItem
+                        if (!haslog || !temdl.Exists(x => x.Link.Contains(bi.CoverPic)))
                         {
-                            FileName = $"Cover.{bi.CoverPic.Split('.').Last()}",
-                            Link = bi.CoverPic,
-                            SavePath = sp,
-                            CTime = bi.CreateDate,
-                            SourceDocu = bi
-                        };
-                        _downLoadItemList.Add(di);
+                            di = new DownloadItem
+                            {
+                                FileName = $"Cover.{bi.CoverPic.Split('.').Last()}",
+                                Link = bi.CoverPic,
+                                SavePath = sp,
+                                CTime = bi.CreateDate,
+                                SourceDocu = bi
+                            };
+                            _downLoadItemList.Add(di);
+                        }
                     }
                     for (int i = 0; i < bi.ContentUrls.Count; i++)
                     {
-                        di = new DownloadItem
+                        if (haslog && temdl.Exists(x => x.Link.Contains(bi.ContentUrls[i])))
                         {
-                            FileName = bi.FileNames[i],
-                            Link = bi.ContentUrls[i],
-                            SavePath = sp,
-                            CTime = bi.CreateDate,
-                            SourceDocu = bi
-                        };
-                        _downLoadItemList.Add(di);
+                            continue;
+                        }
+                        else
+                        {
+                            di = new DownloadItem
+                            {
+                                FileName = bi.FileNames[i],
+                                Link = bi.ContentUrls[i],
+                                SavePath = sp,
+                                CTime = bi.CreateDate,
+                                SourceDocu = bi
+                            };
+                            _downLoadItemList.Add(di);
+                        }
                     }
                     for (int i = 0; i < bi.MediaUrls.Count; i++)
                     {
-                        di = new DownloadItem
+                        if (haslog && temdl.Exists(x => x.Link.Contains(bi.ContentUrls[i])))
                         {
-                            FileName = bi.MediaNames[i],
-                            Link = bi.MediaUrls[i],
-                            SavePath = sp,
-                            CTime = bi.CreateDate,
-                            SourceDocu = bi
-                        };
-                        _downLoadItemList.Add(di);
+                            continue;
+                        }
+                        else
+                        {
+                            di = new DownloadItem
+                            {
+                                FileName = bi.MediaNames[i],
+                                Link = bi.MediaUrls[i],
+                                SavePath = sp,
+                                CTime = bi.CreateDate,
+                                SourceDocu = bi
+                            };
+                            _downLoadItemList.Add(di);
+                        }
                     }
-                    Directory.CreateDirectory(sp);
-                    if (bi.Comments.Count > 0)
-                    {
-                        File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
-                    }
+                    //if (bi.Comments.Count > 0)
+                    //{
+                    //    if (haslog)
+                    //    {
+                    //        continue;
+                    //    }
+                    //    File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
+                    //}
                     //VM_DD.LoadCount++;
                 }
+                VM_DD.DownLoadItemList = _downLoadItemList;
             });
-
-            VM_DD.DownLoadItemList = _downLoadItemList;
             //VM_DD.IsLoading = false;
         }
 
@@ -228,14 +270,23 @@ namespace AtelierMisaka.Views
             {
                 await Task.Run(() =>
                 {
-                    File.WriteAllBytes(Path.Combine(di.SavePath, di.FileName), e.Result);
+                    var fn = Path.Combine(di.SavePath, di.FileName);
+                    if (File.Exists(fn))
+                    {
+                        string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                        fn += $"_{tn}";
+                        di.FileName += $"_{tn}";
+                    }
+                    File.WriteAllBytes(fn, e.Result);
                     lock (lock_Ft)
                     {
                         if (di.CTime > _tempDt)
                         {
-                            File.WriteAllText($"Temp\\{_tempAI}", di.CTime.ToString("yyyy/MM/dd HH:mm"));
+                            //File.WriteAllText($"Temp\\{_tempAI}", di.CTime.ToString("yyyy/MM/dd HH:mm"));
+                            //GlobalData.Dbl.UpdateDate(_tempAI, di.CTime);
                             _tempDt = di.CTime;
                         }
+                        GlobalData.Dbl.InsertLog(_tempAI, di.SourceDocu.ID, fn, di.Link);
                     }
                 });
                 di.DLStatus = DownloadStatus.Completed;
@@ -269,6 +320,11 @@ namespace AtelierMisaka.Views
             {
                 return;
             }
+            await Task.Run(() =>
+            {
+                if (_tflag)
+                    GlobalData.Dbl.UpdateDate(_tempAI, _tempDt);
+            });
             VM_DD.IsDownloading = false;
             VM_DD.BtnText = "全部开始";
         }
@@ -277,15 +333,19 @@ namespace AtelierMisaka.Views
         {
             DownloadItem di = (DownloadItem)e.UserState;
             di.Percent = e.ProgressPercentage;
-            //di.ContentLength = e.TotalBytesToReceive;
             di.TotalRC = e.BytesReceived;
-            if (di.ContentLength == 0)
-            {
-                if (long.TryParse(di.DClient.ResponseHeaders[HttpResponseHeader.ContentLength], out long ll))
-                {
-                    di.ContentLength = ll;
-                }
-            }
+            di.ContentLength = e.TotalBytesToReceive;
+            //if (di.ContentLength == 0)
+            //{
+            //    if (long.TryParse(di.DClient.ResponseHeaders[HttpResponseHeader.ContentLength], out long ll))
+            //    {
+            //        di.ContentLength = ll;
+            //    }
+            //    else
+            //    {
+            //        di.ContentLength = -1;
+            //    }
+            //}
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -305,7 +365,8 @@ namespace AtelierMisaka.Views
                 VM_DD.WClients.ForEach(x => x.CancelAsync());
             }
             VM_DD.DownLoadItemList.Clear();
-            this.Close();
+            //this.Close();
+            this.Hide();
         }
 
         private void Btn_Cancel_Click(object sender, RoutedEventArgs e)

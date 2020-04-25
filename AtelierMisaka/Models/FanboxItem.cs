@@ -8,11 +8,9 @@ namespace AtelierMisaka.Models
 {
     public class FanboxItem : BaseItem
     {
-        private string _id = string.Empty;
 
-        public string ID
+        public string PID
         {
-            get => _id;
             set
             {
                 if (_id != value)

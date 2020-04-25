@@ -21,6 +21,8 @@ namespace AtelierMisaka
         public static VM_Main VM_MA = null;
         public static VM_Download VM_DL = null;
         public static SynchronizationContext SyContext = null;
+        public static Dictionary<string, List<DLSP>> DownloadLogs = null;
+        public static DB_Layer Dbl = new DB_Layer();
 
         private static Pop_Setting _pop_Setting = null;
         private static Pop_Document _pop_Document = null;
@@ -79,6 +81,43 @@ namespace AtelierMisaka
             System.Diagnostics.Process.Start(link);
         });
 
+        public static ParamCommand<object[]> DownloadCommand = new ParamCommand<object[]>((args) =>
+        {
+            BaseItem bi = (BaseItem)args[1];
+            int index = (int)args[2];
+            string sp = $"{VM_DL.SavePath}\\{VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{(bi.Title)}";
+            Directory.CreateDirectory(sp);
+            if (!Directory.Exists(sp))
+            {
+                sp = ReplacePath(sp);
+                Directory.CreateDirectory(sp);
+            }
+            DownloadItem di = null;
+            if ((bool)args[0])
+            {
+                di = new DownloadItem
+                {
+                    FileName = bi.FileNames[index],
+                    Link = bi.ContentUrls[index],
+                    SavePath = sp,
+                    CTime = bi.CreateDate,
+                    SourceDocu = bi
+                };
+            }
+            else
+            {
+                di = new DownloadItem
+                {
+                    FileName = bi.MediaNames[index],
+                    Link = bi.MediaUrls[index],
+                    SavePath = sp,
+                    CTime = bi.CreateDate,
+                    SourceDocu = bi
+                };
+            }
+            VM_DL.DownLoadItemList.Add(di);
+        });
+
         public static void Init()
         {
             _pop_Setting = new Pop_Setting();
@@ -93,7 +132,7 @@ namespace AtelierMisaka
 
         public static bool OverTime(BaseItem bi)
         {
-            return bi.CreateDate > VM_MA.LastDate || bi.UpdateDate > VM_MA.LastDate;
+            return bi.CreateDate >= VM_MA.LastDate || bi.UpdateDate >= VM_MA.LastDate;
         }
 
         public static string ConverToJson(IEnumerable<ArtistInfo> ais)
