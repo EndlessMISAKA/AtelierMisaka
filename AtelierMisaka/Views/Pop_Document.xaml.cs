@@ -92,7 +92,7 @@ namespace AtelierMisaka.Views
                     Hyperlink hl = new Hyperlink(new Run(bi.MediaNames[i]))
                     {
                         Command = GlobalData.DownloadCommand,
-                        CommandParameter = new object[] { true, bi, i }
+                        CommandParameter = new object[] { false, bi, i }
                     };
                     MainBody.Inlines.Add(hl);
                     MainBody.Inlines.Add(new LineBreak());
