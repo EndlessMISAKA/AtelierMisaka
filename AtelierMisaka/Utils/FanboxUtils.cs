@@ -76,12 +76,12 @@ namespace AtelierMisaka
                     {
                         PID = jt["id"].ToString(),
                         Fee = jt["feeRequired"].ToString(),
-                        Title = GlobalData.ReplacePath(jt["title"].ToString().Trim()),
+                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jt["title"].ToString().Trim())),
                         CreateDate = DateTime.Parse(jt["publishedDatetime"].ToString()),
                         UpdateDate = DateTime.Parse(jt["updatedDatetime"].ToString()),
                         CoverPic = jt["coverImageUrl"].ToString()
                     };
-                    if (GlobalData.OverPayment(int.Parse(pi.Fee)) || !GlobalData.OverTime(pi))
+                    if (GlobalData.OverPayment(int.Parse(pi.Fee)) || GlobalData.OverTime(pi))
                     {
                         pi.Skip = true;
                     }
@@ -297,7 +297,7 @@ namespace AtelierMisaka
                 if (null != jd)
                 {
                     var jj = jd.First.First.First.First;
-                    var ai = new ArtistInfo() { Id = jj["userId"].ToString(), AName = GlobalData.ReplacePath(jj["name"].ToString().Trim()) };
+                    var ai = new ArtistInfo() { Id = jj["userId"].ToString(), AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jj["name"].ToString().Trim())) };
                     return ai;
                 }
             }
@@ -356,7 +356,7 @@ namespace AtelierMisaka
                             ai.PayHigh = jt["fee"].ToString();
                             var jtd = jt["user"];
                             ai.Id = jtd["userId"].ToString();
-                            ai.AName = GlobalData.ReplacePath(jtd["name"].ToString().Trim());
+                            ai.AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jtd["name"].ToString().Trim()));
                             ai.PostUrl = $"https://www.pixiv.net/fanbox/creator/{ai.Id}/post";
 
                             var index = tais.IndexOf(ai);

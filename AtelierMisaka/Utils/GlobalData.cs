@@ -23,9 +23,11 @@ namespace AtelierMisaka
         public static SynchronizationContext SyContext = null;
         public static Dictionary<string, List<DLSP>> DownloadLogs = null;
         public static DB_Layer Dbl = new DB_Layer();
+        public static Downloader DownLP = null;
 
         private static Pop_Setting _pop_Setting = null;
         private static Pop_Document _pop_Document = null;
+        private static string _invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
 
         public static ParamCommand<BackType> BackCommand = new ParamCommand<BackType>((flag) =>
         {
@@ -69,6 +71,11 @@ namespace AtelierMisaka
             {
                 bi.NeedLoadCover = true;
             }
+        });
+
+        public static CommonCommand ShowDLCommand = new CommonCommand(() =>
+        {
+            DownLP.Show();
         });
 
         public static CommonCommand OpenLinkCommand = new CommonCommand(() =>
@@ -116,6 +123,7 @@ namespace AtelierMisaka
                 };
             }
             VM_DL.DownLoadItemList.Add(di);
+            ShowDLCommand.Execute(null);
         });
 
         public static void Init()
@@ -127,12 +135,12 @@ namespace AtelierMisaka
 
         public static bool OverPayment(int feeRequired)
         {
-            return (feeRequired < VM_MA.Artist.PayLowInt) || (VM_MA.Artist.PayHighInt < feeRequired);
+            return (feeRequired < VM_MA.Artist.PayLowInt) || (VM_MA.Artist.PayHighInt != -1 && (VM_MA.Artist.PayHighInt < feeRequired));
         }
 
         public static bool OverTime(BaseItem bi)
         {
-            return bi.CreateDate >= VM_MA.LastDate || bi.UpdateDate >= VM_MA.LastDate;
+            return VM_MA.UseDate && (bi.CreateDate <= VM_MA.LastDate || bi.UpdateDate <= VM_MA.LastDate);
         }
 
         public static string ConverToJson(IEnumerable<ArtistInfo> ais)
@@ -160,13 +168,21 @@ namespace AtelierMisaka
 
         public static string ReplacePath(string path)
         {
-            string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-
-            foreach (char c in invalid)
+            foreach (char c in _invalid)
             {
                 path = path.Replace(c.ToString(), "_");
             }
 
+            return path;
+        }
+
+        public static string RemoveLastDot(string path)
+        {
+            Match ma = new Regex(@"\.+$").Match(path);
+            if (ma.Success)
+            {
+                path = path.Substring(0, path.Length - ma.Groups[0].Value.Length);
+            }
             return path;
         }
 

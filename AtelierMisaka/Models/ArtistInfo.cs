@@ -101,7 +101,7 @@ namespace AtelierMisaka.Models
             {
                 if (string.IsNullOrEmpty(_payHigh))
                 {
-                    return 0;
+                    return -1;
                 }
                 else
                 {
