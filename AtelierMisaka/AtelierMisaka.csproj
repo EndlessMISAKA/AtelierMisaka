@@ -171,5 +171,10 @@
   <ItemGroup>
     <Resource Include="Resources\Btn_Look.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Database.mdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
