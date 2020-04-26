@@ -83,7 +83,7 @@
                 <TextBlock Text="付费区间" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="150,0" HorizontalAlignment="Left" Tag="0" Text="{Binding Artist.PayLow, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="320,0"/>
-                <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="0,0,290,0" Tag="0" Text="{Binding Artist.PayHigh, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="0,0,290,0" Tag="∞" Text="{Binding Artist.PayHigh, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="保存路径" Style="{StaticResource TBL_Setting}"/>
@@ -91,7 +91,7 @@
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="Cookies" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="浏览器F12查看网络数据包，从中获取Cookies" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="例：PHPSESSID=1234567_dsa1d5sa6348csa3284dsa1c1as4" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Height="60">
                 <CheckBox Style="{StaticResource CB_Setting}" Content="代理设置" IsChecked="{Binding UseProxy}"/>
@@ -126,6 +126,19 @@
                                     <RotateTransform CenterX="13.5" CenterY="13.5" Angle="270"/>
                                 </TransformGroup>
                             </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="3, 35" Focusable="False"
+                Command="{x:Static basens:GlobalData.ShowDLCommand}" Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Ellipse Width="27" Height="27" Fill="Gray"/>
+                        <Path Data="M17,3L5,16L14,15L10,24L22,11L13,12Z"
+                              Width="27" Height="27" Fill="#2D2D30">
                         </Path>
                     </Grid>
                 </ControlTemplate>
