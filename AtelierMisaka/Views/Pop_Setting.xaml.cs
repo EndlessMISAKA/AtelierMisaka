@@ -38,6 +38,8 @@ namespace AtelierMisaka.Views
         private string _tempCookies = string.Empty;
         private string _tempDate = string.Empty;
         private string _tempSP = string.Empty;
+        private bool _tempUP = false;
+        private bool _tempUD = false;
 
         private IList<BaseItem> _tempBis = null;
 
@@ -141,9 +143,10 @@ namespace AtelierMisaka.Views
                     return;
                 }
                 GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                Downloader dl = new Downloader(_tempBis, GlobalData.VM_MA.SavePath);
-                dl.Show();
-                dl.LoadData();
+                GlobalData.DownLP?.Close();
+                GlobalData.DownLP = new Downloader(_tempBis, GlobalData.VM_MA.SavePath);
+                GlobalData.DownLP.Show();
+                GlobalData.DownLP.LoadData();
                 GlobalData.BackCommand.Execute(BackType.Pop);
 
                 _tempArt = new ArtistInfo()
@@ -159,6 +162,8 @@ namespace AtelierMisaka.Views
                 _tempProxy = GlobalData.VM_MA.Proxy;
                 _tempDate = GlobalData.VM_MA.Date;
                 _tempSP = GlobalData.VM_MA.SavePath;
+                _tempUP = GlobalData.VM_MA.UseProxy;
+                _tempUD = GlobalData.VM_MA.UseDate;
 
                 ShowLoading(false);
                 GlobalData.VM_MA.IsStarted = true;
@@ -177,6 +182,13 @@ namespace AtelierMisaka.Views
                 ShowLoading(true);
                 if (_tempSite != GlobalData.VM_MA.Site || _tempArt.PostUrl != GlobalData.VM_MA.Artist.PostUrl)
                 {
+                    if (GlobalData.VM_DL.IsDownloading)
+                    {
+                        await GetCheck("当前还在下载中，不能更换");
+                        _checkResult = null;
+                        ShowLoading(false);
+                        return;
+                    }
                     if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
                     {
                         await GetCheck("Cookies不能为空");
@@ -253,9 +265,10 @@ namespace AtelierMisaka.Views
                         return;
                     }
                     GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                    Downloader dl = new Downloader(_tempBis, GlobalData.VM_MA.SavePath);
-                    dl.Show();
-                    dl.LoadData();
+                    GlobalData.DownLP?.Close();
+                    GlobalData.DownLP = new Downloader(_tempBis, GlobalData.VM_MA.SavePath);
+                    GlobalData.DownLP.Show();
+                    GlobalData.DownLP.LoadData();
                     GlobalData.BackCommand.Execute(BackType.Pop);
                     _tempArt = new ArtistInfo()
                     {
@@ -277,10 +290,13 @@ namespace AtelierMisaka.Views
 
                 if (_tempArt.PayLow != GlobalData.VM_MA.Artist.PayLow || _tempArt.PayHigh != GlobalData.VM_MA.Artist.PayHigh)
                 {
-                    foreach (var bi in _tempBis)
+                    await Task.Run(() =>
                     {
-                        bi.Skip = GlobalData.OverPayment(int.Parse(bi.Fee));
-                    }
+                        foreach (var bi in _tempBis)
+                        {
+                            bi.Skip = GlobalData.OverPayment(int.Parse(bi.Fee));
+                        }
+                    });
                     GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
                     _tempArt.PayLow = GlobalData.VM_MA.Artist.PayLow;
                     _tempArt.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
@@ -303,8 +319,39 @@ namespace AtelierMisaka.Views
                     _tempProxy = GlobalData.VM_MA.Proxy;
                 }
 
-                if (_tempDate != GlobalData.VM_MA.Date)
+                if (_tempUP != GlobalData.VM_MA.UseProxy)
                 {
+                    if (GlobalData.VM_MA.UseProxy)
+                    {
+                        GlobalData.VM_DL.WClients.ForEach(x =>
+                        {
+                            x.Proxy = GlobalData.VM_MA.MyProxy;
+                            x.CancelAsync();
+                        });
+                    }
+                    else
+                    {
+                        GlobalData.VM_DL.WClients.ForEach(x =>
+                        {
+                            x.Proxy = null;
+                            x.CancelAsync();
+                        });
+                    }
+                    _tempUP = GlobalData.VM_MA.UseProxy;
+                }
+
+                if (_tempDate != GlobalData.VM_MA.Date || _tempUD != GlobalData.VM_MA.UseDate)
+                {
+                    await Task.Run(() =>
+                    {
+                        foreach (var bi in _tempBis)
+                        {
+                            bi.Skip = GlobalData.OverTime(bi);
+                        }
+                    });
+                    GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
+                    #region old
+                    /*
                     DateTime dt = DateTime.Parse(_tempDate);
                     DateTime dp = DateTime.Parse(GlobalData.VM_MA.Date);
                     if (dt > dp)
@@ -375,7 +422,10 @@ namespace AtelierMisaka.Views
                             }
                         }
                     }
+                    /**/
+                    #endregion
                     _tempDate = GlobalData.VM_MA.Date;
+                    _tempUD = GlobalData.VM_MA.UseDate;
                 }
 
                 if (_tempCookies != GlobalData.VM_MA.Cookies)
@@ -486,7 +536,7 @@ namespace AtelierMisaka.Views
                 File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.Cookies, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
                 if (!string.IsNullOrEmpty(GlobalData.VM_MA.ArtistList.Last().Id))
                 {
-                    GlobalData.VM_MA.ArtistList.Add(new ArtistInfo());
+                    Dispatcher.Invoke(() => GlobalData.VM_MA.ArtistList.Add(new ArtistInfo()));
                 }
             }
             catch
@@ -543,7 +593,7 @@ namespace AtelierMisaka.Views
                 //string fn = $"Temp\\{ai.Id}";
                 if (GlobalData.Dbl.GetLastDate(ai.Id, out DateTime dt) == true)
                 {
-                    GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm");
+                    GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm:ss");
                     GlobalData.VM_MA.UseDate = true;
                 }
                 else

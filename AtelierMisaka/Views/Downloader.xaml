@@ -166,7 +166,11 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="取消下载吗？" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Style="{StaticResource TBL_Setting}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Run Text="关闭下载界面吗？"/>
+                    <LineBreak/>
+                    <Run Text="可在设定界面重新打开"/>
+                </TextBlock>
                 <StackPanel Orientation="Horizontal" Grid.Row="1">
                     <Button Click="Btn_Close_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
                     <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>

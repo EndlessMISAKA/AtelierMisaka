@@ -122,7 +122,7 @@ namespace AtelierMisaka.Views
                     }
                     for (int i = 0; i < bi.MediaUrls.Count; i++)
                     {
-                        if (haslog && temdl.Exists(x => x.Link.Contains(bi.ContentUrls[i])))
+                        if (haslog && temdl.Exists(x => x.Link.Contains(bi.MediaUrls[i])))
                         {
                             continue;
                         }
@@ -359,14 +359,15 @@ namespace AtelierMisaka.Views
 
         private void Btn_Close_Click(object sender, RoutedEventArgs e)
         {
-            if (VM_DD.IsDownloading)
-            {
-                VM_DD.IsDownloading = false;
-                VM_DD.WClients.ForEach(x => x.CancelAsync());
-            }
-            VM_DD.DownLoadItemList.Clear();
+            //if (VM_DD.IsDownloading)
+            //{
+            //    VM_DD.IsDownloading = false;
+            //    VM_DD.WClients.ForEach(x => x.CancelAsync());
+            //}
+            //VM_DD.DownLoadItemList.Clear();
             //this.Close();
             this.Hide();
+            VM_DD.ShowCheck = false;
         }
 
         private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
