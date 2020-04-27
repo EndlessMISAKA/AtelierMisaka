@@ -10,10 +10,24 @@ namespace AtelierMisaka.Models
     public class ArtistInfo : NotifyModel
     {
         private string _id = string.Empty;
+        private string _cid = string.Empty;
         private string _aName = "自定义";
         private string _postUrl = string.Empty;
         private string _payLow = string.Empty;
         private string _payHigh = string.Empty;
+
+        public string Cid
+        {
+            get => _cid;
+            set
+            {
+                if (_cid != value)
+                {
+                    _cid = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
         public string Id
         {

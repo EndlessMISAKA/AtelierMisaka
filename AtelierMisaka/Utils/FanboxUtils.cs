@@ -16,13 +16,18 @@ namespace AtelierMisaka
 {
     public class FanboxUtils : BaseUtils
     {
+        string _referer = string.Empty;
+
         public override ErrorType GetPostIDs(string uid, out IList<BaseItem> bis)
         {
             bis = new List<BaseItem>();
             try
             {
-                string url = $"https://fanbox.pixiv.net/api/post.listCreator?userId={uid}&limit=10";
-                string reff = $"https://www.pixiv.net/fanbox/creator/{uid}/post";
+                string url = $"https://api.fanbox.cc/post.listCreator?creatorId={uid}&limit=10";
+                if (string.IsNullOrEmpty(_referer))
+                {
+                    _referer = $"https://{uid}.fanbox.cc";
+                }
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
                 req.Method = "GET";
 
@@ -30,9 +35,9 @@ namespace AtelierMisaka
                     req.Proxy = GlobalData.VM_MA.MyProxy;
 
                 req.Accept = "application/json, text/plain, */*";
-                req.Headers.Set("Origin", "https://www.pixiv.net");
+                req.Headers.Set("Origin", "https://www.fanbox.cc");
                 req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Referer = reff;
+                req.Referer = _referer;
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
                 StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
                 string respHtml = sr.ReadToEnd();
@@ -44,7 +49,7 @@ namespace AtelierMisaka
                 string nurl = GetUrls(respHtml, bis);
                 if (!string.IsNullOrEmpty(nurl))
                 {
-                    GetPostIDs_Next(nurl, reff, bis);
+                    GetPostIDs_Next(nurl, bis);
                 }
                 return ErrorType.NoError;
             }
@@ -222,7 +227,7 @@ namespace AtelierMisaka
             return null;
         }
 
-        protected override void GetPostIDs_Next(string url, string reff, IList<BaseItem> pis)
+        protected override void GetPostIDs_Next(string url, IList<BaseItem> pis)
         {
             try
             {
@@ -233,9 +238,9 @@ namespace AtelierMisaka
                     req.Proxy = GlobalData.VM_MA.MyProxy;
 
                 req.Accept = "application/json, text/plain, */*";
-                req.Headers.Set("Origin", "https://www.pixiv.net");
+                req.Headers.Set("Origin", "https://www.fanbox.cc");
                 req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Referer = reff;
+                req.Referer = _referer;
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
                 StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
                 string respHtml = sr.ReadToEnd();
@@ -247,7 +252,7 @@ namespace AtelierMisaka
                 string nurl = GetUrls(respHtml, pis);
                 if (!string.IsNullOrEmpty(nurl))
                 {
-                    GetPostIDs_Next(nurl, reff, pis);
+                    GetPostIDs_Next(nurl, pis);
                 }
             }
             catch
@@ -260,17 +265,19 @@ namespace AtelierMisaka
         {
             try
             {
-                Match ma = (new Regex(@"/(\d+)/post")).Match(url);
-                string id = string.Empty;
-                if (ma.Success)
+                Match ma = (new Regex(@"^https://(\w+)\.fanbox\.cc/?$")).Match(url);
+                if (!ma.Success)
                 {
-                    id = ma.Groups[1].Value;
+                    ma = (new Regex(@"^https://www\.fanbox\.cc/@(\w+)$")).Match(url);
+                    if (!ma.Success)
+                    {
+                        return null;
+                    }
+                    url = $"https://{ma.Groups[1].Value}.fanbox.cc/";
                 }
-                else
-                {
-                    return null;
-                }
-                url = $"https://fanbox.pixiv.net/api/creator.get?userId={ma.Groups[1].Value}";
+                _referer = url;
+                string cid = ma.Groups[1].Value;
+                url = $"https://api.fanbox.cc/creator.get?creatorId={cid}";
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);//请求数据
                 req.Method = "GET";
                 if (GlobalData.VM_MA.UseProxy)
@@ -278,9 +285,9 @@ namespace AtelierMisaka
 
                 req.Accept = "application/json, text/plain, */*";
                 req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Headers.Set("Origin", "https://www.pixiv.net");
+                req.Headers.Set("Origin", "https://www.fanbox.cc");
                 req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
-                req.Referer = $"https://www.pixiv.net/fanbox/creator/{id}";
+                req.Referer = _referer;
 
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
                                                                           //otherwise will return messy code
@@ -296,8 +303,14 @@ namespace AtelierMisaka
                 var jd = ConvertJSON(respHtml);
                 if (null != jd)
                 {
+                    var _cid = jd.First.First["creatorId"].ToString();
                     var jj = jd.First.First.First.First;
-                    var ai = new ArtistInfo() { Id = jj["userId"].ToString(), AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jj["name"].ToString().Trim())) };
+                    var ai = new ArtistInfo()
+                    {
+                        Id = jj["userId"].ToString(),
+                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jj["name"].ToString().Trim())),
+                        Cid = _cid
+                    };
                     return ai;
                 }
             }
@@ -312,7 +325,7 @@ namespace AtelierMisaka
         {
             try
             {
-                string url = "https://fanbox.pixiv.net/api/plan.listSupporting";
+                string url = "https://api.fanbox.cc/plan.listSupporting";
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);//请求数据
                 req.Method = "GET";
                 if (GlobalData.VM_MA.UseProxy)
@@ -320,9 +333,9 @@ namespace AtelierMisaka
 
                 req.Accept = "application/json, text/plain, */*";
                 req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Headers.Set("Origin", "https://www.pixiv.net");
+                req.Headers.Set("Origin", "https://www.fanbox.cc");
                 req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
-                req.Referer = "https://www.pixiv.net/fanbox/support/creators";
+                req.Referer = "https://www.fanbox.cc/creators/supporting";
 
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
                                                                           //otherwise will return messy code
@@ -354,10 +367,11 @@ namespace AtelierMisaka
                         {
                             ArtistInfo ai = new ArtistInfo();
                             ai.PayHigh = jt["fee"].ToString();
+                            ai.Cid = jt["creatorId"].ToString();
                             var jtd = jt["user"];
                             ai.Id = jtd["userId"].ToString();
                             ai.AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jtd["name"].ToString().Trim()));
-                            ai.PostUrl = $"https://www.pixiv.net/fanbox/creator/{ai.Id}/post";
+                            ai.PostUrl = $"https://{ai.Cid}.fanbox.cc";
 
                             var index = tais.IndexOf(ai);
                             if (index != -1)

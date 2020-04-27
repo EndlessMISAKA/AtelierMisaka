@@ -16,7 +16,7 @@ namespace AtelierMisaka.Models
                 if (_id != value)
                 {
                     _id = value;
-                    _link = $"https://www.pixiv.net/fanbox/creator/{GlobalData.VM_MA.Artist.Id}/post/{_id}";
+                    _link = $"https://{GlobalData.VM_MA.Artist.Cid}.fanbox.cc/post/{_id}";
                     RaisePropertyChanged();
                 }
             }

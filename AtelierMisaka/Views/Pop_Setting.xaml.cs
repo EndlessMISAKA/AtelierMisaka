@@ -101,7 +101,9 @@ namespace AtelierMisaka.Views
                         return;
                     }
                     GlobalData.VM_MA.Artist.Id = ai.Id;
+                    GlobalData.VM_MA.Artist.Cid = ai.Cid;
                     GlobalData.VM_MA.Artist.AName = ai.AName;
+                    GlobalData.VM_MA.Artist.PostUrl = $"https://{ai.Cid}.fanbox.cc";
                     if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
                     {
                         if (GlobalData.VM_MA.ArtistList.Count > 0)
@@ -113,10 +115,11 @@ namespace AtelierMisaka.Views
                             GlobalData.VM_MA.ArtistList.Add(GlobalData.VM_MA.Artist);
                         }
                     }
+                    SetLastDate(ai.Id);
                 }
                 Task.Run(() => SaveSetting());
                 GlobalData.DownloadLogs = await Task.Run(() => GlobalData.Dbl.GetLog(GlobalData.VM_MA.Artist.Id));
-                var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Id, out _tempBis));
+                var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid, out _tempBis));
                 if (ret != ErrorType.NoError)
                 {
                     if (ret == ErrorType.Web)
@@ -223,7 +226,9 @@ namespace AtelierMisaka.Views
                             return;
                         }
                         GlobalData.VM_MA.Artist.Id = ai.Id;
+                        GlobalData.VM_MA.Artist.Cid = ai.Cid;
                         GlobalData.VM_MA.Artist.AName = ai.AName;
+                        GlobalData.VM_MA.Artist.PostUrl = $"https://{ai.Cid}.fanbox.cc";
                         if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
                         {
                             if (GlobalData.VM_MA.ArtistList.Count > 0)
@@ -235,10 +240,11 @@ namespace AtelierMisaka.Views
                                 GlobalData.VM_MA.ArtistList.Add(GlobalData.VM_MA.Artist);
                             }
                         }
+                        SetLastDate(ai.Id);
                     }
                     Task.Run(() => SaveSetting());
                     GlobalData.DownloadLogs = await Task.Run(() => GlobalData.Dbl.GetLog(GlobalData.VM_MA.Artist.Id));
-                    var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Id, out _tempBis));
+                    var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid, out _tempBis));
                     if (ret != ErrorType.NoError)
                     {
                         if (ret == ErrorType.Web)
@@ -589,18 +595,7 @@ namespace AtelierMisaka.Views
             if(e.AddedItems.Count > 0)
             {
                 ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
-                //GlobalData.VM_MA.Artist = ai;
-                //string fn = $"Temp\\{ai.Id}";
-                if (GlobalData.Dbl.GetLastDate(ai.Id, out DateTime dt) == true)
-                {
-                    GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    GlobalData.VM_MA.UseDate = true;
-                }
-                else
-                {
-                    GlobalData.VM_MA.Date = string.Empty;
-                    GlobalData.VM_MA.UseDate = false;
-                }
+                SetLastDate(ai.Id);
             }
             else
             {
@@ -608,6 +603,20 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 }
+            }
+        }
+
+        private void SetLastDate(string id)
+        {
+            if (GlobalData.Dbl.GetLastDate(id, out DateTime dt) == true)
+            {
+                GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                GlobalData.VM_MA.UseDate = true;
+            }
+            else
+            {
+                GlobalData.VM_MA.Date = string.Empty;
+                GlobalData.VM_MA.UseDate = false;
             }
         }
 
