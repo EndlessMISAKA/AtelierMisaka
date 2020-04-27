@@ -67,6 +67,7 @@ namespace AtelierMisaka.Views
 
             if (bi.ContentUrls.Count > 0)
             {
+                MainBody.Inlines.Add(new LineBreak());
                 MainBody.Inlines.Add(new Run("文件列表: "));
                 MainBody.Inlines.Add(new LineBreak());
 
@@ -84,6 +85,7 @@ namespace AtelierMisaka.Views
 
             if (bi.MediaUrls.Count > 0)
             {
+                MainBody.Inlines.Add(new LineBreak());
                 MainBody.Inlines.Add(new Run("图片列表: "));
                 MainBody.Inlines.Add(new LineBreak());
 
