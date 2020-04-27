@@ -22,7 +22,7 @@ namespace AtelierMisaka.Views
         IList<BaseItem> _baseItems = null;
         int _changedCount = 0;
         string _tempAI = string.Empty;
-        DateTime _tempDt = DateTime.Parse("1900/01/01");
+        DateTime _tempDt = DateTime.Parse("2010/01/01");
         bool _tflag = true;
         
         static readonly object lock_Wc = new object();
@@ -48,9 +48,18 @@ namespace AtelierMisaka.Views
                 {
                     _tflag = false;
                 }
-                else if (!GlobalData.Dbl.InsertDate(_tempAI, _tempDt))
+                else
                 {
-                    _tflag = false;
+                    if (!GlobalData.VM_MA.LastDate.Equals(DateTime.MinValue))
+                    {
+                        _tflag = GlobalData.Dbl.InsertDate(_tempAI, GlobalData.VM_MA.LastDate);
+                    }
+                    else
+                    {
+                        _tflag = GlobalData.Dbl.InsertDate(_tempAI, _tempDt);
+                    }
+                    //if (!GlobalData.Dbl.InsertDate(_tempAI, _tempDt))
+                    //    _tflag = false;
                 }
             }
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));

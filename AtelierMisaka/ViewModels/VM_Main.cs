@@ -246,7 +246,7 @@ namespace AtelierMisaka.ViewModels
                     }
                     else
                     {
-                        if(DateTime.TryParse(_date, out DateTime dt))
+                        if (DateTime.TryParse(_date, out DateTime dt))
                         {
                             LastDate = dt;
                         }
