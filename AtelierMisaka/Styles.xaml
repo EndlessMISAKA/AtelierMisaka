@@ -465,7 +465,7 @@
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="FontSize" Value="28"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Width" Value="630"/>
+        <Setter Property="Width" Value="730"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Margin" Value="20,0"/>
         <Setter Property="Padding" Value="10,0"/>
