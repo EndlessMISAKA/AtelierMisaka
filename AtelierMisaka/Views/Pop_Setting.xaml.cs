@@ -126,6 +126,10 @@ namespace AtelierMisaka.Views
                     {
                         await GetCheck("发生网络错误", "请确认网络连接");
                     }
+                    else if (ret == ErrorType.Cookies)
+                    {
+                        await GetCheck("请更换Cookies");
+                    }
                     else if (ret == ErrorType.IO)
                     {
                         await GetCheck("磁盘读写出错");
@@ -250,6 +254,10 @@ namespace AtelierMisaka.Views
                         if (ret == ErrorType.Web)
                         {
                             await GetCheck("发生网络错误", "请确认网络连接");
+                        }
+                        else if (ret == ErrorType.Cookies)
+                        {
+                            await GetCheck("请更换Cookies");
                         }
                         else if (ret == ErrorType.IO)
                         {

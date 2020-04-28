@@ -57,7 +57,7 @@ namespace AtelierMisaka
             {
                 if (ex is WebException || ex is System.Net.Sockets.SocketException)
                 {
-                    return ErrorType.Web;
+                    return ex.Message.Contains("401") ? ErrorType.Cookies : ErrorType.Web;
                 }
                 else if (ex is IOException)
                 {

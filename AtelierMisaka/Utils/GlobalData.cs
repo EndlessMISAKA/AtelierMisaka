@@ -239,7 +239,8 @@ namespace AtelierMisaka
         Web,
         IO,
         UnKnown,
-        NoError
+        NoError,
+        Cookies
     }
 
     public enum DownloadStatus
