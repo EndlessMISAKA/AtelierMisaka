@@ -84,6 +84,8 @@
                                             <Run Text="{Binding Fee}"/>
                                         </TextBlock>
                                         <TextBlock Grid.Row="3" HorizontalAlignment="Left" Margin="10,0" FontSize="15" Text="{Binding FileCount}"/>
+                                        <TextBlock Grid.Row="3" HorizontalAlignment="Right" Margin="10,0" FontSize="15" Text="检测到网站链接"
+                                                   Visibility="{Binding HasLink, Converter={StaticResource btvc}}" Foreground="Red"/>
                                     </Grid>
                                 </Grid>
                             </DataTemplate>

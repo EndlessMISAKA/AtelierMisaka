@@ -36,6 +36,11 @@ namespace AtelierMisaka.Models
             get => (_contentUrls.Count == 0 && _mediaUrls.Count == 0);
         }
 
+        public bool HasLink
+        {
+            get => _comments.FindIndex(x => x.Contains("http")) != -1;
+        }
+
         public string Title
         {
             get => _title;
