@@ -238,9 +238,12 @@ namespace AtelierMisaka
     {
         Web,
         IO,
+        Cookies,
+        Path,
+        Security,
+
         UnKnown,
         NoError,
-        Cookies
     }
 
     public enum DownloadStatus
