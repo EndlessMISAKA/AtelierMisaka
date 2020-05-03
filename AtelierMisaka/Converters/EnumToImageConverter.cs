@@ -29,7 +29,7 @@ namespace AtelierMisaka.Converters
                     res = "/AtelierMisaka;component/Resources/Status_Cancel.png";
                     break;
                 case DownloadStatus.Paused:
-                    res = "/AtelierMisaka;component/Resources/Status_Paused.png";
+                    res = "/AtelierMisaka;component/Resources/Btn_Paused.png";
                     break;
             }
             return res;
