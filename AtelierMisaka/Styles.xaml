@@ -371,72 +371,111 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type vs:ButtonEx}" x:Key="BTN_Ex">
-        <Setter Property="Width" Value="Auto"/>
+    <Style TargetType="vs:ButtonEx" x:Key="BTN_Play">
+        <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Background" Value="#2D2D30"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="25"/>
+        <Setter Property="Margin" Value="10,0"/>
+        <Setter Property="ToolTip" Value="开始下载"/>
         <Setter Property="CommandParameter" Value="{Binding}"/>
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.StartCommand}"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vs:ButtonEx}">
-                    <Border x:Name="bg" Height="{TemplateBinding Height}" 
-                            Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image x:Name="img" Width="40"/>
-                            <TextBlock x:Name="txt" Width="Auto" FontSize="25" Foreground="White" VerticalAlignment="Center" Margin="0"/>
-                        </StackPanel>
+                <ControlTemplate TargetType="vs:ButtonEx">
+                    <Border Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                        <Image x:Name="img" Width="40" Source="/AtelierMisaka;component/Resources/Btn_Start.png"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="bg" Property="Background" Value="#3F3F41"/>
+                            <Setter Property="Background" Value="#3F3F41"/>
+                        </Trigger>
+                        <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Downloading}">
+                            <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_Paused.png"/>
+                            <Setter Property="ToolTip" Value="暂停下载"/>
+                            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.PauseCommand}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="vs:ButtonEx" x:Key="BTN_Ex">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Background" Value="#2D2D30"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="Margin" Value="10,0"/>
+        <Setter Property="ToolTip" Value="暂停并继续"/>
+        <Setter Property="CommandParameter" Value="{Binding}"/>
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.ReStartCommand}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type vs:ButtonEx}">
+                    <Border Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                        <Image x:Name="img" Width="40" Source="/AtelierMisaka;component/Resources/Btn_ReDo.png"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#3F3F41"/>
                         </Trigger>
                         <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Waiting}">
                             <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_ToFirst.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="优先"/>
+                            <Setter Property="ToolTip" Value="优先下载"/>
                             <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.ToFirstCommand}"/>
-                        </Trigger>
-                        <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Downloading}">
-                            <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_ReDo.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="重下"/>
-                            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.ReStartCommand}"/>
-                        </Trigger>
-                        <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Error}">
-                            <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_ReDo.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="重下"/>
-                            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.ReStartCommand}"/>
                         </Trigger>
                         <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Cancel}">
                             <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_ReDo.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="重下"/>
+                            <Setter Property="ToolTip" Value="重新下载"/>
                             <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.ReStartCommand}"/>
                         </Trigger>
                         <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Common}">
                             <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Status_Cancel.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="取消"/>
+                            <Setter Property="ToolTip" Value="取消下载"/>
                             <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.CancelCommand}"/>
                         </Trigger>
-                        <Trigger Property="DLS" Value="{x:Static local:DownloadStatus.Paused}">
-                            <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Status_Paused.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="开始"/>
-                            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.ReStartCommand}"/>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="vs:ButtonEx" x:Key="BTN_Open">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Background" Value="#2D2D30"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="Margin" Value="10,0"/>
+        <Setter Property="ToolTip" Value="查看文章"/>
+        <Setter Property="CommandParameter" Value="{Binding}"/>
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.OpenDocumentCommand}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type vs:ButtonEx}">
+                    <Border Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                        <Image x:Name="img" Width="40" Source="/AtelierMisaka;component/Resources/Btn_Look.png"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#3F3F41"/>
                         </Trigger>
                         <Trigger Property="OpenType" Value="File">
                             <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_OpenFile.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="打开文件"/>
+                            <Setter Property="ToolTip" Value="打开文件"/>
                             <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.OpenFileCommand}"/>
                         </Trigger>
                         <Trigger Property="OpenType" Value="Folder">
                             <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_OpenFolder.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="打开文件夹"/>
+                            <Setter Property="ToolTip" Value="打开文件夹"/>
                             <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.OpenFolderCommand}"/>
                         </Trigger>
-                        <Trigger Property="OpenType" Value="Look">
+                        <!--<Trigger Property="OpenType" Value="Look">
                             <Setter TargetName="img" Property="Source" Value="/AtelierMisaka;component/Resources/Btn_Look.png"/>
-                            <Setter TargetName="txt" Property="Text" Value="查看文章"/>
+                            <Setter Property="ToolTip" Value="查看文章"/>
                             <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.OpenDocumentCommand}"/>
-                        </Trigger>
+                        </Trigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
