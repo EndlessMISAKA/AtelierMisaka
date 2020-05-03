@@ -2,6 +2,7 @@
 using AtelierMisaka.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -13,23 +14,28 @@ namespace AtelierMisaka.Models
     public class DownloadItem : NotifyModel
     {
         private DownloadStatus _ds = DownloadStatus.Waiting;
+        private ErrorType _dlRet = ErrorType.UnKnown;
         private string _fileName = string.Empty;
         private string _savePath = string.Empty;
         private string _link = string.Empty;
+        private string _errorMsg = string.Empty;
         private DateTime _cTime = DateTime.Now;
         private int _percent = 0;
         private int _reTryC = 0;
-        private bool _isCompleted = false;
-        private bool _isReStart = false;
+        private bool _isStop = false;
         private long _contentLength = 0;
         private long _receviedCount = 0;
         private long _totalRC = 0;
         private int _zeroCount = 0;
-        
+        private byte[] _dlData = new byte[0];
+
         private WebClient _dClient = null;
         private Timer _showSpeed = null;
 
+        private HttpWebRequest _request;
+
         public BaseItem SourceDocu = null;
+        public string AId = string.Empty;
 
         private void ShowSpeed(object state)
         {
@@ -101,6 +107,19 @@ namespace AtelierMisaka.Models
             }
         }
 
+        public string ErrorMsg
+        {
+            get => _errorMsg;
+            set
+            {
+                if (_errorMsg != value)
+                {
+                    _errorMsg = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public DateTime CTime
         {
             get => _cTime;
@@ -119,7 +138,7 @@ namespace AtelierMisaka.Models
             get => _zeroCount;
             set
             {
-                if (value == 30)
+                if (value == 40)
                 {
                     _dClient.CancelAsync();
                     _zeroCount = 0;
@@ -211,33 +230,11 @@ namespace AtelierMisaka.Models
                 }
                 var res = $"{Math.Round(re, 2)}{dw}";
                 Interlocked.Add(ref _receviedCount, speed);
+                if (_contentLength > 0)
+                {
+                    Percent = (int)((double)_receviedCount / _contentLength * 100);
+                }
                 return res;
-            }
-        }
-
-        public bool IsCompleted
-        {
-            get => _isCompleted;
-            set
-            {
-                if (_isCompleted != value)
-                {
-                    _isCompleted = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public bool IsReStart
-        {
-            get => _isReStart;
-            set
-            {
-                if (_isReStart != value)
-                {
-                    _isReStart = value;
-                    RaisePropertyChanged();
-                }
             }
         }
 
@@ -268,27 +265,230 @@ namespace AtelierMisaka.Models
             }
         }
 
-
-        public WebClient DClient
+        public void CheckTempFile()
         {
-            get => _dClient;
-            set
+            var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
+            if (File.Exists(fnt))
             {
-                if (null != value)
+                _totalRC = (new FileInfo(fnt)).Length;
+            }
+        }
+
+        public async void Start()
+        {
+            if (_ds != DownloadStatus.Downloading)
+            {
+                DLStatus = DownloadStatus.Downloading;
+                while (_isStop)
                 {
-                    _dClient = value;
-                    _dClient.DownloadDataAsync(new Uri(_link), this);
-                    _receviedCount = 0;
+                    await Task.Delay(300);
+                }
+                _dlRet = await Task.Run(() =>
+                {
+                    try
+                    {
+                        ErrorMsg = string.Empty;
+                        _request = WebRequest.CreateHttp(_link);
+                        if (GlobalData.VM_MA.UseProxy)
+                        {
+                            _request.Proxy = GlobalData.VM_MA.MyProxy;
+                        }
+                        _request.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                        _request.AddRange("bytes", _totalRC);
+                        HttpWebResponse response = _request.GetResponse() as HttpWebResponse;
+                        if (_contentLength == 0)
+                        {
+                            if (long.TryParse(response.Headers[HttpResponseHeader.ContentLength], out long ll))
+                            {
+                                ContentLength = ll;
+                                _dlData = new byte[_contentLength];
+                            }
+                            else
+                            {
+                                ContentLength = -1;
+                            }
+                        }
+                        using (Stream sm = response.GetResponseStream())
+                        {
+                            byte[] arra = new byte[1024];
+                            int i = sm.Read(arra, 0, arra.Length);
+                            if (_contentLength != -1)
+                            {
+                                while (i > 0)
+                                {
+                                    Array.Copy(arra, 0, _dlData, _totalRC, i);
+                                    Interlocked.Add(ref _totalRC, i);
+                                    if (_isStop)
+                                    {
+                                        _isStop = false;
+                                        return ErrorType.UnKnown;
+                                    }
+                                    i = sm.Read(arra, 0, arra.Length);
+                                }
+
+                                var fn = Path.Combine(_savePath, _fileName);
+                                if (File.Exists(fn))
+                                {
+                                    string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                                    var ext = fn.Split('.').Last();
+                                    int iln = ext.Length + 1;
+                                    FileName = $"{fn.Substring(0, fn.Length - iln)}_{tn}.{ext}";
+                                    fn = Path.Combine(_savePath, _fileName);
+                                }
+                                File.WriteAllBytes(fn, _dlData);
+                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, fn, _link);
+                                Array.Clear(_dlData, 0, _dlData.Length);
+                                _dlData = null;
+                                GC.Collect(9);
+                            }
+                            else
+                            {
+                                var fn = Path.Combine(_savePath, _fileName);
+                                if (_totalRC == 0 && File.Exists(fn))
+                                {
+                                    string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                                    var ext = fn.Split('.').Last();
+                                    int iln = ext.Length + 1;
+                                    FileName = $"{fn.Substring(0, fn.Length - iln)}_{tn}.{ext}";
+                                    fn = Path.Combine(_savePath, _fileName);
+                                }
+                                fn += ".msk";
+                                using (FileStream fs = new FileStream(fn, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                {
+                                    fs.Seek(0, SeekOrigin.End);
+                                    while (i > 0)
+                                    {
+                                        fs.Write(arra, 0, i);
+                                        Interlocked.Add(ref _totalRC, i);
+                                        if (_isStop)
+                                        {
+                                            _isStop = false;
+                                            return ErrorType.UnKnown;
+                                        }
+                                        i = sm.Read(arra, 0, arra.Length);
+                                    }
+                                    fs.Flush();
+                                }
+                                File.Move(fn, fn.Substring(0, fn.Length - 4));
+                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, fn, _link);
+                                GC.Collect(9);
+                            }
+                        }
+                        DLStatus = DownloadStatus.Completed;
+                        return ErrorType.NoError;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is IOException)
+                        {
+                            return ErrorType.IO;
+                        }
+                        else if (ex is PathTooLongException)
+                        {
+                            return ErrorType.Path;
+                        }
+                        else if (ex is UnauthorizedAccessException || ex is System.Security.SecurityException)
+                        {
+                            return ErrorType.Security;
+                        }
+                        else
+                        {
+                            return ErrorType.Web;
+                        }
+                    }
+                });
+                if (_dlRet == ErrorType.NoError)
+                {
+                    GlobalData.SyContext.Send((dd) =>
+                    {
+                        GlobalData.VM_DL.MoveToComLCommand.Execute(dd);
+                        GlobalData.VM_DL.BeginNextCommand.Execute(dd);
+                    }, this);
+                }
+                else if (_ds == DownloadStatus.Downloading)
+                {
+                    if (_dlRet == ErrorType.Web)
+                    {
+                        ErrorMsg = "网络错误";
+                        if (++_reTryC < 10)
+                        {
+                            Start();
+                        }
+                    }
+                    else
+                    {
+                        if (_dlRet == ErrorType.IO)
+                        {
+                            ErrorMsg = "数据流读写出错";
+                        }
+                        else if (_dlRet == ErrorType.Path)
+                        {
+                            ErrorMsg = "文件路径太长";
+                        }
+                        else
+                        {
+                            ErrorMsg = "没有权限";
+                        }
+                        DLStatus = DownloadStatus.Error;
+                        GlobalData.SyContext.Send((dd) =>
+                        {
+                            GlobalData.VM_DL.BeginNextCommand.Execute(dd);
+                        }, this);
+                    }
+                }
+            }
+        }
+
+        public async Task<bool> Pause()
+        {
+            if (_ds == DownloadStatus.Downloading)
+            {
+                DLStatus = DownloadStatus.Paused;
+                _isStop = true;
+                while (_isStop)
+                {
+                    await Task.Delay(100);
+                }
+                _request.Abort();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> Cancel()
+        {
+            if (_ds == DownloadStatus.Downloading)
+            {
+                DLStatus = DownloadStatus.Cancel;
+                _isStop = true;
+                while (_isStop)
+                {
+                    await Task.Delay(100);
+                }
+                _request.Abort();
+
+                if (_contentLength != -1)
+                {
+                    Array.Clear(_dlData, 0, _dlData.Length);
+                    _dlData = null;
+                    _contentLength = 0;
                     _totalRC = 0;
-                    Percent = 0;
-                    DLStatus = DownloadStatus.Downloading;
-                    //RaisePropertyChanged("DLStatus");
+                    _receviedCount = 0;
                 }
                 else
                 {
-                    _dClient = null;
+                    var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
+                    if (File.Exists(fnt))
+                    {
+                        File.Delete(fnt);
+                    }
+                    _contentLength = 0;
+                    _totalRC = 0;
+                    _receviedCount = 0;
                 }
+                GC.Collect(9);
             }
+            return true;
         }
     }
 }

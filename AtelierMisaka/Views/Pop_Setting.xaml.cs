@@ -95,7 +95,7 @@ namespace AtelierMisaka.Views
                     var ai = await Task.Run(() => _utils.GetArtistInfos(GlobalData.VM_MA.Artist.PostUrl));
                     if (ai == null)
                     {
-                        await GetCheck("无法获取作者信息");
+                        await GetCheck("无法获取作者信息", "请检查Cookies是否过期");
                         _checkResult = null;
                         ShowLoading(false);
                         return;
@@ -325,32 +325,19 @@ namespace AtelierMisaka.Views
 
                 if (_tempProxy != GlobalData.VM_MA.Proxy)
                 {
-                    GlobalData.VM_DL.WClients.ForEach(x =>
+                    GlobalData.VM_DL.DLClients.ForEach(x =>
                     {
-                        x.Proxy = GlobalData.VM_MA.MyProxy;
-                        x.CancelAsync();
+                        GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
                     _tempProxy = GlobalData.VM_MA.Proxy;
                 }
 
                 if (_tempUP != GlobalData.VM_MA.UseProxy)
                 {
-                    if (GlobalData.VM_MA.UseProxy)
+                    GlobalData.VM_DL.DLClients.ForEach(x =>
                     {
-                        GlobalData.VM_DL.WClients.ForEach(x =>
-                        {
-                            x.Proxy = GlobalData.VM_MA.MyProxy;
-                            x.CancelAsync();
-                        });
-                    }
-                    else
-                    {
-                        GlobalData.VM_DL.WClients.ForEach(x =>
-                        {
-                            x.Proxy = null;
-                            x.CancelAsync();
-                        });
-                    }
+                        GlobalData.VM_DL.ReStartCommand.Execute(x);
+                    });
                     _tempUP = GlobalData.VM_MA.UseProxy;
                 }
 
@@ -444,10 +431,9 @@ namespace AtelierMisaka.Views
 
                 if (_tempCookies != GlobalData.VM_MA.Cookies)
                 {
-                    GlobalData.VM_DL.WClients.ForEach(x =>
+                    GlobalData.VM_DL.DLClients.ForEach(x =>
                     {
-                        x.Headers.Remove(System.Net.HttpRequestHeader.Cookie);
-                        x.Headers.Add(System.Net.HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                        GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
                     _tempCookies = GlobalData.VM_MA.Cookies;
                 }
@@ -507,7 +493,6 @@ namespace AtelierMisaka.Views
 
         private async Task<bool> GetCheck(params string[] msgs)
         {
-
             string mss = msgs[0];
             for (int i = 1; i < msgs.Length; i++)
             {

@@ -19,15 +19,14 @@ namespace AtelierMisaka.ViewModels
         private bool _isQuest = false;
         private string _btnText = "全部开始";
         private string _savePath = string.Empty;
-        private int _threadCount = 2;
-        private int _postCount = 0;
-        private int _loadCount = 0;
-
-        private List<WebClient> _wClients = null;
+        private int _threadCount = 3;
+        
+        private List<DownloadItem> _dlClients = new List<DownloadItem>();
 
         private IList<DownloadItem> _downLoadList = null;
         private IList<DownloadItem> _completedList = null;
 
+        private static readonly object lock_Dl = new object();
 
         public int ThreadCount
         {
@@ -38,32 +37,32 @@ namespace AtelierMisaka.ViewModels
                 {
                     _threadCount = value;
                     RaisePropertyChanged();
-                }
-            }
-        }
-
-        public int LoadCount
-        {
-            get => _loadCount;
-            set
-            {
-                if (_loadCount != value)
-                {
-                    _loadCount = value;
-                    RaisePropertyChanged("LoadContent");
-                }
-            }
-        }
-
-        public int PostCount
-        {
-            get => _postCount;
-            set
-            {
-                if (_postCount != value)
-                {
-                    _postCount = value;
-                    RaisePropertyChanged("LoadContent");
+                    if (_isDownloading)
+                    {
+                        if (_dlClients.Count > _threadCount)
+                        {
+                            for (int i = _dlClients.Count - 1; i >= _threadCount; i++)
+                            {
+                                _dlClients[i].Pause();
+                                _dlClients.RemoveAt(i);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < _downLoadList.Count; i++)
+                            {
+                                if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
+                                {
+                                    _dlClients.Add(_downLoadList[i]);
+                                    _downLoadList[i].Start();
+                                    if (_dlClients.Count >= _threadCount)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -92,11 +91,6 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged();
                 }
             }
-        }
-
-        public string LoadContent
-        {
-            get => $"{_loadCount}/{_postCount}";
         }
 
         public bool IsLoading
@@ -164,14 +158,14 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
-        public List<WebClient> WClients
+        public List<DownloadItem> DLClients
         {
-            get => _wClients;
+            get => _dlClients;
             set
             {
-                if (_wClients != value)
+                if (_dlClients != value)
                 {
-                    _wClients = value;
+                    _dlClients = value;
                     RaisePropertyChanged();
                 }
             }
@@ -214,14 +208,13 @@ namespace AtelierMisaka.ViewModels
                     if (_isDownloading)
                     {
                         BtnText = "全部暂停";
-                        int index = 0;
                         for (int i = 0; i < _downLoadList.Count; i++)
                         {
-                            if (_downLoadList[i].DLStatus != DownloadStatus.Cancel)
+                            if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
                             {
-                                _downLoadList[i].DClient = _wClients[index];
-                                index++;
-                                if (index >= _wClients.Count)
+                                _dlClients.Add(_downLoadList[i]);
+                                _downLoadList[i].Start();
+                                if (_dlClients.Count >= _threadCount)
                                 {
                                     break;
                                 }
@@ -231,7 +224,8 @@ namespace AtelierMisaka.ViewModels
                     else
                     {
                         BtnText = "全部开始";
-                        _wClients.ForEach(x => x.CancelAsync());
+                        _dlClients.ForEach(x => x.Pause());
+                        _dlClients.Clear();
                     }
                 });
                 _isQuest = false;
@@ -242,6 +236,46 @@ namespace AtelierMisaka.ViewModels
             });
         }
 
+        public ParamCommand<DownloadItem> MoveToComLCommand
+        {
+            get => new ParamCommand<DownloadItem>((di) =>
+            {
+                _downLoadList.Remove(di);
+                _completedList.Insert(0, di);
+            });
+        }
+
+        public ParamCommand<DownloadItem> BeginNextCommand
+        {
+            get => new ParamCommand<DownloadItem>((di) =>
+            {
+                if (_isDownloading)
+                {
+                    lock (lock_Dl)
+                    {
+                        if (null != di)
+                        {
+                            _dlClients.Remove(di);
+                        }
+                        for (int i = 0; i < _downLoadList.Count; i++)
+                        {
+                            if (_dlClients.Count < _threadCount)
+                            {
+                                if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
+                                {
+                                    _dlClients.Add(_downLoadList[i]);
+                                    _downLoadList[i].Start();
+                                }
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         public ParamCommand<DownloadItem> OpenFileCommand
         {
@@ -276,40 +310,76 @@ namespace AtelierMisaka.ViewModels
             });
         }
 
-        public ParamCommand<DownloadItem> ReStartCommand
+        public ParamCommand<DownloadItem> StartCommand
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
-                if (di.DLStatus == DownloadStatus.Downloading)
+                if (_dlClients.Count < _threadCount)
                 {
-                    di.IsReStart = true;
-                    di.DClient.CancelAsync();
+                    _dlClients.Add(di);
+                    di.Start();
+                    //if (_dlClients.Count == _threadCount)
+                    //{
+                    //    BtnText = "全部暂停";
+                    //    _isDownloading = true;
+                    //}
                 }
                 else
                 {
+                    di.DLStatus = DownloadStatus.Waiting;
+                }
+            });
+        }
+
+        public ParamCommand<DownloadItem> PauseCommand
+        {
+            get => new ParamCommand<DownloadItem>(async (di) =>
+            {
+                var flag = await di.Pause();
+                if (flag && _isDownloading)
+                {
+                    BeginNextCommand.Execute(di);
+                }
+            });
+        }
+
+        public ParamCommand<DownloadItem> ReStartCommand
+        {
+            get => new ParamCommand<DownloadItem>(async (di) =>
+            {
+                if (di.DLStatus == DownloadStatus.Downloading)
+                {
+                    await di.Pause();
+                    di.Start();
+                }
+                else
+                {
+                    di.DLStatus = DownloadStatus.Waiting;
                     _downLoadList.Remove(di);
                     _downLoadList.Insert(0, di);
-                    di.DLStatus = DownloadStatus.Waiting;
-                    if (!_isDownloading)
-                    {
-                        QuestCommand.Execute(null);
-                    }
                 }
             });
         }
 
         public ParamCommand<DownloadItem> CancelCommand
         {
-            get => new ParamCommand<DownloadItem>((di) =>
+            get => new ParamCommand<DownloadItem>(async (di) =>
             {
                 if (di.DLStatus == DownloadStatus.Cancel)
                     return;
-
+                
                 if (di.DLStatus == DownloadStatus.Downloading)
                 {
-                    di.DClient.CancelAsync();
+                    var flag = await di.Cancel();
+                    if (flag)
+                    {
+                        BeginNextCommand.Execute(di);
+                    }
                 }
-                di.DLStatus = DownloadStatus.Cancel;
+                else
+                {
+                    di.DLStatus = DownloadStatus.Cancel;
+                }
                 _downLoadList.Remove(di);
                 _downLoadList.Add(di);
             });
