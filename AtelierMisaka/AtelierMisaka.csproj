@@ -153,7 +153,7 @@
     <Resource Include="Resources\Status_Completed.png" />
     <Resource Include="Resources\Status_Downloading.png" />
     <Resource Include="Resources\Status_Error.png" />
-    <Resource Include="Resources\Status_Paused.png" />
+    <Resource Include="Resources\Btn_Start.png" />
     <Resource Include="Resources\Status_Waiting.png" />
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +172,8 @@
     <Resource Include="Resources\Btn_Look.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Database.mdb">
+    <Resource Include="Resources\Btn_Paused.png" />
+    <Content Include="Database.mdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
