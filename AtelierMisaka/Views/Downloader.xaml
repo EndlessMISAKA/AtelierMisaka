@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AtelierMisaka.Views"
         xmlns:vm="clr-namespace:AtelierMisaka.ViewModels"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" Style="{StaticResource WindowStyle}"
         Background="#2D2D30" Closing="Window_Closing"
         Title="Downloader" Height="720" Width="1280" WindowStartupLocation="CenterOwner">
@@ -16,6 +17,7 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Border BorderBrush="#3F3F41" BorderThickness="0,0,0,2"/>
         <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
             <RadioButton x:Name="zzxz" Style="{StaticResource RB_Setting}" Content="正在下载" FontSize="40" Height="60" IsChecked="True"/>
             <RadioButton x:Name="yxz" Style="{StaticResource RB_Setting}" Content="已下载列表" FontSize="40" Height="60"/>
@@ -23,20 +25,19 @@
                     Command="{Binding QuestCommand}"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource TBL_Setting}" Text="线程数:"/>
-                <ComboBox Style="{StaticResource ComB}" SelectedIndex="{Binding ThreadCount}" SelectionChanged="ThreadCountChanged">
-                    <TextBlock Text="1"/>
-                    <TextBlock Text="2"/>
-                    <TextBlock Text="3"/>
-                    <TextBlock Text="4"/>
-                    <TextBlock Text="5"/>
-                    <TextBlock Text="6"/>
-                    <TextBlock Text="7"/>
-                    <TextBlock Text="8"/>
-                    <TextBlock Text="9"/>
+                <ComboBox Style="{StaticResource ComB}" SelectedValue="{Binding ThreadCount}">
+                    <sys:Int32>1</sys:Int32>
+                    <sys:Int32>2</sys:Int32>
+                    <sys:Int32>3</sys:Int32>
+                    <sys:Int32>4</sys:Int32>
+                    <sys:Int32>5</sys:Int32>
+                    <sys:Int32>6</sys:Int32>
+                    <sys:Int32>7</sys:Int32>
+                    <sys:Int32>8</sys:Int32>
+                    <sys:Int32>9</sys:Int32>
                 </ComboBox>
             </StackPanel>
         </StackPanel>
-        <Border BorderBrush="#3F3F41" BorderThickness="0,0,0,2"/>
         <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
                  Visibility="{Binding ElementName=zzxz, Path=IsChecked, Converter={StaticResource btvc}}"
                  VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding DownLoadItemList}"
@@ -58,23 +59,24 @@
                     <Setter Property="ItemTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <Grid Height="40">
+                                <Grid Height="40" Background="#2D2D30">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="40"/>
-                                        <ColumnDefinition Width="350"/>
-                                        <ColumnDefinition MinWidth="350"/>
+                                        <ColumnDefinition Width="460"/>
+                                        <ColumnDefinition Width="240"/>
                                         <ColumnDefinition Width="240"/>
                                         <ColumnDefinition Width="150"/>
                                         <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
                                     <Image Source="{Binding DLStatus, Converter={StaticResource etic}}"/>
                                     <TextBlock Grid.Column="1" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
-                                    <Border Grid.Column="2" BorderThickness="0" Background="#2D2D30" HorizontalAlignment="Stretch"/>
                                     <Grid Grid.Column="2">
+                                        <TextBlock Text="{Binding ErrorMsg}" Style="{StaticResource TBL_DL}"/>
                                         <StackPanel x:Name="sp" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
-                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" OpenType="Look" CommandParameter="{Binding}"/>
-                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="{Binding DLStatus}" Margin="10,0" CommandParameter="{Binding}"/>
-                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="Common" CommandParameter="{Binding}"/>
+                                            <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
+                                            <local:ButtonEx Style="{StaticResource BTN_Play}" DLS="{Binding DLStatus}"/>
+                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="{Binding DLStatus}"/>
+                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="Common"/>
                                         </StackPanel>
                                     </Grid>
                                     <Grid Grid.Column="3" HorizontalAlignment="Center">
@@ -122,17 +124,17 @@
                     <Setter Property="ItemTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <Grid Height="40">
+                                <Grid Height="40" Background="#2D2D30">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="300"/>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
-                                    <Border BorderThickness="0" Background="#2D2D30" Grid.Column="1"/>
                                     <StackPanel x:Name="sp" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
-                                        <local:ButtonEx Style="{StaticResource BTN_Ex}" OpenType="File" CommandParameter="{Binding}"/>
-                                        <local:ButtonEx Style="{StaticResource BTN_Ex}" OpenType="Folder" Margin="10,0" CommandParameter="{Binding}"/>
+                                        <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
+                                        <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="File"/>
+                                        <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Folder"/>
                                     </StackPanel>
                                     <TextBlock Text="{Binding SavePath}" Grid.Column="2" Style="{StaticResource TBL_DL}"/>
                                 </Grid>
@@ -147,14 +149,6 @@
                 </Style>
             </ListBox.Style>
         </ListBox>
-
-        <Grid Grid.RowSpan="2" Visibility="{Binding IsLoading, Converter={StaticResource btvc}}">
-            <Border BorderThickness="0" Background="Black" Opacity="0.5"/>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="加载中" HorizontalAlignment="Center"/>
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding LoadContent}" HorizontalAlignment="Center"/>
-            </StackPanel>
-        </Grid>
 
         <Grid Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}" Grid.RowSpan="2">
             <Border Background="Black" Opacity="0.5" BorderThickness="0"/>
