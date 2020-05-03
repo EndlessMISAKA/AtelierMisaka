@@ -101,7 +101,7 @@ namespace AtelierMisaka.ViewModels
 
         private WebProxy _myProxyFanbox = null;
         private WebProxy _myProxyPatreon = null;
-        public DateTime LastDate = DateTime.MinValue;
+        public DateTime LastDate = DateTime.Parse("2010/01/01");
         
         public SiteType Site
         {
@@ -242,7 +242,7 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged();
                     if (string.IsNullOrEmpty(_date))
                     {
-                        LastDate = DateTime.MinValue;
+                        LastDate = DateTime.Parse("2010/01/01");
                     }
                     else
                     {
