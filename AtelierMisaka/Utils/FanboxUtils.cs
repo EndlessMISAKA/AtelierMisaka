@@ -197,7 +197,7 @@ namespace AtelierMisaka
                                     foreach (var fs in jtbs)
                                     {
                                         pi.MediaUrls.Add(fs["originalUrl"].ToString());
-                                        pi.MediaNames.Add($"{index++}.{fs["extension"].ToString()}");
+                                        pi.MediaNames.Add($"{index_pic++}.{fs["extension"].ToString()}");
                                     }
                                 }
                                 else
