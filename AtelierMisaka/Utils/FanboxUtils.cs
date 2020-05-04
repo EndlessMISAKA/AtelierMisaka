@@ -115,7 +115,7 @@ namespace AtelierMisaka
                                 }
                             }
                         }
-                        pis.Add(pi);
+                        //pis.Add(pi);
                     }
                     else if (ftype == "image")
                     {
@@ -142,7 +142,7 @@ namespace AtelierMisaka
                                 }
                             }
                         }
-                        pis.Add(pi);
+                        //pis.Add(pi);
                     }
                     else if (ftype == "article")
                     {
@@ -217,8 +217,21 @@ namespace AtelierMisaka
                                 }
                             }
                         }
-                        pis.Add(pi);
+                        //pis.Add(pi);
                     }
+                    else if (ftype == "text")
+                    {
+                        if (jt["body"].HasValues)
+                        {
+                            var comm = jt["body"]["text"];
+                            if (comm != null)
+                            {
+                                pi.Comments.Add(comm.ToString());
+                                pi.Comments.Add(Environment.NewLine);
+                            }
+                        }
+                    }
+                    pis.Add(pi);
                     jt = jt.Next;
                 }
                 var nul = jd.First.First["nextUrl"].ToString();
