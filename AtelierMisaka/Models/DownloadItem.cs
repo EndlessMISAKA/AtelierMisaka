@@ -18,6 +18,7 @@ namespace AtelierMisaka.Models
         private string _fileName = string.Empty;
         private string _savePath = string.Empty;
         private string _link = string.Empty;
+        private string _fullPath = string.Empty;
         private string _errorMsg = string.Empty;
         private DateTime _cTime = DateTime.Now;
         private int _percent = 0;
@@ -28,8 +29,7 @@ namespace AtelierMisaka.Models
         private long _totalRC = 0;
         private int _zeroCount = 0;
         private byte[] _dlData = new byte[0];
-
-        private WebClient _dClient = null;
+        
         private Timer _showSpeed = null;
 
         private HttpWebRequest _request;
@@ -138,9 +138,9 @@ namespace AtelierMisaka.Models
             get => _zeroCount;
             set
             {
-                if (value == 40)
+                if (value == 45)
                 {
-                    _dClient.CancelAsync();
+                    GlobalData.VM_DL.ReStartCommand.Execute(this);
                     _zeroCount = 0;
                 }
                 else
@@ -267,7 +267,8 @@ namespace AtelierMisaka.Models
 
         public void CheckTempFile()
         {
-            var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
+            _fullPath = Path.Combine(_savePath, _fileName);
+            var fnt = $"{_fullPath}.msk";
             if (File.Exists(fnt))
             {
                 _totalRC = (new FileInfo(fnt)).Length;
@@ -325,35 +326,33 @@ namespace AtelierMisaka.Models
                                     }
                                     i = sm.Read(arra, 0, arra.Length);
                                 }
-
-                                var fn = Path.Combine(_savePath, _fileName);
-                                if (File.Exists(fn))
+                                
+                                if (File.Exists(_fullPath))
                                 {
                                     string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
-                                    var ext = fn.Split('.').Last();
+                                    var ext = _fileName.Split('.').Last();
                                     int iln = ext.Length + 1;
-                                    FileName = $"{fn.Substring(0, fn.Length - iln)}_{tn}.{ext}";
-                                    fn = Path.Combine(_savePath, _fileName);
+                                    FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
+                                    _fullPath = Path.Combine(_savePath, _fileName);
                                 }
-                                File.WriteAllBytes(fn, _dlData);
-                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, fn, _link);
+                                File.WriteAllBytes(_fullPath, _dlData);
+                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, _fullPath, _link);
                                 Array.Clear(_dlData, 0, _dlData.Length);
                                 _dlData = null;
                                 GC.Collect(9);
                             }
                             else
                             {
-                                var fn = Path.Combine(_savePath, _fileName);
-                                if (_totalRC == 0 && File.Exists(fn))
+                                if (_totalRC == 0 && File.Exists(_fullPath))
                                 {
                                     string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
-                                    var ext = fn.Split('.').Last();
+                                    var ext = _fileName.Split('.').Last();
                                     int iln = ext.Length + 1;
-                                    FileName = $"{fn.Substring(0, fn.Length - iln)}_{tn}.{ext}";
-                                    fn = Path.Combine(_savePath, _fileName);
+                                    FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
+                                    _fullPath = Path.Combine(_savePath, _fileName);
                                 }
-                                fn += ".msk";
-                                using (FileStream fs = new FileStream(fn, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                _fullPath += ".msk";
+                                using (FileStream fs = new FileStream(_fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                                 {
                                     fs.Seek(0, SeekOrigin.End);
                                     while (i > 0)
@@ -369,8 +368,8 @@ namespace AtelierMisaka.Models
                                     }
                                     fs.Flush();
                                 }
-                                File.Move(fn, fn.Substring(0, fn.Length - 4));
-                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, fn, _link);
+                                File.Move(_fullPath, _fullPath.Substring(0, _fullPath.Length - 4));
+                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, _fullPath, _link);
                                 GC.Collect(9);
                             }
                         }
