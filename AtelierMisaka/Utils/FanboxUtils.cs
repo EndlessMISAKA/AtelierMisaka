@@ -155,7 +155,8 @@ namespace AtelierMisaka
                             {
                                 jtbs = jtb["blocks"].Children();
                             }
-                            int index = 1;
+                            int index_pic = 1;
+                            int index_f = 1;
                             if (jtbs.Count() > 0)
                             {
                                 foreach (var fs in jtbs)
@@ -170,15 +171,15 @@ namespace AtelierMisaka
                                     {
                                         var imgid = fs["imageId"].ToString();
                                         var imt = jtb["imageMap"][imgid];
-                                        pi.Comments.Add($"<图{index}>");
+                                        pi.Comments.Add($"<图{index_pic}>");
                                         pi.MediaUrls.Add(imt["originalUrl"].ToString());
-                                        pi.MediaNames.Add($"{index++}.{imt["extension"].ToString()}");
+                                        pi.MediaNames.Add($"{index_pic++}.{imt["extension"].ToString()}");
                                     }
                                     else if (ttype == "file")
                                     {
                                         var filid = fs["fileId"].ToString();
                                         var fit = jtb["fileMap"][filid];
-                                        pi.Comments.Add($"<文件{index}>");
+                                        pi.Comments.Add($"<文件{index_f++}>");
                                         pi.ContentUrls.Add(fit["url"].ToString());
                                         pi.FileNames.Add($"{fit["name"].ToString()}.{fit["extension"].ToString()}");
                                     }
