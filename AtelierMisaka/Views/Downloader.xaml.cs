@@ -20,30 +20,16 @@ namespace AtelierMisaka.Views
     public partial class Downloader : Window
     {
         IList<BaseItem> _baseItems = null;
-        string _tempAI = string.Empty;
+        //string _tempAI = string.Empty;
 
         public Downloader(IList<BaseItem> bis, string savepath)
         {
             InitializeComponent();
             _baseItems = bis.Reverse().ToList();
-            _tempAI = GlobalData.VM_MA.Artist.Id;
             GlobalData.VM_DL = VM_DD;
+            VM_DD.TempAI = GlobalData.VM_MA.Artist.Id;
             VM_DD.SavePath = savepath;
-            var ft = GlobalData.Dbl.GetLastDate(_tempAI, out DateTime dt);
-            if (ft == true)
-            {
-                if (GlobalData.VM_MA.LastDate > dt)
-                {
-                    GlobalData.Dbl.UpdateDate(_tempAI, GlobalData.VM_MA.LastDate);
-                }
-            }
-            else
-            {
-                if (!GlobalData.Dbl.InsertDate(_tempAI, GlobalData.VM_MA.LastDate))
-                {
-                    GlobalData.Dbl.UpdateDate(_tempAI, GlobalData.VM_MA.LastDate);
-                }
-            }
+            GlobalData.Dbl.InsertDate(VM_DD.TempAI, GlobalData.VM_MA.LastDate);
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));
             CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, MaximizeWindow, CanResizeWindow));
             CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, MinimizeWindow, CanMinimizeWindow));
@@ -84,7 +70,7 @@ namespace AtelierMisaka.Views
                                 SavePath = sp,
                                 CTime = bi.CreateDate,
                                 SourceDocu = bi,
-                                AId = _tempAI
+                                AId = VM_DD.TempAI
                             };
                             di.CheckTempFile();
                             _downLoadItemList.Add(di);
@@ -105,7 +91,7 @@ namespace AtelierMisaka.Views
                                 SavePath = sp,
                                 CTime = bi.CreateDate,
                                 SourceDocu = bi,
-                                AId = _tempAI
+                                AId = VM_DD.TempAI
                             };
                             di.CheckTempFile();
                             _downLoadItemList.Add(di);
@@ -126,7 +112,7 @@ namespace AtelierMisaka.Views
                                 SavePath = sp,
                                 CTime = bi.CreateDate,
                                 SourceDocu = bi,
-                                AId = _tempAI
+                                AId = VM_DD.TempAI
                             };
                             di.CheckTempFile();
                             _downLoadItemList.Add(di);

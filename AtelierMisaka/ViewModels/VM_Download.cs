@@ -19,6 +19,7 @@ namespace AtelierMisaka.ViewModels
         private bool _isQuest = false;
         private string _btnText = "全部开始";
         private string _savePath = string.Empty;
+        private string _tempAI = string.Empty;
         private int _threadCount = 3;
         
         private List<DownloadItem> _dlClients = new List<DownloadItem>();
@@ -93,14 +94,14 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
-        public bool IsLoading
+        public string TempAI
         {
-            get => _isLoading;
+            get => _tempAI;
             set
             {
-                if (_isLoading != value)
+                if (_tempAI != value)
                 {
-                    _isLoading = value;
+                    _tempAI = value;
                     RaisePropertyChanged();
                 }
             }
@@ -271,6 +272,13 @@ namespace AtelierMisaka.ViewModels
                             {
                                 return;
                             }
+                        }
+                        if (_dlClients.Count == 0)
+                        {
+                            IsDownloading = false;
+                            BtnText = "全部开始";
+                            GlobalData.VM_MA.LastDate = DateTime.Now;
+                            GlobalData.Dbl.UpdateDate(_tempAI, GlobalData.VM_MA.LastDate);
                         }
                     }
                 }
