@@ -236,6 +236,20 @@ namespace AtelierMisaka.ViewModels
                 {
                     _messages = value;
                     RaisePropertyChanged();
+                    ShowCheck = true;
+                }
+            }
+        }
+
+        public bool ShowCheck
+        {
+            get => _showCheck;
+            set
+            {
+                if (_showCheck != value)
+                {
+                    _showCheck = value;
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -494,19 +508,6 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
-        public bool ShowCheck
-        {
-            get => _showCheck;
-            set
-            {
-                if (_showCheck != value)
-                {
-                    _showCheck = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
         public bool ShowLoad
         {
             get => _showLoad;
@@ -565,6 +566,7 @@ namespace AtelierMisaka.ViewModels
                 RaisePropertyChanged("Img_Document");
                 RaisePropertyChanged("Title_Document");
                 RaisePropertyChanged("Date_Document");
+                RaisePropertyChanged("IsLiked_Document");
             }
         }
 
@@ -589,6 +591,22 @@ namespace AtelierMisaka.ViewModels
             get
             {
                 return IsShowDocument ? _selectedDocument.CreateDate.ToString("yyyy/MM/dd HH:mm") : string.Empty;
+            }
+        }
+
+        public bool IsLiked_Document
+        {
+            get
+            {
+                return _selectedDocument.IsLiked;
+            }
+            set
+            {
+                if (_selectedDocument.IsLiked != value)
+                {
+                    _selectedDocument.IsLiked = value;
+                    RaisePropertyChanged();
+                }
             }
         }
 

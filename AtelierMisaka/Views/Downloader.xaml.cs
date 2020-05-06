@@ -21,7 +21,7 @@ namespace AtelierMisaka.Views
     {
         IList<BaseItem> _baseItems = null;
         //string _tempAI = string.Empty;
-
+        
         public Downloader(IList<BaseItem> bis, string savepath)
         {
             InitializeComponent();

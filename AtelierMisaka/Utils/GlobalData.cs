@@ -25,6 +25,9 @@ namespace AtelierMisaka
         public static DB_Layer Dbl = new DB_Layer();
         public static Downloader DownLP = null;
 
+        private static Lazy<FanboxUtils> _utilFanbox = new Lazy<FanboxUtils>();
+        private static Lazy<FantiaUtils> _utilFantia = new Lazy<FantiaUtils>();
+
         private static Pop_Setting _pop_Setting = null;
         private static Pop_Document _pop_Document = null;
         private static string _invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
@@ -53,7 +56,7 @@ namespace AtelierMisaka
             VM_MA.LZindex = 3;
         });
 
-        public static ParamCommand<BaseItem> GetCoverCommand = new ParamCommand<BaseItem>(async(bi) =>
+        public static ParamCommand<BaseItem> GetCoverCommand = new ParamCommand<BaseItem>(async (bi) =>
         {
             VM_MA.SelectedDocument = bi;
             if (string.IsNullOrEmpty(bi.CoverPic))
@@ -87,6 +90,39 @@ namespace AtelierMisaka
         public static ParamCommand<string> OpenBrowserCommand = new ParamCommand<string>((link) =>
         {
             System.Diagnostics.Process.Start(link);
+        });
+
+        public static CommonCommand LikePostCommand = new CommonCommand(async () =>
+        {
+            if (VM_MA.IsLiked_Document)
+                return;
+            ErrorType et = ErrorType.NoError;
+            await Task.Run(() =>
+            {
+                et = GetUtils().LikePost(VM_MA.SelectedDocument.ID, VM_MA.Artist.Cid);
+            });
+            if (et == ErrorType.NoError)
+            {
+                VM_MA.IsLiked_Document = true;
+            }
+            else
+            {
+                if (VM_MA.IsLiked_Document)
+                    return;
+
+                switch (et)
+                {
+                    case ErrorType.Security:
+                        VM_MA.Messages = $"认证机制出错{Environment.NewLine}请联系开发者";
+                        break;
+                    case ErrorType.Web:
+                        VM_MA.Messages = $"网络错误，请重试";
+                        break;
+                    default:
+                        VM_MA.Messages = $"尚未支持此站点";
+                        break;
+                }
+            }
         });
 
         public static ParamCommand<object[]> DownloadCommand = new ParamCommand<object[]>((args) =>
@@ -132,9 +168,9 @@ namespace AtelierMisaka
             switch (VM_MA.Site)
             {
                 case SiteType.Fanbox:
-                    return new FanboxUtils();
+                    return _utilFanbox.Value;
                 case SiteType.Fantia:
-                    return new FantiaUtils();
+                    return _utilFantia.Value;
                 default:
                     return null;
             }

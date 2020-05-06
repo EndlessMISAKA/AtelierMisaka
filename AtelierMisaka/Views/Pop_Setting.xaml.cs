@@ -101,10 +101,6 @@ namespace AtelierMisaka.Views
                         return;
                     }
                     GlobalData.VM_MA.Artist = ai;
-                    //GlobalData.VM_MA.Artist.Id = ai.Id;
-                    //GlobalData.VM_MA.Artist.Cid = ai.Cid;
-                    //GlobalData.VM_MA.Artist.AName = ai.AName;
-                    //GlobalData.VM_MA.Artist.PostUrl = ai.PostUrl;
                     if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
                     {
                         if (GlobalData.VM_MA.ArtistList.Count > 0)
@@ -230,10 +226,7 @@ namespace AtelierMisaka.Views
                             ShowLoading(false);
                             return;
                         }
-                        GlobalData.VM_MA.Artist.Id = ai.Id;
-                        GlobalData.VM_MA.Artist.Cid = ai.Cid;
-                        GlobalData.VM_MA.Artist.AName = ai.AName;
-                        GlobalData.VM_MA.Artist.PostUrl = $"https://{ai.Cid}.fanbox.cc";
+                        GlobalData.VM_MA.Artist = ai;
                         if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
                         {
                             if (GlobalData.VM_MA.ArtistList.Count > 0)
@@ -661,6 +654,8 @@ namespace AtelierMisaka.Views
             _isOverDropBtn = false;
         }
 
+        #region MoveCheck
+
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _mouseD = true;
@@ -687,5 +682,7 @@ namespace AtelierMisaka.Views
         {
             _mouseD = false;
         }
+
+        #endregion
     }
 }

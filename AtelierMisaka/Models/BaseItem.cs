@@ -19,6 +19,7 @@ namespace AtelierMisaka.Models
         protected DateTime _updateDate = DateTime.Now;
         protected bool _needLoadCover = true;
         protected bool _skip = false;
+        protected bool _isLiked = false;
         protected byte[] _imgData = null;
         private int _percent = 0;
 
@@ -41,6 +42,16 @@ namespace AtelierMisaka.Models
         public bool HasLink
         {
             get => _comments.FindIndex(x => x.Contains("http")) != -1;
+        }
+
+        public string Link
+        {
+            get => _link;
+        }
+
+        public string CreateDateStr
+        {
+            get => _createDate.ToString("yyyy/MM/dd HH:mm");
         }
 
         public string Title
@@ -67,11 +78,6 @@ namespace AtelierMisaka.Models
                     RaisePropertyChanged("CoverTxt");
                 }
             }
-        }
-
-        public string Link
-        {
-            get => _link;
         }
 
         public string Fee
@@ -163,11 +169,6 @@ namespace AtelierMisaka.Models
             }
         }
 
-        public string CreateDateStr
-        {
-            get => _createDate.ToString("yyyy/MM/dd HH:mm");
-        }
-
         public List<string> Comments
         {
             get => _comments;
@@ -203,6 +204,19 @@ namespace AtelierMisaka.Models
                 if (_skip != value)
                 {
                     _skip = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool IsLiked
+        {
+            get => _isLiked;
+            set
+            {
+                if (_isLiked != value)
+                {
+                    _isLiked = value;
                     RaisePropertyChanged();
                 }
             }

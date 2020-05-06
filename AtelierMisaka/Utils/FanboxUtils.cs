@@ -17,8 +17,10 @@ namespace AtelierMisaka
     public class FanboxUtils : BaseUtils
     {
         string _referer = string.Empty;
+        string _x_csrf_token = string.Empty;
         Regex _artUrl = new Regex(@"^https://www\.fanbox\.cc/@(\w+)$");
         Regex _artUrl2 = new Regex(@"^https://(\w+)\.fanbox\.cc/?$");
+        Regex _csrfToken = new Regex("csrfToken\":\"(\\w+)\"");
 
         public override ArtistInfo GetArtistInfo(string url)
         {
@@ -193,11 +195,12 @@ namespace AtelierMisaka
                     {
                         PID = po.id,
                         Fee = po.feeRequired.ToString(),
-                        Title = po.title.Trim(),
+                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(po.title.Trim())),
                         CreateDate = po.publishedDatetime,
                         UpdateDate = po.updatedDatetime,
                         CoverPic = po.coverImageUrl,
-                        CoverPicThumb = po.coverImageUrl
+                        CoverPicThumb = po.coverImageUrl,
+                        IsLiked = po.isLiked
                     };
                     if (GlobalData.OverPayment(int.Parse(pi.Fee)) || GlobalData.OverTime(pi.UpdateDate))
                     {
@@ -306,6 +309,65 @@ namespace AtelierMisaka
                 return fd.body.nextUrl ?? null;
             }
             return null;
+        }
+
+        public override ErrorType LikePost(string pid, string cid)
+        {
+            if (string.IsNullOrEmpty(_x_csrf_token))
+            {
+                if (!UpdateToken(pid, cid))
+                {
+                    return ErrorType.Security;
+                }
+            }
+            try
+            {
+                WebClient wc = new WebClient();
+                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                wc.Headers.Set(HttpRequestHeader.ContentType, "application/json");
+                wc.Headers.Set("Origin", "https://www.fanbox.cc");
+                wc.Headers.Add(HttpRequestHeader.Referer, $"https://www.fanbox.cc/@{cid}/posts/{pid}");
+                wc.Headers.Add("x-csrf-token", _x_csrf_token);
+                if (GlobalData.VM_MA.UseProxy)
+                    wc.Proxy = GlobalData.VM_MA.MyProxy;
+
+                wc.UploadString("https://api.fanbox.cc/post.likePost", $"{{\"postId\":\"{pid}\"}}");
+
+                return ErrorType.NoError;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("400"))
+                {
+                    if (!UpdateToken(pid, cid))
+                    {
+                        return ErrorType.Security;
+                    }
+                }
+                return ErrorType.Web;
+            }
+        }
+
+        public bool UpdateToken(string pid, string cid)
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                wc.Headers.Set("Origin", "https://www.fanbox.cc");
+                wc.Headers.Add(HttpRequestHeader.Referer, $"https://www.fanbox.cc/@{cid}");
+                if(GlobalData.VM_MA.UseProxy)
+                    wc.Proxy = GlobalData.VM_MA.MyProxy;
+                var shtml = wc.DownloadData($"https://www.fanbox.cc/@{cid}/posts/{pid}");
+                Match ma = _csrfToken.Match(Encoding.UTF8.GetString(shtml));
+                if (ma.Success)
+                {
+                    _x_csrf_token = ma.Groups[1].Value;
+                    return true;
+                }
+            }
+            catch { }
+            return false;
         }
 
         private string GetWebCode(string url, string referer = null, string orig = "https://www.fanbox.cc")

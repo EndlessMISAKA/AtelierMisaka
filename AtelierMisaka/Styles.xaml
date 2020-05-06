@@ -109,6 +109,10 @@
         <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
+    <Style TargetType="{x:Type FrameworkElement}">
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+
     <Style TargetType="{x:Type Thumb}" x:Key="ScrollBarThumb">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="IsTabStop" Value="false"/>

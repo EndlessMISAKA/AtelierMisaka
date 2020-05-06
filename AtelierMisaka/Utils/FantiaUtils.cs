@@ -386,5 +386,10 @@ namespace AtelierMisaka
                 wc.Dispose();
             }
         }
+
+        public override ErrorType LikePost(string pid, string cid)
+        {
+            return ErrorType.UnKnown;
+        }
     }
 }

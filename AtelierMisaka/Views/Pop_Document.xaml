@@ -474,7 +474,7 @@
                 <Paragraph x:Name="MainBody" FontSize="20"/>
             </FlowDocument>
         </FlowDocumentScrollViewer>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20,20" Width="27" Height="27" Focusable="False"
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="35,20" Width="27" Height="27" Focusable="False"
                 Command="{x:Static local:GlobalData.BackCommand}" CommandParameter="{x:Static local:BackType.Pop}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
@@ -486,7 +486,7 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="60,20" Width="27" Height="27"
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="75,20" Width="27" Height="27"
                 Command="{x:Static local:GlobalData.OpenLinkCommand}" ToolTip="在浏览器中打开" Focusable="False">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
@@ -498,6 +498,60 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="115,20" Width="27" Height="27"
+                Command="{x:Static local:GlobalData.LikePostCommand}" ToolTip="点赞" Focusable="False">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="Black"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                                    <Path Data="M17.5,4.53499984741211 C20.814000129699707,4.53499984741211 23.5,7.248999977111816 23.5,10.5350000858306885 C23.5,15.3329999446868896 20.3420000076293945,19.28000020980835 14.3939999938011169,22.253999710083008 C13.8310000002384186,22.53600025177002 13.2310000002384186,22.53600025177002 12.7939999938011169,22.253999710083008 C6.7420000076293945,19.28000020980835 3.5,15.3329999446868896 3.5,10.5350000858306885 C3.5,7.248999977111816 6.214000129699707,4.53499984741211 9.5,4.53499984741211 C11.075000047683716,4.53499984741211 12.4510000228881836,5.034000396728516 13.5,5.984000015258789 C14.6510000228881836,5.034000396728516 16.075000047683716,4.53499984741211 17.5,4.53499984741211z"
+                                          x:Name="pat" Fill="{TemplateBinding Background}" Width="27" Height="27">
+                                    </Path>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsLiked_Document}" Value="True">
+                                        <Setter Property="Background" Value="Pink"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <!--<Trigger Property="Tag" Value="True">
+                            <Setter Property="Background" Value="Pink"/>
+                            -->
+                                    <!--<Setter TargetName="pat" Property="Fill">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Pink"/>
+                                </Setter.Value>
+                            </Setter>-->
+                                    <!--
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </Trigger>-->
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}">
+            <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
+            <Grid Width="400" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
+                  MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
+                  MouseLeave="Grid_MouseLeave">
+                <Grid.Effect>
+                    <DropShadowEffect/>
+                </Grid.Effect>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
+                    <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
+                </StackPanel>
+            </Grid>
+        </Canvas>
     </Grid>
 </UserControl>

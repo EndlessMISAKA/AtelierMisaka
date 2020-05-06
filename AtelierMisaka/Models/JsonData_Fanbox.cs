@@ -27,7 +27,6 @@ namespace AtelierMisaka.Models
 		public string type { get; set; }
 		public ItemBody body { get; set; }
 		public bool isLiked { get; set; }
-		public int likeCount { get; set; }
 		public string creatorId { get; set; }
 		public string status { get; set; }
 	}

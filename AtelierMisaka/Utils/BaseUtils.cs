@@ -20,21 +20,7 @@ namespace AtelierMisaka
 
         public abstract ErrorType GetPostIDs(string uid, out IList<BaseItem> bis);
 
-        //protected abstract string GetUrls(string jsondata, IList<BaseItem> biList);
-
-        //protected abstract void GetPostIDs_Next(string url, IList<BaseItem> biList);
-
-        public static JObject ConvertJSON(string jsondata)
-        {
-            try
-            {
-                return (JObject)JsonConvert.DeserializeObject(jsondata);
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        public abstract ErrorType LikePost(string pid, string cid);
 
         protected void Wc_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
