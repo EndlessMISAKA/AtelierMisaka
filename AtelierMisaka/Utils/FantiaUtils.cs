@@ -216,79 +216,69 @@ namespace AtelierMisaka
         {
             try
             {
-                var dj = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
-                if (dj is DynamicJson && dj.post())
-                {
-                    var dp = dj.post;
-                    FantiaItem fi = new FantiaItem()
+                JsonData_Fantia_Post jfp = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                if (null != jfp.post)
+				{
+					if (GlobalData.OverTime(jfp.post.converted_at))
+					{
+						return;
+					}
+					FantiaItem fi = new FantiaItem()
                     {
-                        CreateDate = DateTime.Parse(dp.posted_at),
-                        UpdateDate = DateTime.Parse(dp.converted_at)
+                        CreateDate = jfp.post.posted_at,
+                        UpdateDate = jfp.post.converted_at
                     };
-                    if (GlobalData.OverTime(fi))
+                    fi.FID = jfp.post.id.ToString();
+                    fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title));
+                    if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
-                        return;
-                    }
-                    fi.FID = dp.id.ToString();
-                    fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(dp.title));
-                    var comment = dp.comment;
-                    if (!string.IsNullOrEmpty(comment))
-                    {
-                        fi.Comments.Add(comment);
+                        fi.Comments.Add(jfp.post.comment);
                         fi.Comments.Add(string.Empty);
                     }
-                    if (dp.thumb())
+                    if (null != jfp.post.thumb)
                     {
-                        fi.CoverPic = dp.thumb.original;
-                        fi.CoverPicThumb = dp.thumb.ogp;
+                        fi.CoverPic = jfp.post.thumb.original;
+                        fi.CoverPicThumb = jfp.post.thumb.ogp;
                     }
-
-                    var contents = dp.post_contents;
-                    foreach (var ct in contents)
+					
+                    foreach (var ct in jfp.post.post_contents)
                     {
                         var fee = ct.plan.price;
-                        var ftype = ct.category;
                         var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
-                        var isVisible = ct.visible_status;
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
-                        if (isVisible == "visible")
+                        if (ct.visible_status == "visible")
                         {
-                            var scomment = ct.comment;
-                            if (!string.IsNullOrEmpty(scomment))
+                            if (!string.IsNullOrEmpty(ct.comment))
                             {
-                                fi.Comments.Add(scomment);
+                                fi.Comments.Add(ct.comment);
                                 fi.Comments.Add(string.Empty);
                             }
-                            if (ftype == "photo_gallery")
+                            if (ct.category == "photo_gallery")
                             {
                                 var imgs = ct.post_content_photos;
                                 foreach (var img in imgs)
                                 {
-                                    var imgId = img.id;
-                                    var imgCom = img.comment;
                                     var imgUrl = img.url.original;
-
-                                    if (!string.IsNullOrEmpty(imgCom))
+                                    if (!string.IsNullOrEmpty(img.comment))
                                     {
-                                        fi.Comments.Add(imgCom);
+                                        fi.Comments.Add(img.comment);
                                     }
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                    var fn = $"{imgId}{ext}";
-                                    fi.Comments.Add(fn);
-                                    fi.FileNames.Add(fn);
+                                    var fn = $"{img.id}{ext}";
+									fi.Comments.Add($"图片：{fn}");
+									fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
                                     fi.PTitles.Add(stitle);
                                 }
                             }
-                            else if (ftype == "file")
-                            {
-                                var fn = ct.filename;
-                                fi.Comments.Add(fn);
-                                fi.FileNames.Add(fn);
+                            else if (ct.category == "file")
+							{
+								fi.Comments.Add($"文件：{ct.filename}");
+								fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
                                 fi.PTitles.Add(stitle);
@@ -296,12 +286,11 @@ namespace AtelierMisaka
                         }
                     }
                     bis.Add(fi);
-                    if (dp.links() && dp.links.previous())
+                    if (null != jfp.post.links && null != jfp.post.links.previous)
                     {
-                        var dpp = dp.links.previous;
-                        if (!GlobalData.OverTime(dpp.converted_at))
+                        if (!GlobalData.OverTime(jfp.post.links.previous.converted_at))
                         {
-                            GetUrls_Loop(dpp.id.ToString(), bis);
+                            GetUrls_Loop(jfp.post.links.previous.id, bis);
                         }
                     }
                 }
@@ -312,67 +301,60 @@ namespace AtelierMisaka
             }
         }
 
-        private void GetUrls_Loop(string pid, List<BaseItem> bis)
+        private void GetUrls_Loop(int pid, List<BaseItem> bis)
         {
             try
             {
-                var dj = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
-                if (dj is DynamicJson && dj.post())
+                JsonData_Fantia_Post jfp = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                if (null != jfp.post)
                 {
-                    var dp = dj.post;
                     FantiaItem fi = new FantiaItem()
                     {
-                        FID = dp.id.ToString(),
-                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(dp.title)),
-                        CreateDate = DateTime.Parse(dp.posted_at),
-                        UpdateDate = DateTime.Parse(dp.converted_at)
+                        FID = jfp.post.id.ToString(),
+                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title)),
+                        CreateDate = jfp.post.posted_at,
+                        UpdateDate = jfp.post.converted_at
                     };
-                    var comment = dp.comment;
-                    if (!string.IsNullOrEmpty(comment))
+                    if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
-                        fi.Comments.Add(comment);
+                        fi.Comments.Add(jfp.post.comment);
                         fi.Comments.Add(string.Empty);
                     }
-                    if (dp.thumb())
+                    if (null != jfp.post.thumb)
                     {
-                        fi.CoverPic = dp.thumb.original;
-                        fi.CoverPicThumb = dp.thumb.ogp;
+                        fi.CoverPic = jfp.post.thumb.original;
+                        fi.CoverPicThumb = jfp.post.thumb.ogp;
                     }
 
-                    var contents = dp.post_contents;
+                    var contents = jfp.post.post_contents;
                     foreach (var ct in contents)
                     {
                         var fee = ct.plan.price;
-                        var ftype = ct.category;
                         var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
-                        var isVisible = ct.visible_status;
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
-                        if (isVisible == "visible")
+                        if (ct.visible_status == "visible")
                         {
-                            var scomment = ct.comment;
-                            if (!string.IsNullOrEmpty(scomment))
+                            if (!string.IsNullOrEmpty(ct.comment))
                             {
-                                fi.Comments.Add(scomment);
+                                fi.Comments.Add(ct.comment);
                                 fi.Comments.Add(string.Empty);
                             }
-                            if (ftype == "photo_gallery")
+                            if (ct.category == "photo_gallery")
                             {
                                 var imgs = ct.post_content_photos;
                                 foreach (var img in imgs)
                                 {
-                                    var imgId = img.id;
-                                    var imgCom = img.comment;
                                     var imgUrl = img.url.original;
 
-                                    if (!string.IsNullOrEmpty(imgCom))
+                                    if (!string.IsNullOrEmpty(img.comment))
                                     {
-                                        fi.Comments.Add(imgCom);
+                                        fi.Comments.Add(img.comment);
                                     }
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                    var fn = $"{imgId}{ext}";
+                                    var fn = $"{img.id}{ext}";
                                     fi.Comments.Add($"图片：{fn}");
                                     fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
@@ -380,11 +362,10 @@ namespace AtelierMisaka
                                     fi.PTitles.Add(stitle);
                                 }
                             }
-                            else if (ftype == "file")
+                            else if (ct.category == "file")
                             {
-                                var fn = ct.filename;
-                                fi.Comments.Add($"文件：{fn}");
-                                fi.FileNames.Add(fn);
+                                fi.Comments.Add($"文件：{ct.filename}");
+                                fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
                                 fi.PTitles.Add(stitle);
@@ -392,12 +373,11 @@ namespace AtelierMisaka
                         }
                     }
                     bis.Add(fi);
-                    if (dp.links() && dp.links.previous())
+                    if (null != jfp.post.links && null != jfp.post.links.previous)
                     {
-                        var dpp = dp.links.previous;
-                        if (!GlobalData.OverTime(dpp.converted_at))
+                        if (!GlobalData.OverTime(jfp.post.links.previous.converted_at))
                         {
-                            GetUrls_Loop(dpp.id.ToString(), bis);
+                            GetUrls_Loop(jfp.post.links.previous.id, bis);
                         }
                     }
                 }

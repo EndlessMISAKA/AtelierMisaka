@@ -67,6 +67,7 @@
     <Compile Include="Converters\EnumToImageConverter.cs" />
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\NameToWidthConverter.cs" />
+    <Compile Include="Models\JsonData_Fantia_Post.cs" />
     <Compile Include="Utils\DynamicJson.cs" />
     <Compile Include="Models\ArtistInfo.cs" />
     <Compile Include="Models\DLSP.cs" />

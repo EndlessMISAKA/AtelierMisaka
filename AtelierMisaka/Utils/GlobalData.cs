@@ -152,14 +152,9 @@ namespace AtelierMisaka
             return (feeRequired < VM_MA.Artist.PayLowInt) || (VM_MA.Artist.PayHighInt != -1 && (VM_MA.Artist.PayHighInt < feeRequired));
         }
 
-        public static bool OverTime(BaseItem bi)
+        public static bool OverTime(DateTime updt)
         {
-            return VM_MA.UseDate && bi.UpdateDate <= VM_MA.LastDate;
-        }
-
-        public static bool OverTime(string updt)
-        {
-            return VM_MA.UseDate && DateTime.Parse(updt) <= VM_MA.LastDate;
+            return VM_MA.UseDate && updt <= VM_MA.LastDate;
         }
 
         public static string ConverToJson(IEnumerable<ArtistInfo> ais)

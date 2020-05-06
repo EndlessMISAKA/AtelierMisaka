@@ -348,7 +348,7 @@ namespace AtelierMisaka.Views
                     {
                         foreach (var bi in _tempBis)
                         {
-                            bi.Skip = GlobalData.OverTime(bi);
+                            bi.Skip = GlobalData.OverTime(bi.UpdateDate);
                         }
                     });
                     GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
