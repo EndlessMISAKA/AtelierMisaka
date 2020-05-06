@@ -103,7 +103,7 @@ namespace AtelierMisaka
                     {
                         if (link.Contains("twitter.com"))
                         {
-                            ai.Twitter = link;
+                            ai.Twitter = $"{link}/status";
                             break;
                         }
                     }
@@ -275,19 +275,21 @@ namespace AtelierMisaka
                                             case "embed":
                                                 if (null != po.body.embedMap && po.body.embedMap.TryGetValue(binfo.embedId, out EmbedItem eitem))
                                                 {
+                                                    pi.Comments.Add(string.Empty);
                                                     if (eitem.serviceProvider == "twitter" && !string.IsNullOrEmpty(GlobalData.VM_MA.Artist.Twitter))
                                                     {
-                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId}>");
+                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId} >");
                                                     }
                                                     else if (eitem.serviceProvider == "fanbox")
                                                     {
 
-                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()}>");
+                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()} >");
                                                     }
                                                     else
                                                     {
                                                         pi.Comments.Add($"<引用链接: {eitem.serviceProvider} ({eitem.contentId})>");
                                                     }
+                                                    pi.Comments.Add(string.Empty);
                                                 }
                                                 break;
                                         }
