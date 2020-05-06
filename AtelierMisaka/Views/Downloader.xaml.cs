@@ -45,86 +45,159 @@ namespace AtelierMisaka.Views
                 DownloadItem di = null;
                 List<DLSP> temdl = null;
                 bool haslog = false;
-                foreach (var bi in _baseItems)
+                if (GlobalData.VM_MA.Site == SiteType.Fantia)
                 {
-                    if (bi.Skip)
+                    foreach (FantiaItem fi in _baseItems)
                     {
-                        continue;
-                    }
-                    string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{(bi.Title)}";
-                    Directory.CreateDirectory(sp);
-                    if (!Directory.Exists(sp))
-                    {
-                        sp = GlobalData.ReplacePath(sp);
+                        string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi.CreateDate.ToString("yyyyMMdd_HHmm")}_{(fi.Title)}";
                         Directory.CreateDirectory(sp);
-                    }
-                    haslog = GlobalData.DownloadLogs.TryGetValue(bi.ID, out temdl);
-                    if (!string.IsNullOrEmpty(bi.CoverPic))
-                    {
-                        if (!haslog || !temdl.Exists(x => x.Link.Contains(bi.CoverPic)))
+                        if (!Directory.Exists(sp))
                         {
-                            di = new DownloadItem
+                            sp = GlobalData.ReplacePath(sp);
+                            Directory.CreateDirectory(sp);
+                        }
+                        haslog = GlobalData.DownloadLogs.TryGetValue(fi.ID, out temdl);
+                        if (!string.IsNullOrEmpty(fi.CoverPic))
+                        {
+                            if (!haslog || !temdl.Exists(x => x.Link.Contains(fi.CoverPic)))
                             {
-                                FileName = $"Cover.{bi.CoverPic.Split('.').Last()}",
-                                Link = bi.CoverPic,
-                                SavePath = sp,
-                                CTime = bi.CreateDate,
-                                SourceDocu = bi,
-                                AId = VM_DD.TempAI
-                            };
-                            di.CheckTempFile();
-                            _downLoadItemList.Add(di);
+                                di = new DownloadItem
+                                {
+                                    FileName = $"Cover.{fi.CoverPic.Split('.').Last()}",
+                                    Link = fi.CoverPic,
+                                    SavePath = sp,
+                                    SourceDocu = fi,
+                                    AId = VM_DD.TempAI
+                                };
+                                di.CheckTempFile();
+                                _downLoadItemList.Add(di);
+                            }
+                        }
+                        for (int i = 0; i < fi.ContentUrls.Count; i++)
+                        {
+                            if (GlobalData.OverPayment(int.Parse(fi.Fees[i])))
+                            {
+                                continue;
+                            }
+                            int ind = fi.ContentUrls[i].IndexOf("?Key");
+                            var turl = (ind == -1) ? fi.ContentUrls[i] : fi.ContentUrls[i].Substring(0, ind);
+                            if (haslog && temdl.Exists(x => x.Link.Contains(turl)))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                var nsp = $"{sp}\\{fi.PTitles[i]}";
+                                if (!Directory.Exists(nsp))
+                                {
+                                    Directory.CreateDirectory(nsp);
+                                    if (!Directory.Exists(nsp))
+                                    {
+                                        sp = GlobalData.ReplacePath(nsp);
+                                        Directory.CreateDirectory(nsp);
+                                    }
+                                }
+                                di = new DownloadItem
+                                {
+                                    FileName = fi.FileNames[i],
+                                    Link = fi.ContentUrls[i],
+                                    SavePath = nsp,
+                                    SourceDocu = fi,
+                                    AId = VM_DD.TempAI
+                                };
+                                di.CheckTempFile();
+                                _downLoadItemList.Add(di);
+                            }
+                        }
+                        if (fi.Comments.Count > 0)
+                        {
+                            File.WriteAllLines(Path.Combine(sp, "Comment.txt"), fi.Comments);
                         }
                     }
-                    for (int i = 0; i < bi.ContentUrls.Count; i++)
+                }
+                else
+                {
+                    foreach (var bi in _baseItems)
                     {
-                        if (haslog && temdl.Exists(x => x.Link.Contains(bi.ContentUrls[i])))
+                        if (bi.Skip)
                         {
                             continue;
                         }
-                        else
+                        string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{(bi.Title)}";
+                        Directory.CreateDirectory(sp);
+                        if (!Directory.Exists(sp))
                         {
-                            di = new DownloadItem
+                            sp = GlobalData.ReplacePath(sp);
+                            Directory.CreateDirectory(sp);
+                        }
+                        haslog = GlobalData.DownloadLogs.TryGetValue(bi.ID, out temdl);
+                        if (!string.IsNullOrEmpty(bi.CoverPic))
+                        {
+                            if (!haslog || !temdl.Exists(x => x.Link.Contains(bi.CoverPic)))
                             {
-                                FileName = bi.FileNames[i],
-                                Link = bi.ContentUrls[i],
-                                SavePath = sp,
-                                CTime = bi.CreateDate,
-                                SourceDocu = bi,
-                                AId = VM_DD.TempAI
-                            };
-                            di.CheckTempFile();
-                            _downLoadItemList.Add(di);
+                                di = new DownloadItem
+                                {
+                                    FileName = $"Cover.{bi.CoverPic.Split('.').Last()}",
+                                    Link = bi.CoverPic,
+                                    SavePath = sp,
+                                    CTime = bi.CreateDate,
+                                    SourceDocu = bi,
+                                    AId = VM_DD.TempAI
+                                };
+                                di.CheckTempFile();
+                                _downLoadItemList.Add(di);
+                            }
                         }
-                    }
-                    for (int i = 0; i < bi.MediaUrls.Count; i++)
-                    {
-                        if (haslog && temdl.Exists(x => x.Link.Contains(bi.MediaUrls[i])))
+                        for (int i = 0; i < bi.ContentUrls.Count; i++)
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            di = new DownloadItem
+                            if (haslog && temdl.Exists(x => x.Link.Contains(bi.ContentUrls[i])))
                             {
-                                FileName = bi.MediaNames[i],
-                                Link = bi.MediaUrls[i],
-                                SavePath = sp,
-                                CTime = bi.CreateDate,
-                                SourceDocu = bi,
-                                AId = VM_DD.TempAI
-                            };
-                            di.CheckTempFile();
-                            _downLoadItemList.Add(di);
+                                continue;
+                            }
+                            else
+                            {
+                                di = new DownloadItem
+                                {
+                                    FileName = bi.FileNames[i],
+                                    Link = bi.ContentUrls[i],
+                                    SavePath = sp,
+                                    CTime = bi.CreateDate,
+                                    SourceDocu = bi,
+                                    AId = VM_DD.TempAI
+                                };
+                                di.CheckTempFile();
+                                _downLoadItemList.Add(di);
+                            }
                         }
-                    }
-                    if (bi.Comments.Count > 0)
-                    {
-                        if (haslog)
+                        for (int i = 0; i < bi.MediaUrls.Count; i++)
                         {
-                            continue;
+                            if (haslog && temdl.Exists(x => x.Link.Contains(bi.MediaUrls[i])))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                di = new DownloadItem
+                                {
+                                    FileName = bi.MediaNames[i],
+                                    Link = bi.MediaUrls[i],
+                                    SavePath = sp,
+                                    CTime = bi.CreateDate,
+                                    SourceDocu = bi,
+                                    AId = VM_DD.TempAI
+                                };
+                                di.CheckTempFile();
+                                _downLoadItemList.Add(di);
+                            }
                         }
-                        File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
+                        if (bi.Comments.Count > 0)
+                        {
+                            if (haslog)
+                            {
+                                continue;
+                            }
+                            File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
+                        }
                     }
                 }
             });

@@ -88,8 +88,8 @@ namespace AtelierMisaka.Views
                     ShowLoading(false);
                     return;
                 }
-
-                _utils = GlobalData.VM_MA.Site == SiteType.Fanbox ? new FanboxUtils() : null;
+                
+                _utils = GlobalData.GetUtils();
                 if (!GlobalData.VM_MA.HasSelected)
                 {
                     var ai = await Task.Run(() => _utils.GetArtistInfos(GlobalData.VM_MA.Artist.PostUrl));
@@ -100,10 +100,11 @@ namespace AtelierMisaka.Views
                         ShowLoading(false);
                         return;
                     }
-                    GlobalData.VM_MA.Artist.Id = ai.Id;
-                    GlobalData.VM_MA.Artist.Cid = ai.Cid;
-                    GlobalData.VM_MA.Artist.AName = ai.AName;
-                    GlobalData.VM_MA.Artist.PostUrl = $"https://{ai.Cid}.fanbox.cc";
+                    GlobalData.VM_MA.Artist = ai;
+                    //GlobalData.VM_MA.Artist.Id = ai.Id;
+                    //GlobalData.VM_MA.Artist.Cid = ai.Cid;
+                    //GlobalData.VM_MA.Artist.AName = ai.AName;
+                    //GlobalData.VM_MA.Artist.PostUrl = ai.PostUrl;
                     if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
                     {
                         if (GlobalData.VM_MA.ArtistList.Count > 0)
@@ -218,7 +219,7 @@ namespace AtelierMisaka.Views
                         ShowLoading(false);
                         return;
                     }
-                    _utils = GlobalData.VM_MA.Site == SiteType.Fanbox ? new FanboxUtils() : null;
+                    _utils = GlobalData.GetUtils();
                     if (!GlobalData.VM_MA.HasSelected)
                     {
                         var ai = await Task.Run(() => _utils.GetArtistInfos(GlobalData.VM_MA.Artist.PostUrl));
@@ -452,7 +453,7 @@ namespace AtelierMisaka.Views
                 return;
             }
             ShowLoading(true);
-            _utils = GlobalData.VM_MA.Site == SiteType.Fanbox ? new FanboxUtils() : null;
+            _utils = GlobalData.GetUtils();
             var ais = await Task.Run(() =>
             {
                 return _utils.GetArtistList();
@@ -463,6 +464,7 @@ namespace AtelierMisaka.Views
                 GlobalData.VM_MA.ArtistList.Add(ai);
             }
             GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
+            await Task.Run(() => SaveSetting());
             ShowLoading(false);
         }
 
@@ -528,10 +530,9 @@ namespace AtelierMisaka.Views
         {
             try
             {
-                bool flag = GlobalData.VM_MA.Site == SiteType.Fanbox;
-                string fn = flag ? "Artists_Fanbox.json" : "Artists_Patreon.json";
+                string fn = $"Artists_{GlobalData.VM_MA.Site.ToString()}.json";
                 File.WriteAllText(fn, GlobalData.ConverToJson(GlobalData.VM_MA.ArtistList));
-                fn = flag ? "Setting_Fanbox.ini" : "Setting_Patreon.ini";
+                fn = $"Setting_{GlobalData.VM_MA.Site.ToString()}.ini";
                 File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.Cookies, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
                 if (!string.IsNullOrEmpty(GlobalData.VM_MA.ArtistList.Last().Id))
                 {
@@ -562,6 +563,20 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
+                GlobalData.VM_MA.Site = SiteType.Fantia;
+                ais = GlobalData.ReadArtists("Artists_Fantia.json");
+                foreach (var ai in ais)
+                {
+                    GlobalData.VM_MA.ArtistList.Add(ai);
+                }
+                if (File.Exists("Setting_Fantia.ini"))
+                {
+                    var ms = File.ReadAllLines("Setting_Fantia.ini");
+                    GlobalData.VM_MA.Cookies = ms[0];
+                    GlobalData.VM_MA.SavePath = ms[1];
+                    GlobalData.VM_MA.Proxy = ms[2];
+                    GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
+                }
                 GlobalData.VM_MA.Site = SiteType.Fanbox;
                 ais = GlobalData.ReadArtists("Artists_Fanbox.json");
                 foreach (var ai in ais)
@@ -576,6 +591,7 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
+                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
             }
             catch
             {

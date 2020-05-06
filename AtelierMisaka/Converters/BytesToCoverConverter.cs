@@ -27,7 +27,6 @@ namespace AtelierMisaka.Converters
                     bi.BeginInit();
                     bi.CacheOption = BitmapCacheOption.OnLoad;
                     bi.StreamSource = new MemoryStream(data);
-                    bi.DecodePixelHeight = 300;
                     bi.EndInit();
                     bi.Freeze();
                     return bi;

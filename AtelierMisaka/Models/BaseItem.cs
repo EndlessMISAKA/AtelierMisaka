@@ -12,6 +12,7 @@ namespace AtelierMisaka.Models
         protected string _id = string.Empty;
         protected string _title = string.Empty;
         protected string _coverPic = string.Empty;
+        protected string _coverPicThumb = string.Empty;
         protected string _fee = string.Empty;
         protected string _link = string.Empty;
         protected DateTime _createDate = DateTime.Now;
@@ -19,6 +20,7 @@ namespace AtelierMisaka.Models
         protected bool _needLoadCover = true;
         protected bool _skip = false;
         protected byte[] _imgData = null;
+        private int _percent = 0;
 
         protected List<string> _comments = new List<string>();
         protected List<string> _contentUrls = new List<string>();
@@ -54,6 +56,19 @@ namespace AtelierMisaka.Models
             }
         }
 
+        public int Percent
+        {
+            get => _percent;
+            set
+            {
+                if (_percent != value)
+                {
+                    _percent = value;
+                    RaisePropertyChanged("CoverTxt");
+                }
+            }
+        }
+
         public string Link
         {
             get => _link;
@@ -82,7 +97,12 @@ namespace AtelierMisaka.Models
                 }
                 else if (!_needLoadCover)
                 {
-                    return "加载中";
+                    if (_percent >= 0)
+                    {
+                        return $"加载中...{_percent}%";
+                    }
+                    _needLoadCover = true;
+                    return $"网络出错，请重试";
                 }
                 else
                 {
@@ -99,6 +119,19 @@ namespace AtelierMisaka.Models
                 if (_coverPic != value)
                 {
                     _coverPic = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public string CoverPicThumb
+        {
+            get => _coverPicThumb;
+            set
+            {
+                if (_coverPicThumb != value)
+                {
+                    _coverPicThumb = value;
                     RaisePropertyChanged();
                 }
             }

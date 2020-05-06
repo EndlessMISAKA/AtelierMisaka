@@ -103,6 +103,11 @@ namespace AtelierMisaka
 
         public bool InsertLog(string cid, string pid, string savep, string link)
         {
+            var ind = link.IndexOf("?Key");
+            if (ind != -1)
+            {
+                link = link.Substring(0, ind);
+            }
             string sql = $"INSERT INTO DLLogs(CID,PID,SavePath,DLink) VALUES('{cid}','{pid}','{savep}','{link}')";
             int re = Db_Base.SetDS(sql);
             return re == 1;

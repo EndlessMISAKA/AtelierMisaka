@@ -61,16 +61,17 @@ namespace AtelierMisaka
                 return;
             }
             bi.NeedLoadCover = false;
-            bool flag = false;
-            BaseUtils bu = (VM_MA.Site == SiteType.Fanbox) ? new FanboxUtils() : null;
-            await Task.Run(() =>
-            {
-                flag = bu.GetCover(bi);
-            });
-            if (!flag)
-            {
-                bi.NeedLoadCover = true;
-            }
+            //bool flag = false;
+            BaseUtils bu = GetUtils();
+            bu.GetCover(bi);
+            //await Task.Run(() =>
+            //{
+            //    flag = bu.GetCover(bi);
+            //});
+            //if (!flag)
+            //{
+            //    bi.NeedLoadCover = true;
+            //}
         });
 
         public static CommonCommand ShowDLCommand = new CommonCommand(() =>
@@ -126,6 +127,19 @@ namespace AtelierMisaka
             ShowDLCommand.Execute(null);
         });
 
+        public static BaseUtils GetUtils()
+        {
+            switch (VM_MA.Site)
+            {
+                case SiteType.Fanbox:
+                    return new FanboxUtils();
+                case SiteType.Fantia:
+                    return new FantiaUtils();
+                default:
+                    return null;
+            }
+        }
+
         public static void Init()
         {
             _pop_Setting = new Pop_Setting();
@@ -140,7 +154,12 @@ namespace AtelierMisaka
 
         public static bool OverTime(BaseItem bi)
         {
-            return VM_MA.UseDate && (bi.CreateDate <= VM_MA.LastDate || bi.UpdateDate <= VM_MA.LastDate);
+            return VM_MA.UseDate && bi.UpdateDate <= VM_MA.LastDate;
+        }
+
+        public static bool OverTime(string updt)
+        {
+            return VM_MA.UseDate && DateTime.Parse(updt) <= VM_MA.LastDate;
         }
 
         public static string ConverToJson(IEnumerable<ArtistInfo> ais)
@@ -231,6 +250,7 @@ namespace AtelierMisaka
     public enum SiteType
     {
         Fanbox,
+        Fantia,
         Patreon
     }
 

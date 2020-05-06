@@ -21,12 +21,12 @@
             <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center" Width="600">
                 <RadioButton Content="Fanbox" Style="{StaticResource RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fanbox}}"/>
-                <RadioButton Content="Patreon" Style="{StaticResource RB_Setting}"
-                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Patreon}}"/>
+                <RadioButton Content="Fantia" Style="{StaticResource RB_Setting}"
+                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fantia}}"/>
             </StackPanel>
             <Grid Height="60">
                 <TextBlock Text="作者链接" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Name="popt" Style="{StaticResource TB_Setting}" Tag="https://www.fanbox.cc/@a or https://a.fanbox.cc/" Text="{Binding Artist.PostUrl, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Name="popt" Style="{StaticResource TB_Setting}" Tag="{Binding PostUrlTag}" Text="{Binding Artist.PostUrl, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Background="#2D2D30" Visibility="{Binding HasSelected, Converter={StaticResource btvc}}" Padding="10,0"
                            HorizontalAlignment="Right" Width="726" Margin="22,0" FontSize="28" Foreground="White" VerticalAlignment="Center">
                     <Run Text="{Binding Artist.AName}"/>
@@ -91,7 +91,7 @@
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="Cookies" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="例：FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Height="60">
                 <CheckBox Style="{StaticResource CB_Setting}" Content="代理设置" IsChecked="{Binding UseProxy}"/>

@@ -3,6 +3,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace AtelierMisaka.Views
 {
@@ -26,49 +27,67 @@ namespace AtelierMisaka.Views
             bool flag = false;
             for(int i = 0; i < doms.Count; i++)
             {
-                var ts = doms[i].Split(new string[] { "\n" }, StringSplitOptions.None);
-                foreach (var dis in ts)
+                if (doms[i].Length == 0)
                 {
-                    var index = dis.IndexOf("http");
-                    if (index != -1)
+                    MainBody.Inlines.Add(new LineBreak());
+                }
+                else if (doms[i].StartsWith("文件：") || doms[i].StartsWith("图片："))
+                {
+                    MainBody.Inlines.Add(new Run(doms[i]) { Foreground = Brushes.LightSeaGreen });
+                    MainBody.Inlines.Add(new LineBreak());
+                }
+                else
+                {
+                    var ts = doms[i].Split(new string[] { "\n" }, StringSplitOptions.None);
+                    foreach (var dis in ts)
                     {
-                        var i2 = dis.IndexOf(' ', index);
-                        flag = i2 != -1;
-                        if (flag)
+                        var index = dis.IndexOf("http");
+                        if (index != -1)
                         {
-                            link = dis.Substring(index, i2 - index);
+                            var i2 = dis.IndexOf(' ', index);
+                            flag = i2 != -1;
+                            if (flag)
+                            {
+                                link = dis.Substring(index, i2 - index);
+                            }
+                            else
+                            {
+                                link = dis.Substring(index);
+                            }
+                            Hyperlink hl = new Hyperlink(new Run(link))
+                            {
+                                Command = GlobalData.OpenBrowserCommand,
+                                CommandParameter = link
+                            };
+                            if (index != 0)
+                            {
+                                MainBody.Inlines.Add(new Run(dis.Substring(0, index)));
+                            }
+                            MainBody.Inlines.Add(hl);
+                            if (flag && i2 != dis.Length - 1)
+                            {
+                                MainBody.Inlines.Add(new Run(dis.Substring(i2)));
+                            }
                         }
                         else
                         {
-                            link = dis.Substring(index);
+                            var rr = new Run(dis);
+                            if (dis.Length > 0 && dis[0] == '$')
+                            {
+                                rr.FontSize = 30;
+                            }
+                            MainBody.Inlines.Add(rr);
                         }
-                        Hyperlink hl = new Hyperlink(new Run(link))
-                        {
-                            Command = GlobalData.OpenBrowserCommand,
-                            CommandParameter = link
-                        };
-                        if (index != 0)
-                        {
-                            MainBody.Inlines.Add(new Run(dis.Substring(0, index)));
-                        }
-                        MainBody.Inlines.Add(hl);
-                        if (flag && i2 != dis.Length - 1)
-                        {
-                            MainBody.Inlines.Add(new Run(dis.Substring(i2)));
-                        }
+                        MainBody.Inlines.Add(new LineBreak());
                     }
-                    else
-                    {
-                        MainBody.Inlines.Add(new Run(dis));
-                    }
-                    MainBody.Inlines.Add(new LineBreak());
                 }
             }
 
             if (bi.ContentUrls.Count > 0)
             {
+                MainBody.Inlines.Add(new Run("------------------------------------------------------------------------------------------"));
                 MainBody.Inlines.Add(new LineBreak());
-                MainBody.Inlines.Add(new Run("文件列表: "));
+                MainBody.Inlines.Add(new Run("文件列表: ") { FontSize = 25 });
                 MainBody.Inlines.Add(new LineBreak());
 
                 for (int i = 0; i< bi.ContentUrls.Count; i++)
@@ -85,8 +104,9 @@ namespace AtelierMisaka.Views
 
             if (bi.MediaUrls.Count > 0)
             {
+                MainBody.Inlines.Add(new Run("------------------------------------------------------------------------------------------"));
                 MainBody.Inlines.Add(new LineBreak());
-                MainBody.Inlines.Add(new Run("图片列表: "));
+                MainBody.Inlines.Add(new Run("图片列表: ") { FontSize = 25 });
                 MainBody.Inlines.Add(new LineBreak());
 
                 for (int i = 0; i < bi.MediaUrls.Count; i++)

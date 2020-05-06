@@ -1,0 +1,435 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using AtelierMisaka.Models;
+using Codeplex.Data;
+
+namespace AtelierMisaka
+{
+    public class FantiaUtils : BaseUtils
+    {
+        readonly Regex _artIdName = new Regex(@"/fanclubs/(\d+)""><strong>(.+?)</strong>");
+        readonly Regex _artPlan = new Regex(@"(\d+)円/月\)</strong");
+        readonly Regex _artPost = new Regex(@"block"" href=""/posts/(\d+)");
+        readonly Regex _artUrl = new Regex(@"^https://fantia.jp/fanclubs/(\d+)$");
+        readonly string _nextP = "fa fa-angle-right";
+
+        public override ArtistInfo GetArtistInfos(string url)
+        {
+            try
+            {
+                Match ma = _artUrl.Match(url);
+                if (!ma.Success)
+                {
+                    return null;
+                }
+                string _cid = ma.Groups[1].Value;
+                url = $"https://fantia.jp/api/v1/fanclubs/{_cid}";
+
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                if (GlobalData.VM_MA.UseProxy)
+                    req.Proxy = GlobalData.VM_MA.MyProxy;
+
+                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);
+                string respHtml = sr.ReadToEnd();
+
+                sr.Close();
+                resp.Close();
+                req.Abort();
+
+                var dj = DynamicJson.Parse(respHtml);
+                if (dj is DynamicJson && dj.fanclub())
+                {
+                    var cname = dj.fanclub.creator_name;
+                    var ai = new ArtistInfo()
+                    {
+                        Id = _cid,
+                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(cname)),
+                        Cid = _cid,
+                        PostUrl = $"https://fantia.jp/fanclubs/{_cid}",
+                        PayLow = GlobalData.VM_MA.Artist.PayLow,
+                        PayHigh = GlobalData.VM_MA.Artist.PayHigh
+                    };
+                    return ai;
+                }
+            }
+            catch
+            {
+
+            }
+            return null;
+        }
+
+        public override List<ArtistInfo> GetArtistList()
+        {
+            try
+            {
+                List<ArtistInfo> ais = new List<ArtistInfo>();
+                //有料
+                ais.AddRange(GetArtistListFromWebCode("not_"));
+                //無料
+                ais.AddRange(GetArtistListFromWebCode(string.Empty));
+                
+                var tais = GlobalData.VM_MA.ArtistList.ToList();
+                if (tais.Count == 0)
+                {
+                    tais.Add(new ArtistInfo());
+                }
+                tais.ForEach(x =>
+                {
+                    if (!ais.Contains(x))
+                        ais.Add(x);
+                });
+                return ais;
+            }
+            catch
+            {
+                return new List<ArtistInfo>() { new ArtistInfo() };
+            }
+        }
+
+        private List<ArtistInfo> GetArtistListFromWebCode(string free, int index = 1)
+        {
+            try
+            {
+                List<ArtistInfo> ais = new List<ArtistInfo>();
+                string url = $"https://fantia.jp/mypage/users/plans?page={index}&type={free}free";
+
+                WebClient wc = new WebClient();
+                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                if (GlobalData.VM_MA.UseProxy)
+                {
+                    wc.Proxy = GlobalData.VM_MA.MyProxy;
+                }
+                var ss = wc.DownloadData(url);
+                string s = Encoding.UTF8.GetString(ss);
+
+                Match ma = _artIdName.Match(s);
+                while (ma.Success)
+                {
+                    var cid = ma.Groups[1].Value;
+                    var ana = ma.Groups[2].Value;
+                    int ind = ana.IndexOf('(');
+                    if (ind != -1)
+                        ana = ana.Substring(0, ind);
+                    var ai = new ArtistInfo()
+                    {
+                        Id = cid,
+                        Cid = cid,
+                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(ana)),
+                        PostUrl = $"https://fantia.jp/fanclubs/{cid}"
+                    };
+                    ais.Add(ai);
+                    ma = ma.NextMatch();
+                }
+                if (!string.IsNullOrEmpty(free))
+                {
+                    ma = _artPlan.Match(s);
+                    int i = 0;
+                    while (ma.Success)
+                    {
+                        ais[i++].PayHigh = ma.Groups[1].Value;
+                        ma = ma.NextMatch();
+                    }
+                }
+                if (s.IndexOf(_nextP) != -1)
+                {
+                    index++;
+                    ais.AddRange(GetArtistListFromWebCode(free, index));
+                }
+                return ais;
+            }
+            catch
+            {
+                return new List<ArtistInfo>();
+            }
+        }
+
+        public override bool GetCover(BaseItem bi)
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+                wc.DownloadProgressChanged += Wc_DownloadProgressChanged;
+                wc.DownloadDataCompleted += Wc_DownloadDataCompleted;
+                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                if(GlobalData.VM_MA.UseProxy)
+                    wc.Proxy = GlobalData.VM_MA.MyProxy;
+                wc.DownloadDataAsync(new Uri(bi.CoverPicThumb), bi);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override ErrorType GetPostIDs(string uid, out IList<BaseItem> bis)
+        {
+            try
+            {
+                bis = GetPostIDsFromWebCode(uid);
+                return ErrorType.NoError;
+            }
+            catch (Exception ex)
+            {
+                bis = new List<BaseItem>();
+                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                {
+                    return ex.Message.Contains("401") ? ErrorType.Cookies : ErrorType.Web;
+                }
+                else if (ex is IOException)
+                {
+                    return ErrorType.IO;
+                }
+                return ErrorType.UnKnown;
+            }
+        }
+
+        private IList<BaseItem> GetPostIDsFromWebCode(string uid)
+        {
+            try
+            {
+                List<BaseItem> bis = new List<BaseItem>();
+                Match ma = _artPost.Match(GetWebCode($"https://fantia.jp/fanclubs/{uid}"));
+                if (ma.Success)
+                {
+                    GetUrls(ma.Groups[1].Value, bis);
+                }
+                return bis;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private void GetUrls(string pid, List<BaseItem> bis)
+        {
+            try
+            {
+                var dj = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                if (dj is DynamicJson && dj.post())
+                {
+                    var dp = dj.post;
+                    FantiaItem fi = new FantiaItem()
+                    {
+                        CreateDate = DateTime.Parse(dp.posted_at),
+                        UpdateDate = DateTime.Parse(dp.converted_at)
+                    };
+                    if (GlobalData.OverTime(fi))
+                    {
+                        return;
+                    }
+                    fi.FID = dp.id.ToString();
+                    fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(dp.title));
+                    var comment = dp.comment;
+                    if (!string.IsNullOrEmpty(comment))
+                    {
+                        fi.Comments.Add(comment);
+                        fi.Comments.Add(string.Empty);
+                    }
+                    if (dp.thumb())
+                    {
+                        fi.CoverPic = dp.thumb.original;
+                        fi.CoverPicThumb = dp.thumb.ogp;
+                    }
+
+                    var contents = dp.post_contents;
+                    foreach (var ct in contents)
+                    {
+                        var fee = ct.plan.price;
+                        var ftype = ct.category;
+                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
+                        var isVisible = ct.visible_status;
+                        fi.Comments.Add("------------------------------------------------------------------------------------------");
+                        fi.Comments.Add(stitle);
+                        fi.Comments.Add(string.Empty);
+                        if (isVisible == "visible")
+                        {
+                            var scomment = ct.comment;
+                            if (!string.IsNullOrEmpty(scomment))
+                            {
+                                fi.Comments.Add(scomment);
+                                fi.Comments.Add(string.Empty);
+                            }
+                            if (ftype == "photo_gallery")
+                            {
+                                var imgs = ct.post_content_photos;
+                                foreach (var img in imgs)
+                                {
+                                    var imgId = img.id;
+                                    var imgCom = img.comment;
+                                    var imgUrl = img.url.original;
+
+                                    if (!string.IsNullOrEmpty(imgCom))
+                                    {
+                                        fi.Comments.Add(imgCom);
+                                    }
+                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                    var fn = $"{imgId}{ext}";
+                                    fi.Comments.Add(fn);
+                                    fi.FileNames.Add(fn);
+                                    fi.ContentUrls.Add(imgUrl);
+                                    fi.Fees.Add($"{fee}");
+                                    fi.PTitles.Add(stitle);
+                                }
+                            }
+                            else if (ftype == "file")
+                            {
+                                var fn = ct.filename;
+                                fi.Comments.Add(fn);
+                                fi.FileNames.Add(fn);
+                                fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
+                                fi.Fees.Add($"{fee}");
+                                fi.PTitles.Add(stitle);
+                            }
+                        }
+                    }
+                    bis.Add(fi);
+                    if (dp.links() && dp.links.previous())
+                    {
+                        var dpp = dp.links.previous;
+                        if (!GlobalData.OverTime(dpp.converted_at))
+                        {
+                            GetUrls_Loop(dpp.id.ToString(), bis);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private void GetUrls_Loop(string pid, List<BaseItem> bis)
+        {
+            try
+            {
+                var dj = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                if (dj is DynamicJson && dj.post())
+                {
+                    var dp = dj.post;
+                    FantiaItem fi = new FantiaItem()
+                    {
+                        FID = dp.id.ToString(),
+                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(dp.title)),
+                        CreateDate = DateTime.Parse(dp.posted_at),
+                        UpdateDate = DateTime.Parse(dp.converted_at)
+                    };
+                    var comment = dp.comment;
+                    if (!string.IsNullOrEmpty(comment))
+                    {
+                        fi.Comments.Add(comment);
+                        fi.Comments.Add(string.Empty);
+                    }
+                    if (dp.thumb())
+                    {
+                        fi.CoverPic = dp.thumb.original;
+                        fi.CoverPicThumb = dp.thumb.ogp;
+                    }
+
+                    var contents = dp.post_contents;
+                    foreach (var ct in contents)
+                    {
+                        var fee = ct.plan.price;
+                        var ftype = ct.category;
+                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
+                        var isVisible = ct.visible_status;
+                        fi.Comments.Add("------------------------------------------------------------------------------------------");
+                        fi.Comments.Add(stitle);
+                        fi.Comments.Add(string.Empty);
+                        if (isVisible == "visible")
+                        {
+                            var scomment = ct.comment;
+                            if (!string.IsNullOrEmpty(scomment))
+                            {
+                                fi.Comments.Add(scomment);
+                                fi.Comments.Add(string.Empty);
+                            }
+                            if (ftype == "photo_gallery")
+                            {
+                                var imgs = ct.post_content_photos;
+                                foreach (var img in imgs)
+                                {
+                                    var imgId = img.id;
+                                    var imgCom = img.comment;
+                                    var imgUrl = img.url.original;
+
+                                    if (!string.IsNullOrEmpty(imgCom))
+                                    {
+                                        fi.Comments.Add(imgCom);
+                                    }
+                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                    var fn = $"{imgId}{ext}";
+                                    fi.Comments.Add($"图片：{fn}");
+                                    fi.FileNames.Add(fn);
+                                    fi.ContentUrls.Add(imgUrl);
+                                    fi.Fees.Add($"{fee}");
+                                    fi.PTitles.Add(stitle);
+                                }
+                            }
+                            else if (ftype == "file")
+                            {
+                                var fn = ct.filename;
+                                fi.Comments.Add($"文件：{fn}");
+                                fi.FileNames.Add(fn);
+                                fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
+                                fi.Fees.Add($"{fee}");
+                                fi.PTitles.Add(stitle);
+                            }
+                        }
+                    }
+                    bis.Add(fi);
+                    if (dp.links() && dp.links.previous())
+                    {
+                        var dpp = dp.links.previous;
+                        if (!GlobalData.OverTime(dpp.converted_at))
+                        {
+                            GetUrls_Loop(dpp.id.ToString(), bis);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private string GetWebCode(string url)
+        {
+            WebClient wc = new WebClient();
+            try
+            {
+                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                if (GlobalData.VM_MA.UseProxy)
+                {
+                    wc.Proxy = GlobalData.VM_MA.MyProxy;
+                }
+                var ss = wc.DownloadData(url);
+                string s = Encoding.UTF8.GetString(ss);
+                return s;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                wc.Dispose();
+            }
+        }
+    }
+}

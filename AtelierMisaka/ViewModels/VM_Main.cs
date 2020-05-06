@@ -79,16 +79,24 @@ namespace AtelierMisaka.ViewModels
 
         private ArtistInfo _artist = new ArtistInfo();
         private SiteType _site = SiteType.Fanbox;
+
         private string _cookiesFanbox = string.Empty;
-        private string _cookiesPatreon = string.Empty;
         private string _proxyFanbox = string.Empty;
+        private string _savePathFanbox = string.Empty;
+        private bool _useProxyFanbox = true;
+
+        private string _cookiesPatreon = string.Empty;
         private string _proxyPatreon = string.Empty;
+        private string _savePathPatreon = string.Empty;
+        private bool _useProxyPatreon = true;
+
+        private string _cookiesFantia = string.Empty;
+        private string _proxyFantia = string.Empty;
+        private string _savePathFantia = string.Empty;
+        private bool _useProxyFantia = true;
+
         private string _date = string.Empty;
         private string _messages = string.Empty;
-        private string _savePathFanbox = string.Empty;
-        private string _savePathPatreon = string.Empty;
-        private bool _useProxyFanbox = true;
-        private bool _useProxyPatreon = true;
         private bool _useDate = false;
         private bool _showCheck = false;
         private bool _showLoad = false;
@@ -98,9 +106,11 @@ namespace AtelierMisaka.ViewModels
         private Regex _regex = new Regex(@"^\d+\.\d+\.\d+\.\d+:\d+$");
         private IList<ArtistInfo> _artistListFanbox = new ObservableCollection<ArtistInfo>();
         private IList<ArtistInfo> _artistListPatreon = new ObservableCollection<ArtistInfo>();
+        private IList<ArtistInfo> _artistListFantia = new ObservableCollection<ArtistInfo>();
 
         private WebProxy _myProxyFanbox = null;
         private WebProxy _myProxyPatreon = null;
+        private WebProxy _myProxyFantia = null;
         public DateTime LastDate = DateTime.Parse("2010/01/01");
         
         public SiteType Site
@@ -117,6 +127,10 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged("UseProxy");
                     RaisePropertyChanged("Proxy");
                     RaisePropertyChanged("SavePath");
+                    RaisePropertyChanged("CookieTag");
+                    RaisePropertyChanged("PostUrlTag");
+                    if (ArtistList.Count > 0)
+                        Artist = ArtistList.Last();
                 }
             }
         }
@@ -139,25 +153,71 @@ namespace AtelierMisaka.ViewModels
         {
             get
             {
-                return _site == SiteType.Fanbox ? _artistListFanbox : _artistListPatreon;
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _artistListFanbox;
+                    case SiteType.Fantia:
+                        return _artistListFantia;
+                    default:
+                        return _artistListPatreon;
+                }
             }
             set
             {
-                if (_site == SiteType.Fanbox)
+                switch (_site)
                 {
-                    if (_artistListFanbox != value)
-                    {
-                        _artistListFanbox = value;
-                        RaisePropertyChanged();
-                    }
+                    case SiteType.Fanbox:
+                        if (_artistListFanbox != value)
+                        {
+                            _artistListFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_artistListFantia != value)
+                        {
+                            _artistListFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_artistListPatreon != value)
+                        {
+                            _artistListPatreon = value;
+                        }
+                        break;
                 }
-                else
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CookieTag
+        {
+            get
+            {
+                switch (_site)
                 {
-                    if (_artistListPatreon != value)
-                    {
-                        _artistListPatreon = value;
-                        RaisePropertyChanged();
-                    }
+                    case SiteType.Fanbox:
+                        return "例：FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4";
+                    case SiteType.Fantia:
+                        return "例：_session_id=dsadw13232rfcd43tcfwwb6e3f0ec";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        public string PostUrlTag
+        {
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return "https://www.fanbox.cc/@a or https://a.fanbox.cc/";
+                    case SiteType.Fantia:
+                        return "https://fantia.jp/fanclubs/12345";
+                    default:
+                        return "";
                 }
             }
         }
@@ -182,25 +242,42 @@ namespace AtelierMisaka.ViewModels
 
         public string SavePath
         {
-            get => _site == SiteType.Fanbox ? _savePathFanbox : _savePathPatreon;
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _savePathFanbox;
+                    case SiteType.Fantia:
+                        return _savePathFantia;
+                    default:
+                        return _savePathPatreon;
+                }
+            }
             set
             {
-                if(_site == SiteType.Fanbox)
+                switch (_site)
                 {
-                    if (_savePathFanbox != value)
-                    {
-                        _savePathFanbox = value;
-                        RaisePropertyChanged();
-                    }
+                    case SiteType.Fanbox:
+                        if (_savePathFanbox != value)
+                        {
+                            _savePathFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_savePathFantia != value)
+                        {
+                            _savePathFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_savePathPatreon != value)
+                        {
+                            _savePathPatreon = value;
+                        }
+                        break;
                 }
-                else
-                {
-                    if (_savePathPatreon != value)
-                    {
-                        _savePathPatreon = value;
-                        RaisePropertyChanged();
-                    }
-                }
+                RaisePropertyChanged();
             }
         }
 
@@ -208,26 +285,40 @@ namespace AtelierMisaka.ViewModels
         {
             get
             {
-                return _site == SiteType.Fanbox ? _cookiesFanbox : _cookiesPatreon;
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _cookiesFanbox;
+                    case SiteType.Fantia:
+                        return _cookiesFantia;
+                    default:
+                        return _cookiesPatreon;
+                }
             }
             set
             {
-                if (_site == SiteType.Fanbox)
+                switch (_site)
                 {
-                    if (_cookiesFanbox != value)
-                    {
-                        _cookiesFanbox = value;
-                        RaisePropertyChanged();
-                    }
+                    case SiteType.Fanbox:
+                        if (_cookiesFanbox != value)
+                        {
+                            _cookiesFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_cookiesFantia != value)
+                        {
+                            _cookiesFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_cookiesPatreon != value)
+                        {
+                            _cookiesPatreon = value;
+                        }
+                        break;
                 }
-                else
-                {
-                    if (_cookiesPatreon != value)
-                    {
-                        _cookiesPatreon = value;
-                        RaisePropertyChanged();
-                    }
-                }
+                RaisePropertyChanged();
             }
         }
 
@@ -257,70 +348,123 @@ namespace AtelierMisaka.ViewModels
 
         public string Proxy
         {
-            get => _site == SiteType.Fanbox ? _proxyFanbox : _proxyPatreon;
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _proxyFanbox;
+                    case SiteType.Fantia:
+                        return _proxyFantia;
+                    default:
+                        return _proxyPatreon;
+                }
+            }
             set
             {
-                if (_site == SiteType.Fanbox)
+                switch (_site)
                 {
-                    if (_proxyFanbox != value)
-                    {
-                        _proxyFanbox = value;
-                        RaisePropertyChanged();
-                        if (_regex.IsMatch(_proxyFanbox))
+                    case SiteType.Fanbox:
+                        if (_proxyFanbox != value)
                         {
-                            try
+                            _proxyFanbox = value;
+                            if (_regex.IsMatch(_proxyFanbox))
                             {
-                                _myProxyFanbox = new WebProxy(_proxyFanbox);
+                                try
+                                {
+                                    _myProxyFanbox = new WebProxy(_proxyFanbox);
+                                }
+                                catch { }
                             }
-                            catch { }
                         }
-                    }
-                }
-                else
-                {
-                    if (_proxyPatreon != value)
-                    {
-                        _proxyPatreon = value;
-                        RaisePropertyChanged();
-                        if (_regex.IsMatch(_proxyPatreon))
+                        break;
+                    case SiteType.Fantia:
+                        if (_proxyFantia != value)
                         {
-                            try
+                            _proxyFantia = value;
+                            if (_regex.IsMatch(_proxyFantia))
                             {
-                                _myProxyPatreon = new WebProxy(_proxyPatreon);
+                                try
+                                {
+                                    _myProxyFantia = new WebProxy(_proxyFantia);
+                                }
+                                catch { }
                             }
-                            catch { }
                         }
-                    }
+                        break;
+                    default:
+                        if (_proxyPatreon != value)
+                        {
+                            _proxyPatreon = value;
+                            if (_regex.IsMatch(_proxyPatreon))
+                            {
+                                try
+                                {
+                                    _myProxyPatreon = new WebProxy(_proxyPatreon);
+                                }
+                                catch { }
+                            }
+                        }
+                        break;
                 }
+                RaisePropertyChanged();
             }
         }
 
         public WebProxy MyProxy
         {
-            get => _site == SiteType.Fanbox ? _myProxyFanbox : _myProxyPatreon;
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _myProxyFanbox;
+                    case SiteType.Fantia:
+                        return _myProxyFantia;
+                    default:
+                        return _myProxyPatreon;
+                }
+            }
         }
 
         public bool UseProxy
         {
-            get => _site == SiteType.Fanbox ? _useProxyFanbox : _useProxyPatreon;
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _useProxyFanbox;
+                    case SiteType.Fantia:
+                        return _useProxyFantia;
+                    default:
+                        return _useProxyPatreon;
+                }
+            }
             set
             {
-                if(_site == SiteType.Fanbox)
+                switch (_site)
                 {
-                    if (_useProxyFanbox != value)
-                    {
-                        _useProxyFanbox = value;
-                        RaisePropertyChanged();
-                    }
+                    case SiteType.Fanbox:
+                        if (_useProxyFanbox != value)
+                        {
+                            _useProxyFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_useProxyFantia != value)
+                        {
+                            _useProxyFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_useProxyPatreon != value)
+                        {
+                            _useProxyPatreon = value;
+                        }
+                        break;
                 }
-                else
-                {
-                    if (_useProxyPatreon != value)
-                    {
-                        _useProxyPatreon = value;
-                        RaisePropertyChanged();
-                    }
-                }
+                RaisePropertyChanged();
             }
         }
 

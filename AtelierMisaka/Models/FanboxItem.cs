@@ -8,7 +8,6 @@ namespace AtelierMisaka.Models
 {
     public class FanboxItem : BaseItem
     {
-
         public string PID
         {
             set
