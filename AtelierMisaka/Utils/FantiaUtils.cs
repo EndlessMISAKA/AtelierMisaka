@@ -243,7 +243,7 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-									fi.Comments.Add($"<图片：{fn}>");
+									fi.Comments.Add($"<图片: {fn}>");
 									fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
@@ -252,7 +252,7 @@ namespace AtelierMisaka
                             }
                             else if (ct.category == "file")
 							{
-								fi.Comments.Add($"<文件：{ct.filename}>");
+								fi.Comments.Add($"<文件: {ct.filename}>");
 								fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
@@ -330,7 +330,7 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-                                    fi.Comments.Add($"<图片：{fn}>");
+                                    fi.Comments.Add($"<图片: {fn}>");
                                     fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
@@ -339,7 +339,7 @@ namespace AtelierMisaka
                             }
                             else if (ct.category == "file")
                             {
-                                fi.Comments.Add($"<文件：{ct.filename}>");
+                                fi.Comments.Add($"<文件: {ct.filename}>");
                                 fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");

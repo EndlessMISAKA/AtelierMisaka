@@ -34,7 +34,7 @@ namespace AtelierMisaka.Views
                 {
                     MainBody.Inlines.Add(new LineBreak());
                 }
-                else if (doms[i].StartsWith("<文件：") || doms[i].StartsWith("<图片："))
+                else if (doms[i].StartsWith("<文件:") || doms[i].StartsWith("<图片:"))
                 {
                     MainBody.Inlines.Add(new Run(doms[i]) { Foreground = Brushes.LightSeaGreen });
                     MainBody.Inlines.Add(new LineBreak());
