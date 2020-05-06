@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AtelierMisaka.Models;
-using Codeplex.Data;
+using Newtonsoft.Json;
 
 namespace AtelierMisaka
 {
@@ -19,7 +19,7 @@ namespace AtelierMisaka
         readonly Regex _artUrl = new Regex(@"^https://fantia.jp/fanclubs/(\d+)$");
         readonly string _nextP = "fa fa-angle-right";
 
-        public override ArtistInfo GetArtistInfos(string url)
+        public override ArtistInfo GetArtistInfo(string url)
         {
             try
             {
@@ -28,33 +28,17 @@ namespace AtelierMisaka
                 {
                     return null;
                 }
-                string _cid = ma.Groups[1].Value;
-                url = $"https://fantia.jp/api/v1/fanclubs/{_cid}";
-
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "GET";
-                req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                if (GlobalData.VM_MA.UseProxy)
-                    req.Proxy = GlobalData.VM_MA.MyProxy;
-
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);
-                string respHtml = sr.ReadToEnd();
-
-                sr.Close();
-                resp.Close();
-                req.Abort();
-
-                var dj = DynamicJson.Parse(respHtml);
-                if (dj is DynamicJson && dj.fanclub())
+                string cid = ma.Groups[1].Value;
+                
+                var jfa = JsonConvert.DeserializeObject<JsonData_Fantia_Artist>(GetWebCode($"https://fantia.jp/api/v1/fanclubs/{cid}"));
+                if(null != jfa.fanclub)
                 {
-                    var cname = dj.fanclub.creator_name;
                     var ai = new ArtistInfo()
                     {
-                        Id = _cid,
-                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(cname)),
-                        Cid = _cid,
-                        PostUrl = $"https://fantia.jp/fanclubs/{_cid}",
+                        Id = cid,
+                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name)),
+                        Cid = cid,
+                        PostUrl = $"https://fantia.jp/fanclubs/{cid}",
                         PayLow = GlobalData.VM_MA.Artist.PayLow,
                         PayHigh = GlobalData.VM_MA.Artist.PayHigh
                     };
@@ -101,18 +85,8 @@ namespace AtelierMisaka
             try
             {
                 List<ArtistInfo> ais = new List<ArtistInfo>();
-                string url = $"https://fantia.jp/mypage/users/plans?page={index}&type={free}free";
-
-                WebClient wc = new WebClient();
-                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                if (GlobalData.VM_MA.UseProxy)
-                {
-                    wc.Proxy = GlobalData.VM_MA.MyProxy;
-                }
-                var ss = wc.DownloadData(url);
-                string s = Encoding.UTF8.GetString(ss);
-
-                Match ma = _artIdName.Match(s);
+                string sphtml = GetWebCode($"https://fantia.jp/mypage/users/plans?page={index}&type={free}free");
+                Match ma = _artIdName.Match(sphtml);
                 while (ma.Success)
                 {
                     var cid = ma.Groups[1].Value;
@@ -125,14 +99,15 @@ namespace AtelierMisaka
                         Id = cid,
                         Cid = cid,
                         AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(ana)),
-                        PostUrl = $"https://fantia.jp/fanclubs/{cid}"
+                        PostUrl = $"https://fantia.jp/fanclubs/{cid}",
+                        PayHigh = "0"
                     };
                     ais.Add(ai);
                     ma = ma.NextMatch();
                 }
                 if (!string.IsNullOrEmpty(free))
                 {
-                    ma = _artPlan.Match(s);
+                    ma = _artPlan.Match(sphtml);
                     int i = 0;
                     while (ma.Success)
                     {
@@ -140,7 +115,7 @@ namespace AtelierMisaka
                         ma = ma.NextMatch();
                     }
                 }
-                if (s.IndexOf(_nextP) != -1)
+                if (sphtml.IndexOf(_nextP) != -1)
                 {
                     index++;
                     ais.AddRange(GetArtistListFromWebCode(free, index));
@@ -216,7 +191,7 @@ namespace AtelierMisaka
         {
             try
             {
-                JsonData_Fantia_Post jfp = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
                 if (null != jfp.post)
 				{
 					if (GlobalData.OverTime(jfp.post.converted_at))
@@ -268,7 +243,7 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-									fi.Comments.Add($"图片：{fn}");
+									fi.Comments.Add($"<图片：{fn}>");
 									fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
@@ -277,7 +252,7 @@ namespace AtelierMisaka
                             }
                             else if (ct.category == "file")
 							{
-								fi.Comments.Add($"文件：{ct.filename}");
+								fi.Comments.Add($"<文件：{ct.filename}>");
 								fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
@@ -305,7 +280,7 @@ namespace AtelierMisaka
         {
             try
             {
-                JsonData_Fantia_Post jfp = DynamicJson.Parse(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
                 if (null != jfp.post)
                 {
                     FantiaItem fi = new FantiaItem()
@@ -355,7 +330,7 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-                                    fi.Comments.Add($"图片：{fn}");
+                                    fi.Comments.Add($"<图片：{fn}>");
                                     fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
@@ -364,7 +339,7 @@ namespace AtelierMisaka
                             }
                             else if (ct.category == "file")
                             {
-                                fi.Comments.Add($"文件：{ct.filename}");
+                                fi.Comments.Add($"<文件：{ct.filename}>");
                                 fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");

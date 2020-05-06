@@ -12,7 +12,7 @@ namespace AtelierMisaka
 {
     public abstract class BaseUtils
     {
-        public abstract ArtistInfo GetArtistInfos(string url);
+        public abstract ArtistInfo GetArtistInfo(string url);
 
         public abstract List<ArtistInfo> GetArtistList();
 

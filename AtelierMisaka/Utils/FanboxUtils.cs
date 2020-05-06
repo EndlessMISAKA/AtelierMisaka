@@ -10,7 +10,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Codeplex.Data;
 
 
 namespace AtelierMisaka
@@ -18,97 +17,42 @@ namespace AtelierMisaka
     public class FanboxUtils : BaseUtils
     {
         string _referer = string.Empty;
+        Regex _artUrl = new Regex(@"^https://www\.fanbox\.cc/@(\w+)$");
+        Regex _artUrl2 = new Regex(@"^https://(\w+)\.fanbox\.cc/?$");
 
-        public override ArtistInfo GetArtistInfos(string url)
+        public override ArtistInfo GetArtistInfo(string url)
         {
             try
             {
-                Match ma = (new Regex(@"^https://(\w+)\.fanbox\.cc/?$")).Match(url);
+                Match ma = _artUrl.Match(url);
                 if (!ma.Success)
                 {
-                    ma = (new Regex(@"^https://www\.fanbox\.cc/@(\w+)$")).Match(url);
+                    ma = _artUrl2.Match(url);
                     if (!ma.Success)
                     {
                         return null;
                     }
-                    url = $"https://{ma.Groups[1].Value}.fanbox.cc/";
                 }
-                _referer = url;
-                string cid = ma.Groups[1].Value;
-                url = $"https://api.fanbox.cc/creator.get?creatorId={cid}";
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);//请求数据
-                req.Method = "GET";
-                if (GlobalData.VM_MA.UseProxy)
-                    req.Proxy = GlobalData.VM_MA.MyProxy;
+                _referer = $"https://www.fanbox.cc/@{ma.Groups[1].Value}";
 
-                req.Accept = "application/json, text/plain, */*";
-                req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Headers.Set("Origin", "https://www.fanbox.cc");
-                req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
-                req.Referer = _referer;
-
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
-                                                                          //otherwise will return messy code
-                                                                          //  Encoding htmlEncoding = Encoding.GetEncoding(htmlCharset);
-                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
-                                                                                            //read out the returned html
-                string respHtml = sr.ReadToEnd();
-
-                sr.Close();
-                resp.Close();
-                req.Abort();
-
-                var jd = ConvertJSON(respHtml);
-                if (null != jd)
+                var ai = GetInfo(ma.Groups[1].Value);
+                if (null != ai)
                 {
-                    var _cid = jd.First.First["creatorId"].ToString();
-                    var jj = jd.First.First.First.First;
-                    var ai = new ArtistInfo()
-                    {
-                        Id = jj["userId"].ToString(),
-                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jj["name"].ToString().Trim())),
-                        Cid = _cid,
-                        PostUrl = $"https://{_cid}.fanbox.cc",
-                        PayLow = GlobalData.VM_MA.Artist.PayLow,
-                        PayHigh = GlobalData.VM_MA.Artist.PayHigh
-                    };
-                    return ai;
+                    ai.PayLow = GlobalData.VM_MA.Artist.PayLow;
+                    ai.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
                 }
+                return ai;
             }
             catch
             {
-
+                return null;
             }
-            return null;
         }
 
         public override List<ArtistInfo> GetArtistList()
         {
             try
             {
-                string url = "https://api.fanbox.cc/plan.listSupporting";
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);//请求数据
-                req.Method = "GET";
-                if (GlobalData.VM_MA.UseProxy)
-                    req.Proxy = GlobalData.VM_MA.MyProxy;
-
-                req.Accept = "application/json, text/plain, */*";
-                req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Headers.Set("Origin", "https://www.fanbox.cc");
-                req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
-                req.Referer = "https://www.fanbox.cc/creators/supporting";
-
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
-                                                                          //otherwise will return messy code
-                                                                          //  Encoding htmlEncoding = Encoding.GetEncoding(htmlCharset);
-                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
-                                                                                            //read out the returned html
-                string respHtml = sr.ReadToEnd();
-
-                sr.Close();
-                resp.Close();
-                req.Abort();
-
                 List<ArtistInfo> ais = new List<ArtistInfo>();
                 var tais = GlobalData.VM_MA.ArtistList.ToList();
                 if (tais.Count == 0)
@@ -116,32 +60,18 @@ namespace AtelierMisaka
                     tais.Add(new ArtistInfo());
                 }
 
-                var jd = ConvertJSON(respHtml);
-                if (null != jd)
+                var jfp = JsonConvert.DeserializeObject<JsonData_Fanbox_Plan>(GetWebCode("https://api.fanbox.cc/plan.listSupporting", "https://www.fanbox.cc/creators/supporting"));
+                if (null != jfp.body)
                 {
-                    var jts = jd.First.Children();
-                    var count = jts.Count();
-                    if (count > 0)
+                    foreach(var pl in jfp.body)
                     {
-                        var jt = jts.First().First;
-                        do
+                        var ai = GetInfo(pl.creatorId, $"https://www.fanbox.cc/@{pl.creatorId}");
+                        if (null != ai)
                         {
-                            ArtistInfo ai = new ArtistInfo();
-                            ai.PayHigh = jt["fee"].ToString();
-                            ai.Cid = jt["creatorId"].ToString();
-                            var jtd = jt["user"];
-                            ai.Id = jtd["userId"].ToString();
-                            ai.AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jtd["name"].ToString().Trim()));
-                            ai.PostUrl = $"https://{ai.Cid}.fanbox.cc";
-
-                            var index = tais.IndexOf(ai);
-                            if (index != -1)
-                            {
-                                tais.RemoveAt(index);
-                            }
+                            ai.PayHigh = pl.fee.ToString();
+                            tais.Remove(ai);
                             ais.Add(ai);
-                            jt = jt.Next;
-                        } while (jt != null);
+                        }
                     }
                 }
                 ais.AddRange(tais);
@@ -151,6 +81,38 @@ namespace AtelierMisaka
             {
                 return new List<ArtistInfo>() { new ArtistInfo() };
             }
+        }
+
+        private ArtistInfo GetInfo(string cid, string referer = null)
+        {
+            try
+            {
+                var jfa = JsonConvert.DeserializeObject<JsonData_Fanbox_Artist>(GetWebCode($"https://api.fanbox.cc/creator.get?creatorId={cid}", referer));
+                if (null != jfa.body)
+                {
+                    var ai = new ArtistInfo()
+                    {
+                        Id = jfa.body.user.userId,
+                        Cid = cid,
+                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.body.user.name.Trim())),
+                        PostUrl = referer ?? _referer
+                    };
+                    foreach (var link in jfa.body.profileLinks)
+                    {
+                        if (link.Contains("twitter.com"))
+                        {
+                            ai.Twitter = link;
+                            break;
+                        }
+                    }
+                    return ai;
+                }
+            }
+            catch
+            {
+
+            }
+            return null;
         }
 
         public override bool GetCover(BaseItem bi)
@@ -182,25 +144,8 @@ namespace AtelierMisaka
                 {
                     _referer = $"https://{uid}.fanbox.cc";
                 }
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "GET";
 
-                if (GlobalData.VM_MA.UseProxy)
-                    req.Proxy = GlobalData.VM_MA.MyProxy;
-
-                req.Accept = "application/json, text/plain, */*";
-                req.Headers.Set("Origin", "https://www.fanbox.cc");
-                req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Referer = _referer;
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
-                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
-                string respHtml = sr.ReadToEnd();
-
-                sr.Close();
-                resp.Close();
-                req.Abort();
-
-                string nurl = GetUrls(respHtml, bis);
+                string nurl = GetUrls(GetWebCode(url), bis);
                 if (!string.IsNullOrEmpty(nurl))
                 {
                     GetPostIDs_Next(nurl, bis);
@@ -221,7 +166,149 @@ namespace AtelierMisaka
             }
         }
 
-        private void GetPostIDs_Next(string url, IList<BaseItem> pis)
+        private void GetPostIDs_Next(string url, IList<BaseItem> bis)
+        {
+            try
+            {
+                string nurl = GetUrls(GetWebCode(url), bis);
+                if (!string.IsNullOrEmpty(nurl))
+                {
+                    GetPostIDs_Next(nurl, bis);
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private string GetUrls(string jsondata, IList<BaseItem> bis)
+        {
+            var fd = JsonConvert.DeserializeObject<JsonData_Fanbox_Post>(jsondata);
+            if (null != fd.body && null != fd.body.items)
+            {
+                foreach (var po in fd.body.items)
+                {
+                    var pi = new FanboxItem()
+                    {
+                        PID = po.id,
+                        Fee = po.feeRequired.ToString(),
+                        Title = po.title.Trim(),
+                        CreateDate = po.publishedDatetime,
+                        UpdateDate = po.updatedDatetime,
+                        CoverPic = po.coverImageUrl,
+                        CoverPicThumb = po.coverImageUrl
+                    };
+                    if (GlobalData.OverPayment(int.Parse(pi.Fee)) || GlobalData.OverTime(pi.UpdateDate))
+                    {
+                        pi.Skip = true;
+                    }
+
+                    if (null != po.body)
+                    {
+                        switch (po.type)
+                        {
+                            case "file":
+                                {
+                                    if (!string.IsNullOrEmpty(po.body.text))
+                                    {
+                                        pi.Comments.Add(po.body.text);
+                                        pi.Comments.Add(string.Empty);
+                                    }
+                                    foreach (var finfo in po.body.files)
+                                    {
+                                        pi.ContentUrls.Add(finfo.url);
+                                        var fn = $"{finfo.name}.{finfo.extension}";
+                                        pi.FileNames.Add(fn);
+                                        pi.Comments.Add($"<文件: {fn} ({GetSize(finfo.size)})>");
+                                    }
+                                }
+                                break;
+                            case "image":
+                                {
+                                    if (!string.IsNullOrEmpty(po.body.text))
+                                    {
+                                        pi.Comments.Add(po.body.text);
+                                        pi.Comments.Add(string.Empty);
+                                    }
+                                    int index = 1;
+                                    foreach (var iinfo in po.body.images)
+                                    {
+                                        pi.MediaUrls.Add(iinfo.originalUrl);
+                                        var fn = $"{index++}.{iinfo.extension}";
+                                        pi.MediaNames.Add(fn);
+                                        pi.Comments.Add($"<图片: {fn} ({iinfo.width}x{iinfo.height}px)>");
+                                    }
+                                }
+                                break;
+                            case "article":
+                                {
+                                    int index_pic = 1;
+                                    foreach (var binfo in po.body.blocks)
+                                    {
+                                        switch (binfo.type)
+                                        {
+                                            case "p":
+                                                pi.Comments.Add(binfo.text);
+                                                break;
+                                            case "file":
+                                                if (null != po.body.fileMap && po.body.fileMap.TryGetValue(binfo.fileId, out FileItem fitem))
+                                                {
+                                                    pi.ContentUrls.Add(fitem.url);
+                                                    var fn = $"{fitem.name}.{fitem.extension}";
+                                                    pi.FileNames.Add(fn);
+                                                    pi.Comments.Add($"<文件: {fn} ({GetSize(fitem.size)})>");
+                                                }
+                                                break;
+                                            case "image":
+                                                if (null != po.body.imageMap && po.body.imageMap.TryGetValue(binfo.imageId, out ImageItem iitem))
+                                                {
+                                                    pi.MediaUrls.Add(iitem.originalUrl);
+                                                    var fn = $"{index_pic++}.{iitem.extension}";
+                                                    pi.MediaNames.Add(fn);
+                                                    pi.Comments.Add($"<图片: {fn} ({iitem.width}x{iitem.height}px)>");
+                                                }
+                                                break;
+                                            case "embed":
+                                                if (null != po.body.embedMap && po.body.embedMap.TryGetValue(binfo.embedId, out EmbedItem eitem))
+                                                {
+                                                    if (eitem.serviceProvider == "twitter" && !string.IsNullOrEmpty(GlobalData.VM_MA.Artist.Twitter))
+                                                    {
+                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId}>");
+                                                    }
+                                                    else if (eitem.serviceProvider == "fanbox")
+                                                    {
+
+                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()}>");
+                                                    }
+                                                    else
+                                                    {
+                                                        pi.Comments.Add($"<引用链接: {eitem.serviceProvider} ({eitem.contentId})>");
+                                                    }
+                                                }
+                                                break;
+                                        }
+                                    }
+                                }
+                                break;
+                            case "text":
+                                {
+                                    if (!string.IsNullOrEmpty(po.body.text))
+                                    {
+                                        pi.Comments.Add(po.body.text);
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    bis.Add(pi);
+                }
+                return fd.body.nextUrl ?? null;
+            }
+            return null;
+        }
+
+        private string GetWebCode(string url, string referer = null, string orig = "https://www.fanbox.cc")
         {
             try
             {
@@ -232,9 +319,9 @@ namespace AtelierMisaka
                     req.Proxy = GlobalData.VM_MA.MyProxy;
 
                 req.Accept = "application/json, text/plain, */*";
-                req.Headers.Set("Origin", "https://www.fanbox.cc");
+                req.Headers.Set("Origin", orig);
                 req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                req.Referer = _referer;
+                req.Referer = referer ?? _referer;
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
                 StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
                 string respHtml = sr.ReadToEnd();
@@ -242,12 +329,7 @@ namespace AtelierMisaka
                 sr.Close();
                 resp.Close();
                 req.Abort();
-
-                string nurl = GetUrls(respHtml, pis);
-                if (!string.IsNullOrEmpty(nurl))
-                {
-                    GetPostIDs_Next(nurl, pis);
-                }
+                return respHtml;
             }
             catch
             {
@@ -255,172 +337,25 @@ namespace AtelierMisaka
             }
         }
 
-        private string GetUrls(string jsondata, IList<BaseItem> pis)
+        private string GetSize(int size)
         {
-            var jd = ConvertJSON(jsondata);
-            if (null != jd)
+            if (size <= 0)
             {
-                var jts = jd.First.First.First.Children().Children();
-                var jt = jts.First();
-                int count = jts.Count();
-                for (int po = 0; po < count; po++)
-                {
-                    var pi = new FanboxItem()
-                    {
-                        PID = jt["id"].ToString(),
-                        Fee = jt["feeRequired"].ToString(),
-                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jt["title"].ToString().Trim())),
-                        CreateDate = DateTime.Parse(jt["publishedDatetime"].ToString()),
-                        UpdateDate = DateTime.Parse(jt["updatedDatetime"].ToString()),
-                        CoverPic = jt["coverImageUrl"].ToString()
-                    };
-                    if (GlobalData.OverPayment(int.Parse(pi.Fee)) || GlobalData.OverTime(pi.UpdateDate))
-                    {
-                        pi.Skip = true;
-                    }
-                    var ftype = jt["type"].ToString();
-                    if (ftype == "file")
-                    {
-                        if (jt["body"].HasValues)
-                        {
-                            ftype += "s";
-                            var comm = jt["body"]["text"];
-                            if (comm != null)
-                            {
-                                pi.Comments.Add(comm.ToString());
-                                pi.Comments.Add(string.Empty);
-                            }
-                            var jtb = jt["body"][ftype].Children();
-                            if (jtb.Count() > 0)
-                            {
-                                foreach (var fs in jtb)
-                                {
-                                    pi.ContentUrls.Add(fs["url"].ToString());
-                                    var fn = $"{fs["name"].ToString()}.{fs["extension"].ToString()}";
-                                    pi.FileNames.Add(fn);
-                                    pi.Comments.Add($"文件: {fn}");
-                                }
-                            }
-                        }
-                    }
-                    else if (ftype == "image")
-                    {
-                        if (jt["body"].HasValues)
-                        {
-                            ftype += "s";
-                            var comm = jt["body"]["text"];
-                            if (comm != null)
-                            {
-                                pi.Comments.Add(comm.ToString());
-                                pi.Comments.Add(string.Empty);
-                            }
-                            var jtb = jt["body"][ftype].Children();
-                            if (jtb.Count() > 0)
-                            {
-                                int index = 1;
-                                foreach (var fs in jtb)
-                                {
-                                    pi.MediaUrls.Add(fs["originalUrl"].ToString());
-                                    var fn = $"{index++}.{fs["extension"].ToString()}";
-                                    pi.MediaNames.Add(fn);
-                                    pi.Comments.Add($"图片: {fn}");
-                                }
-                            }
-                        }
-                    }
-                    else if (ftype == "article")
-                    {
-                        var jtb = jt["body"];
-                        if (jtb.HasValues)
-                        {
-                            var sf = jtb["blocks"].First;
-                            JEnumerable<JToken> jtbs = new JEnumerable<JToken>();
-                            if (null != sf)
-                            {
-                                jtbs = jtb["blocks"].Children();
-                            }
-                            int index_pic = 1;
-                            int index_f = 1;
-                            if (jtbs.Count() > 0)
-                            {
-                                foreach (var fs in jtbs)
-                                {
-                                    var ttype = fs["type"].ToString();
-                                    if (ttype == "p")
-                                    {
-                                        var tstr = fs["text"].ToString();
-                                        pi.Comments.Add(tstr);
-                                    }
-                                    else if (ttype == "image")
-                                    {
-                                        var imgid = fs["imageId"].ToString();
-                                        var imt = jtb["imageMap"][imgid];
-                                        pi.Comments.Add($"<图{index_pic}>");
-                                        pi.MediaUrls.Add(imt["originalUrl"].ToString());
-                                        pi.MediaNames.Add($"{index_pic++}.{imt["extension"].ToString()}");
-                                    }
-                                    else if (ttype == "file")
-                                    {
-                                        var filid = fs["fileId"].ToString();
-                                        var fit = jtb["fileMap"][filid];
-                                        pi.Comments.Add($"<文件{index_f++}>");
-                                        pi.ContentUrls.Add(fit["url"].ToString());
-                                        pi.FileNames.Add($"{fit["name"].ToString()}.{fit["extension"].ToString()}");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                sf = jtb["imageMap"].First;
-                                if (sf != null)
-                                {
-                                    jtbs = jtb["blocks"].Children();
-                                }
-                                if (jtbs.Count() > 0)
-                                {
-                                    foreach (var fs in jtbs)
-                                    {
-                                        pi.MediaUrls.Add(fs["originalUrl"].ToString());
-                                        pi.MediaNames.Add($"{index_pic++}.{fs["extension"].ToString()}");
-                                    }
-                                }
-                                else
-                                {
-                                    sf = jtb["fileMap"].First;
-                                    if (sf != null)
-                                    {
-                                        jtbs = jtb["blocks"].Children();
-                                    }
-                                    if (jtbs.Count() > 0)
-                                    {
-                                        foreach (var fs in jtbs)
-                                        {
-                                            pi.ContentUrls.Add(fs["url"].ToString());
-                                            pi.FileNames.Add($"{fs["name"].ToString()}.{fs["extension"].ToString()}");
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (ftype == "text")
-                    {
-                        if (jt["body"].HasValues)
-                        {
-                            var comm = jt["body"]["text"];
-                            if (comm != null)
-                            {
-                                pi.Comments.Add(comm.ToString());
-                            }
-                        }
-                    }
-                    pis.Add(pi);
-                    jt = jt.Next;
-                }
-                var nul = jd.First.First["nextUrl"].ToString();
-                return string.IsNullOrEmpty(nul) ? null : nul;
+                return "未知大小";
             }
-            return null;
+            var re = size / 1024d;
+            var dw = "KB";
+            if (re >= 1024)
+            {
+                re /= 1024d;
+                dw = "MB";
+                if (re >= 1024)
+                {
+                    re /= 1024d;
+                    dw = "GB";
+                }
+            }
+            return $"{Math.Round(re)}{dw}";
         }
     }
 }

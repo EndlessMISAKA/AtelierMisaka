@@ -15,6 +15,7 @@ namespace AtelierMisaka.Models
         private string _postUrl = string.Empty;
         private string _payLow = string.Empty;
         private string _payHigh = string.Empty;
+        private string _twitter = string.Empty;
 
         public string Cid
         {
@@ -63,6 +64,19 @@ namespace AtelierMisaka.Models
                 if (_postUrl != value)
                 {
                     _postUrl = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public string Twitter
+        {
+            get => _twitter;
+            set
+            {
+                if (_twitter != value)
+                {
+                    _twitter = value;
                     RaisePropertyChanged();
                 }
             }

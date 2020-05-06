@@ -2,7 +2,9 @@
 
 namespace AtelierMisaka.Models
 {
-	public class JsonData_Fantia_Post
+    #region Post
+
+    public class JsonData_Fantia_Post
 	{
 		public Post post { get; set; }
 	}
@@ -67,4 +69,20 @@ namespace AtelierMisaka.Models
 	{
 		public string original { get; set; }
 	}
+
+    #endregion
+
+    #region Artist
+
+    public class JsonData_Fantia_Artist
+    {
+        public Fanclub fanclub { get; set; }
+    }
+
+    public class Fanclub
+    {
+        public string creator_name { get; set; }
+    }
+    
+    #endregion
 }

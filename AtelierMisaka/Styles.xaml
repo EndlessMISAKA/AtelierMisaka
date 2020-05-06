@@ -105,7 +105,11 @@
     </Style>
 
 
-    <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style TargetType="{x:Type Thumb}" x:Key="ScrollBarThumb">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="IsTabStop" Value="false"/>
         <Setter Property="Template">
@@ -118,7 +122,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="VerticalScrollBarPageButton" TargetType="{x:Type RepeatButton}">
+    <Style TargetType="{x:Type RepeatButton}" x:Key="VerticalScrollBarPageButton">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Focusable" Value="false"/>
@@ -132,7 +136,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="for_scrollbar" TargetType="{x:Type ScrollBar}">
+    <Style TargetType="{x:Type ScrollBar}" x:Key="for_scrollbar">
         <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
         <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
         <Setter Property="Background" Value="LightGray"/>
@@ -162,7 +166,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="for_scrollviewer" TargetType="{x:Type ScrollViewer}">
+    <Style TargetType="{x:Type ScrollViewer}" x:Key="for_scrollviewer">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -286,7 +290,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="RadioButton" x:Key="RB_Setting">
+    <Style TargetType="{x:Type RadioButton}" x:Key="RB_Setting">
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Width" Value="300"/>
@@ -294,7 +298,7 @@
         <Setter Property="FontSize" Value="50"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="RadioButton">
+                <ControlTemplate TargetType="{x:Type RadioButton}">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
                         <Border x:Name="radioButtonBorder" BorderThickness="0"/>
                         <TextBlock x:Name="tb" Foreground="Black" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Content}"
@@ -317,7 +321,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="CheckBox" x:Key="CB_Setting">
+    <Style TargetType="{x:Type CheckBox}" x:Key="CB_Setting">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -326,7 +330,7 @@
         <Setter Property="Margin" Value="20,0"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="CheckBox">
+                <ControlTemplate TargetType="{x:Type CheckBox}">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
                         <TextBlock Foreground="Black" FontSize="28" Text="{TemplateBinding Content}"
                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -348,7 +352,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="BTN_Setting">
+    <Style TargetType="{x:Type Button}" x:Key="BTN_Setting">
         <Setter Property="Width" Value="200"/>
         <Setter Property="Height" Value="50"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -356,7 +360,7 @@
         <Setter Property="FontSize" Value="25"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Button">
+                <ControlTemplate TargetType="{x:Type Button}">
                     <Border x:Name="bg" Height="{TemplateBinding Height}" 
                             Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
                         <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -371,7 +375,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="vs:ButtonEx" x:Key="BTN_Play">
+    <Style TargetType="{x:Type vs:ButtonEx}" x:Key="BTN_Play">
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Background" Value="#2D2D30"/>
@@ -383,7 +387,7 @@
         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vs:Downloader}}, Path=DataContext.StartCommand}"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="vs:ButtonEx">
+                <ControlTemplate TargetType="{x:Type vs:ButtonEx}">
                     <Border Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
                         <Image x:Name="img" Width="40" Source="/AtelierMisaka;component/Resources/Btn_Start.png"/>
                     </Border>
@@ -401,7 +405,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="vs:ButtonEx" x:Key="BTN_Ex">
+    <Style TargetType="{x:Type vs:ButtonEx}" x:Key="BTN_Ex">
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Background" Value="#2D2D30"/>
@@ -441,7 +445,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="vs:ButtonEx" x:Key="BTN_Open">
+    <Style TargetType="{x:Type vs:ButtonEx}" x:Key="BTN_Open">
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Background" Value="#2D2D30"/>
@@ -482,7 +486,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="TextBlock" x:Key="TBL_Setting">
+    <Style TargetType="{x:Type TextBlock}" x:Key="TBL_Setting">
         <Setter Property="FontSize" Value="28"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="20,0"/>
@@ -490,7 +494,7 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
 
-    <Style TargetType="TextBlock" x:Key="TBL_DL">
+    <Style TargetType="{x:Type TextBlock}" x:Key="TBL_DL">
         <Setter Property="FontSize" Value="25"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="10,0,0,0"/>
@@ -498,7 +502,7 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
 
-    <Style TargetType="TextBox" x:Key="TB_Setting">
+    <Style TargetType="{x:Type TextBox}" x:Key="TB_Setting">
         <Setter Property="Background" Value="#333337"/>
         <Setter Property="BorderBrush" Value="#3F3F46"/>
         <Setter Property="BorderThickness" Value="2"/>
@@ -511,7 +515,7 @@
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="TextBox">
+                <ControlTemplate TargetType="{x:Type TextBox}">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
                         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
                                 Background="{TemplateBinding Background}" SnapsToDevicePixels="True"/>
@@ -542,7 +546,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ProgressBar" x:Key="PB_Download">
+    <Style TargetType="{x:Type ProgressBar}" x:Key="PB_Download">
         <Setter Property="Width" Value="140"/>
         <Setter Property="Height" Value="10"/>
         <Setter Property="Maximum" Value="100"/>
@@ -552,7 +556,7 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ProgressBar">
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
                     <Grid x:Name="Root">
                         <Border x:Name="PART_Track" Background="{TemplateBinding Background}" CornerRadius="5"
                                 BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
@@ -565,7 +569,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Path" x:Key="Pa_Load">
+    <Style TargetType="{x:Type Path}" x:Key="Pa_Load">
         <Setter Property="Width" Value="200"/>
         <Setter Property="Height" Value="200"/>
         <Setter Property="StrokeThickness" Value="15"/>
@@ -579,7 +583,7 @@
     </Style>
 
 
-    <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+    <ControlTemplate TargetType="{x:Type ToggleButton}" x:Key="ComboBoxToggleButton">
         <Grid Height="{TemplateBinding Height}" Width="{TemplateBinding Width}">
             <Border Background="White" Opacity="0" Cursor="Hand"/>
             <Path x:Name="Arrow" Data="M0,0L9,9 M9,9L18,0" StrokeThickness="2" Stroke="White" Height="10"
@@ -597,7 +601,7 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <Style TargetType="ComboBox" x:Key="ComB">
+    <Style TargetType="{x:Type ComboBox}" x:Key="ComB">
         <Setter Property="MaxDropDownHeight" Value="200"/>
         <Setter Property="Background" Value="#333337"/>
         <Setter Property="BorderBrush" Value="#3F3F46"/>
@@ -611,7 +615,7 @@
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="ComboBoxItem">
+                <Style TargetType="{x:Type ComboBoxItem}">
                     <Setter Property="Height" Value="40"/>
                     <Setter Property="OverridesDefaultStyle" Value="True"/>
                     <Setter Property="Template">
@@ -646,7 +650,7 @@
         </Setter>-->
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ComboBox">
+                <ControlTemplate TargetType="{x:Type ComboBox}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

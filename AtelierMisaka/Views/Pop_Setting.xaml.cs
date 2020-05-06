@@ -92,7 +92,7 @@ namespace AtelierMisaka.Views
                 _utils = GlobalData.GetUtils();
                 if (!GlobalData.VM_MA.HasSelected)
                 {
-                    var ai = await Task.Run(() => _utils.GetArtistInfos(GlobalData.VM_MA.Artist.PostUrl));
+                    var ai = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl));
                     if (ai == null)
                     {
                         await GetCheck("无法获取作者信息", "请检查Cookies是否过期");
@@ -222,7 +222,7 @@ namespace AtelierMisaka.Views
                     _utils = GlobalData.GetUtils();
                     if (!GlobalData.VM_MA.HasSelected)
                     {
-                        var ai = await Task.Run(() => _utils.GetArtistInfos(GlobalData.VM_MA.Artist.PostUrl));
+                        var ai = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl));
                         if (ai == null)
                         {
                             await GetCheck("无法获取作者信息");

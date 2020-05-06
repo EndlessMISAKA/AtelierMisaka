@@ -41,10 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -67,8 +64,8 @@
     <Compile Include="Converters\EnumToImageConverter.cs" />
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\NameToWidthConverter.cs" />
-    <Compile Include="Models\JsonData_Fantia_Post.cs" />
-    <Compile Include="Utils\DynamicJson.cs" />
+    <Compile Include="Models\JsonData_Fanbox.cs" />
+    <Compile Include="Models\JsonData_Fantia.cs" />
     <Compile Include="Models\ArtistInfo.cs" />
     <Compile Include="Models\DLSP.cs" />
     <Compile Include="Models\DownloadItem.cs" />

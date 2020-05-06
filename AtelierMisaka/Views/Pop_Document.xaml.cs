@@ -31,7 +31,7 @@ namespace AtelierMisaka.Views
                 {
                     MainBody.Inlines.Add(new LineBreak());
                 }
-                else if (doms[i].StartsWith("文件：") || doms[i].StartsWith("图片："))
+                else if (doms[i].StartsWith("<文件：") || doms[i].StartsWith("<图片："))
                 {
                     MainBody.Inlines.Add(new Run(doms[i]) { Foreground = Brushes.LightSeaGreen });
                     MainBody.Inlines.Add(new LineBreak());
@@ -72,9 +72,16 @@ namespace AtelierMisaka.Views
                         else
                         {
                             var rr = new Run(dis);
-                            if (dis.Length > 0 && dis[0] == '$')
+                            if (dis.Length > 0)
                             {
-                                rr.FontSize = 30;
+                                if (dis[0] == '$')
+                                {
+                                    rr.FontSize = 30;
+                                }
+                                else if (dis.StartsWith("<引用"))
+                                {
+                                    rr.Foreground = Brushes.LightSkyBlue;
+                                }
                             }
                             MainBody.Inlines.Add(rr);
                         }
