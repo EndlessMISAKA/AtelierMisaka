@@ -4,459 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AtelierMisaka"
-             xmlns:vm="clr-namespace:AtelierMisaka.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1280">
     <UserControl.Resources>
         <ControlTemplate x:Key="FlowDocumentScrollViewerControlTemplate1" TargetType="{x:Type FlowDocumentScrollViewer}">
-            <Grid Language="zh-cn" Uid="Grid_26">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Margin="{TemplateBinding Padding}" Uid="Border_49">
+                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Margin="{TemplateBinding Padding}">
                     <ScrollViewer x:Name="PART_ContentHost" CanContentScroll="True" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                  Uid="ScrollViewer_8" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Style="{StaticResource for_scrollviewer}"/>
-                </Border>
-                <Border x:Name="PART_ToolBarHost" Background="{TemplateBinding Background}" Grid.Row="1" Uid="Border_51">
-                    <Grid Uid="Grid_34">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Border x:Name="PART_FindToolBarHost" Grid.Column="0" HorizontalAlignment="Left" Uid="Border_61" Visibility="Collapsed" VerticalAlignment="Center"/>
-                        <Grid Grid.Column="1" HorizontalAlignment="Right" Uid="Grid_27" VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <RepeatButton BorderBrush="{TemplateBinding BorderBrush}" Grid.Column="0" Command="NavigationCommands.DecreaseZoom" Foreground="{TemplateBinding Foreground}" Height="{TemplateBinding FontSize}" IsEnabled="{TemplateBinding CanDecreaseZoom}" ToolTip="减小缩放比例" Uid="RepeatButton_7" Width="{TemplateBinding FontSize}">
-                                <RepeatButton.LayoutTransform>
-                                    <ScaleTransform ScaleY="2.2" ScaleX="2.2"/>
-                                </RepeatButton.LayoutTransform>
-                                <RepeatButton.Style>
-                                    <Style TargetType="{x:Type RepeatButton}">
-                                        <Setter Property="Padding" Value="2,2,0,2"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type RepeatButton}">
-                                                    <Border Background="Transparent" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}}" Uid="Border_41">
-                                                        <Viewbox x:Name="Content" RenderTransformOrigin="0.5,0.5" Uid="Viewbox_2">
-                                                            <Canvas Height="32" Uid="Canvas_4" Width="32">
-                                                                <Path Fill="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" Height="32" Uid="Path_7" Width="32">
-                                                                    <Path.Data>
-                                                                        <GeometryGroup>
-                                                                            <EllipseGeometry Center="16,16" RadiusY="16" RadiusX="16"/>
-                                                                        </GeometryGroup>
-                                                                    </Path.Data>
-                                                                </Path>
-                                                                <Path x:Name="Sheen" Height="32" Uid="Path_8" Width="32">
-                                                                    <Path.Data>
-                                                                        <GeometryGroup>
-                                                                            <EllipseGeometry Center="16,16" RadiusY="16" RadiusX="16"/>
-                                                                        </GeometryGroup>
-                                                                    </Path.Data>
-                                                                    <Path.Fill>
-                                                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                                                            <GradientStop Color="#99FFFFFF" Offset="0"/>
-                                                                            <GradientStop Color="#66000000" Offset="1"/>
-                                                                        </LinearGradientBrush>
-                                                                    </Path.Fill>
-                                                                </Path>
-                                                                <Path Canvas.Left="16" Stroke="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" StrokeThickness="5" Canvas.Top="16" Uid="Path_9">
-                                                                    <Path.Data>
-                                                                        <LineGeometry EndPoint="10,0" StartPoint="-10,0"/>
-                                                                    </Path.Data>
-                                                                </Path>
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                <Setter.Value>
-                                                                    <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                <Setter.Value>
-                                                                    <ScaleTransform ScaleY="1" ScaleX="1"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                            <Setter Property="Fill" TargetName="Sheen">
-                                                                <Setter.Value>
-                                                                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                                                        <GradientStop Color="#99000000" Offset="0"/>
-                                                                        <GradientStop Color="#66FFFFFF" Offset="1"/>
-                                                                    </LinearGradientBrush>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.BasedOn>
-                                            <Style TargetType="{x:Type RepeatButton}">
-                                                <Setter Property="Padding" Value="5"/>
-                                                <Setter Property="Delay" Value="1000"/>
-                                                <Setter Property="Interval" Value="250"/>
-                                                <Style.BasedOn>
-                                                    <Style TargetType="{x:Type ButtonBase}">
-                                                        <Setter Property="Focusable" Value="False"/>
-                                                        <Setter Property="Opacity" Value="0.5"/>
-                                                        <Setter Property="Cursor" Value="Hand"/>
-                                                        <Setter Property="Background" Value="Transparent"/>
-                                                        <Setter Property="Padding" Value="3,1"/>
-                                                        <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                                        <Setter Property="BorderThickness" Value="0"/>
-                                                        <Setter Property="MinWidth" Value="0"/>
-                                                        <Setter Property="MinHeight" Value="0"/>
-                                                        <Setter Property="Template">
-                                                            <Setter.Value>
-                                                                <ControlTemplate TargetType="{x:Type ButtonBase}">
-                                                                    <Border Background="{TemplateBinding Background}" Uid="Border_39">
-                                                                        <ContentPresenter x:Name="Content" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" RenderTransformOrigin="0.5,0.5" Uid="ContentPresenter_2"/>
-                                                                    </Border>
-                                                                    <ControlTemplate.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                                <Setter.Value>
-                                                                                    <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                                                                                </Setter.Value>
-                                                                            </Setter>
-                                                                        </Trigger>
-                                                                        <Trigger Property="IsPressed" Value="True">
-                                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                                <Setter.Value>
-                                                                                    <ScaleTransform ScaleY="0.9" ScaleX="0.9"/>
-                                                                                </Setter.Value>
-                                                                            </Setter>
-                                                                        </Trigger>
-                                                                    </ControlTemplate.Triggers>
-                                                                </ControlTemplate>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsEnabled" Value="False">
-                                                                <Setter Property="Opacity" Value="0.3"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Opacity" Value="1"/>
-                                                            </Trigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Style.BasedOn>
-                                            </Style>
-                                        </Style.BasedOn>
-                                    </Style>
-                                </RepeatButton.Style>
-                            </RepeatButton>
-                            <Slider Grid.Column="1" FontSize="{TemplateBinding FontSize}" HorizontalAlignment="Stretch" LargeChange="{TemplateBinding ZoomIncrement}" Maximum="{TemplateBinding MaxZoom}" Minimum="{TemplateBinding MinZoom}" SmallChange="{TemplateBinding ZoomIncrement}" TickFrequency="{TemplateBinding ZoomIncrement}" Uid="Slider_2" Value="{Binding Zoom, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center" Width="100">
-                                <Slider.Style>
-                                    <Style TargetType="{x:Type Slider}">
-                                        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
-                                        <Setter Property="Focusable" Value="False"/>
-                                        <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                        <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
-                                        <Setter Property="BorderBrush" Value="#00000000"/>
-                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                        <Setter Property="IsSnapToTickEnabled" Value="True"/>
-                                        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-                                        <Setter Property="MinWidth" Value="50"/>
-                                        <Setter Property="MinHeight" Value="0"/>
-                                        <Setter Property="Width" Value="Auto"/>
-                                        <Setter Property="Padding" Value="2,0"/>
-                                        <Setter Property="Height" Value="Auto"/>
-                                        <Setter Property="Opacity" Value="0.75"/>
-                                        <Setter Property="Delay" Value="1000"/>
-                                        <Setter Property="Interval" Value="250"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type Slider}">
-                                                    <Border Background="Transparent" Padding="{TemplateBinding Padding}" Uid="Border_45">
-                                                        <Grid ClipToBounds="False" Uid="Grid_22">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="*"/>
-                                                            </Grid.RowDefinitions>
-                                                            <TickBar x:Name="TopTick" Fill="{TemplateBinding Foreground}" Height="4" Placement="Top" Grid.Row="0" Uid="TickBar_1" Visibility="Collapsed"/>
-                                                            <Border Background="{TemplateBinding Foreground}" CornerRadius="2" Height="2" Opacity="0.5" Grid.Row="1" Uid="Border_46"/>
-                                                            <Canvas Height="4" Grid.Row="1" Uid="Canvas_7" VerticalAlignment="Center">
-                                                                <Rectangle x:Name="PART_SelectionRange" Fill="{TemplateBinding Foreground}" Height="2" Canvas.Top="1" Uid="Rectangle_17" Visibility="Hidden"/>
-                                                            </Canvas>
-                                                            <Track x:Name="PART_Track" Grid.Row="1" Uid="PART_Track">
-                                                                <Track.DecreaseRepeatButton>
-                                                                    <RepeatButton Command="Slider.DecreaseLarge" Uid="RepeatButton_1">
-                                                                        <RepeatButton.Style>
-                                                                            <Style TargetType="{x:Type RepeatButton}">
-                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                                                                <Setter Property="IsTabStop" Value="False"/>
-                                                                                <Setter Property="Focusable" Value="False"/>
-                                                                                <Setter Property="Template">
-                                                                                    <Setter.Value>
-                                                                                        <ControlTemplate TargetType="{x:Type RepeatButton}">
-                                                                                            <Border Background="Transparent" Uid="Border_43"/>
-                                                                                        </ControlTemplate>
-                                                                                    </Setter.Value>
-                                                                                </Setter>
-                                                                            </Style>
-                                                                        </RepeatButton.Style>
-                                                                    </RepeatButton>
-                                                                </Track.DecreaseRepeatButton>
-                                                                <Track.IncreaseRepeatButton>
-                                                                    <RepeatButton Command="Slider.IncreaseLarge" Uid="RepeatButton_2">
-                                                                        <RepeatButton.Style>
-                                                                            <Style TargetType="{x:Type RepeatButton}">
-                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                                                                <Setter Property="IsTabStop" Value="False"/>
-                                                                                <Setter Property="Focusable" Value="False"/>
-                                                                                <Setter Property="Template">
-                                                                                    <Setter.Value>
-                                                                                        <ControlTemplate TargetType="{x:Type RepeatButton}">
-                                                                                            <Border Background="Transparent" Uid="Border_43"/>
-                                                                                        </ControlTemplate>
-                                                                                    </Setter.Value>
-                                                                                </Setter>
-                                                                            </Style>
-                                                                        </RepeatButton.Style>
-                                                                    </RepeatButton>
-                                                                </Track.IncreaseRepeatButton>
-                                                                <Track.Thumb>
-                                                                    <Thumb Background="{TemplateBinding Background}" Uid="Thumb_5">
-                                                                        <Thumb.Style>
-                                                                            <Style TargetType="{x:Type Thumb}">
-                                                                                <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                                                                <Setter Property="Focusable" Value="False"/>
-                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                                                                <Setter Property="Cursor" Value="Hand"/>
-                                                                                <Setter Property="Padding" Value="6"/>
-                                                                                <Setter Property="Template">
-                                                                                    <Setter.Value>
-                                                                                        <ControlTemplate TargetType="{x:Type Thumb}">
-                                                                                            <Border Background="Transparent" Margin="-2" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}}" Uid="Border_44">
-                                                                                                <Viewbox HorizontalAlignment="Center" Uid="Viewbox_4" VerticalAlignment="Center" Width="{Binding FontSize, RelativeSource={RelativeSource TemplatedParent}}">
-                                                                                                    <Viewbox.LayoutTransform>
-                                                                                                        <ScaleTransform ScaleY="1" ScaleX="1"/>
-                                                                                                    </Viewbox.LayoutTransform>
-                                                                                                    <Canvas Height="17" Uid="Canvas_6" Width="13">
-                                                                                                        <Path Data="F1 M1,0 L10,0 L11,1 L11,13 L6.5,17 L4.5,17 L0,13 L0,1 L1,0 z" Fill="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" Uid="Path_13"/>
-                                                                                                        <Path Data="F1 M1,0 L10,0 L11,1 L11,13 L6.5,17 L4.5,17 L0,13 L0,1 L1,0 z" StrokeEndLineCap="Round" StrokeDashCap="Round" Stroke="{TemplateBinding Background}" StrokeThickness="0.75" StrokeMiterLimit="1" StrokeLineJoin="Round" Uid="Path_14">
-                                                                                                            <Path.Fill>
-                                                                                                                <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-                                                                                                                    <LinearGradientBrush.RelativeTransform>
-                                                                                                                        <TransformGroup>
-                                                                                                                            <TranslateTransform X="-0.5" Y="-0.5"/>
-                                                                                                                            <ScaleTransform ScaleY="1" ScaleX="1"/>
-                                                                                                                            <SkewTransform AngleY="0" AngleX="0"/>
-                                                                                                                            <RotateTransform Angle="110"/>
-                                                                                                                            <TranslateTransform X="0.5" Y="0.5"/>
-                                                                                                                        </TransformGroup>
-                                                                                                                    </LinearGradientBrush.RelativeTransform>
-                                                                                                                    <GradientStop Color="#CC999999" Offset="0.5"/>
-                                                                                                                    <GradientStop Color="#CCFFFFFF" Offset="0.8"/>
-                                                                                                                    <GradientStop Color="#CCFFFFFF" Offset="0.2"/>
-                                                                                                                </LinearGradientBrush>
-                                                                                                            </Path.Fill>
-                                                                                                        </Path>
-                                                                                                    </Canvas>
-                                                                                                </Viewbox>
-                                                                                            </Border>
-                                                                                        </ControlTemplate>
-                                                                                    </Setter.Value>
-                                                                                </Setter>
-                                                                            </Style>
-                                                                        </Thumb.Style>
-                                                                    </Thumb>
-                                                                </Track.Thumb>
-                                                            </Track>
-                                                            <TickBar x:Name="BottomTick" Fill="{TemplateBinding Foreground}" Height="4" Placement="Bottom" Grid.Row="2" Uid="TickBar_2" Visibility="Collapsed"/>
-                                                        </Grid>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="TickPlacement" Value="TopLeft">
-                                                            <Setter Property="Visibility" TargetName="TopTick" Value="Visible"/>
-                                                        </Trigger>
-                                                        <Trigger Property="TickPlacement" Value="BottomRight">
-                                                            <Setter Property="Visibility" TargetName="BottomTick" Value="Visible"/>
-                                                        </Trigger>
-                                                        <Trigger Property="TickPlacement" Value="Both">
-                                                            <Setter Property="Visibility" TargetName="TopTick" Value="Visible"/>
-                                                            <Setter Property="Visibility" TargetName="BottomTick" Value="Visible"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsSelectionRangeEnabled" Value="True">
-                                                            <Setter Property="Visibility" TargetName="PART_SelectionRange" Value="Visible"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="RenderTransform">
-                                                                <Setter.Value>
-                                                                    <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Opacity" Value="1"/>
-                                                            <Setter Property="RenderTransform">
-                                                                <Setter.Value>
-                                                                    <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter Property="Opacity" Value="0.3"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </Slider.Style>
-                            </Slider>
-                            <RepeatButton BorderBrush="{TemplateBinding BorderBrush}" Grid.Column="2" Command="NavigationCommands.IncreaseZoom" Foreground="{TemplateBinding Foreground}" Height="{TemplateBinding FontSize}" IsEnabled="{TemplateBinding CanIncreaseZoom}" ToolTip="增大缩放比例" Uid="RepeatButton_8" Width="{TemplateBinding FontSize}">
-                                <RepeatButton.LayoutTransform>
-                                    <ScaleTransform ScaleY="2.2" ScaleX="2.2"/>
-                                </RepeatButton.LayoutTransform>
-                                <RepeatButton.Style>
-                                    <Style TargetType="{x:Type RepeatButton}">
-                                        <Setter Property="Padding" Value="0,2,2,2"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type RepeatButton}">
-                                                    <Border Background="Transparent" Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}}" Uid="Border_42">
-                                                        <Viewbox x:Name="Content" RenderTransformOrigin="0.5,0.5" Uid="Viewbox_3">
-                                                            <Canvas Height="32" Uid="Canvas_5" Width="32">
-                                                                <Path Fill="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" Height="32" Uid="Path_10" Width="32">
-                                                                    <Path.Data>
-                                                                        <GeometryGroup>
-                                                                            <EllipseGeometry Center="16,16" RadiusY="16" RadiusX="16"/>
-                                                                        </GeometryGroup>
-                                                                    </Path.Data>
-                                                                </Path>
-                                                                <Path x:Name="Sheen" Height="32" Uid="Path_11" Width="32">
-                                                                    <Path.Data>
-                                                                        <GeometryGroup>
-                                                                            <EllipseGeometry Center="16,16" RadiusY="16" RadiusX="16"/>
-                                                                        </GeometryGroup>
-                                                                    </Path.Data>
-                                                                    <Path.Fill>
-                                                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                                                            <GradientStop Color="#99FFFFFF" Offset="0"/>
-                                                                            <GradientStop Color="#66000000" Offset="1"/>
-                                                                        </LinearGradientBrush>
-                                                                    </Path.Fill>
-                                                                </Path>
-                                                                <Path Canvas.Left="16" Stroke="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" StrokeThickness="5" Canvas.Top="16" Uid="Path_12">
-                                                                    <Path.Data>
-                                                                        <GeometryGroup>
-                                                                            <LineGeometry EndPoint="10,0" StartPoint="-10,0"/>
-                                                                            <LineGeometry EndPoint="0,10" StartPoint="0,-10"/>
-                                                                        </GeometryGroup>
-                                                                    </Path.Data>
-                                                                </Path>
-                                                            </Canvas>
-                                                        </Viewbox>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                <Setter.Value>
-                                                                    <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                <Setter.Value>
-                                                                    <ScaleTransform ScaleY="1" ScaleX="1"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                            <Setter Property="Fill" TargetName="Sheen">
-                                                                <Setter.Value>
-                                                                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                                                        <GradientStop Color="#99000000" Offset="0"/>
-                                                                        <GradientStop Color="#66FFFFFF" Offset="1"/>
-                                                                    </LinearGradientBrush>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.BasedOn>
-                                            <Style TargetType="{x:Type RepeatButton}">
-                                                <Setter Property="Padding" Value="5"/>
-                                                <Setter Property="Delay" Value="1000"/>
-                                                <Setter Property="Interval" Value="250"/>
-                                                <Style.BasedOn>
-                                                    <Style TargetType="{x:Type ButtonBase}">
-                                                        <Setter Property="Focusable" Value="False"/>
-                                                        <Setter Property="Opacity" Value="0.5"/>
-                                                        <Setter Property="Cursor" Value="Hand"/>
-                                                        <Setter Property="Background" Value="Transparent"/>
-                                                        <Setter Property="Padding" Value="3,1"/>
-                                                        <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                                        <Setter Property="BorderThickness" Value="0"/>
-                                                        <Setter Property="MinWidth" Value="0"/>
-                                                        <Setter Property="MinHeight" Value="0"/>
-                                                        <Setter Property="Template">
-                                                            <Setter.Value>
-                                                                <ControlTemplate TargetType="{x:Type ButtonBase}">
-                                                                    <Border Background="{TemplateBinding Background}" Uid="Border_39">
-                                                                        <ContentPresenter x:Name="Content" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" RenderTransformOrigin="0.5,0.5" Uid="ContentPresenter_2"/>
-                                                                    </Border>
-                                                                    <ControlTemplate.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                                <Setter.Value>
-                                                                                    <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                                                                                </Setter.Value>
-                                                                            </Setter>
-                                                                        </Trigger>
-                                                                        <Trigger Property="IsPressed" Value="True">
-                                                                            <Setter Property="RenderTransform" TargetName="Content">
-                                                                                <Setter.Value>
-                                                                                    <ScaleTransform ScaleY="0.9" ScaleX="0.9"/>
-                                                                                </Setter.Value>
-                                                                            </Setter>
-                                                                        </Trigger>
-                                                                    </ControlTemplate.Triggers>
-                                                                </ControlTemplate>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsEnabled" Value="False">
-                                                                <Setter Property="Opacity" Value="0.3"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Opacity" Value="1"/>
-                                                            </Trigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Style.BasedOn>
-                                            </Style>
-                                        </Style.BasedOn>
-                                    </Style>
-                                </RepeatButton.Style>
-                            </RepeatButton>
-                        </Grid>
-                    </Grid>
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Style="{StaticResource for_scrollviewer}"/>
                 </Border>
             </Grid>
         </ControlTemplate>
     </UserControl.Resources>
     <Grid>
         <Border Background="Black" BorderThickness="0" Opacity="0.5"/>
-        <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="20" Template="{DynamicResource FlowDocumentScrollViewerControlTemplate1}">
+        <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="20"
+                                  Template="{DynamicResource FlowDocumentScrollViewerControlTemplate1}">
             <FlowDocument Foreground="White" Background="#2D2D30" FontFamily="Microsoft YaHei UI">
                 <Paragraph>
                     <Figure HorizontalAnchor="ContentCenter" VerticalAnchor="ContentTop">
@@ -474,7 +41,7 @@
                 <Paragraph x:Name="MainBody" FontSize="20"/>
             </FlowDocument>
         </FlowDocumentScrollViewer>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="35,20" Width="27" Height="27" Focusable="False"
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="35,25" Width="27" Height="27"
                 Command="{x:Static local:GlobalData.BackCommand}" CommandParameter="{x:Static local:BackType.Pop}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
@@ -486,8 +53,8 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="75,20" Width="27" Height="27"
-                Command="{x:Static local:GlobalData.OpenLinkCommand}" ToolTip="在浏览器中打开" Focusable="False">
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="75,25" Width="27" Height="27"
+                Command="{x:Static local:GlobalData.OpenLinkCommand}" ToolTip="在浏览器中打开">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -498,11 +65,12 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="115,20" Width="27" Height="27"
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="115,25" Width="27" Height="27"
                 Command="{x:Static local:GlobalData.LikePostCommand}" ToolTip="点赞" Focusable="False">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="Black"/>
+                    <Setter Property="Cursor" Value="Hand"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="Button">
@@ -516,17 +84,6 @@
                                         <Setter Property="Background" Value="Pink"/>
                                         <Setter Property="IsEnabled" Value="False"/>
                                     </DataTrigger>
-                                    <!--<Trigger Property="Tag" Value="True">
-                            <Setter Property="Background" Value="Pink"/>
-                            -->
-                                    <!--<Setter TargetName="pat" Property="Fill">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="Pink"/>
-                                </Setter.Value>
-                            </Setter>-->
-                                    <!--
-                            <Setter Property="IsEnabled" Value="False"/>
-                        </Trigger>-->
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
@@ -534,24 +91,5 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}">
-            <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
-            <Grid Width="400" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
-                  MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
-                  MouseLeave="Grid_MouseLeave">
-                <Grid.Effect>
-                    <DropShadowEffect/>
-                </Grid.Effect>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="60"/>
-                </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
-                    <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
-                </StackPanel>
-            </Grid>
-        </Canvas>
     </Grid>
 </UserControl>

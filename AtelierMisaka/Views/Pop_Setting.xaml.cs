@@ -1,19 +1,12 @@
 ﻿using AtelierMisaka.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
 using System.Windows.Media.Animation;
 
 namespace AtelierMisaka.Views
@@ -23,12 +16,7 @@ namespace AtelierMisaka.Views
     /// </summary>
     public partial class Pop_Setting : UserControl
     {
-        private bool _mouseD = false;
-        private Point _mouM = new Point(0, 0);
-        //private bool _isNew = true;
         private bool _isOverDropBtn = false;
-        private bool? _checkResult = null;
-        //private bool _isStarted = false;
         private BaseUtils _utils = null;
         private Storyboard _sbLoad = null;
 
@@ -56,19 +44,19 @@ namespace AtelierMisaka.Views
             {
                 if (await GetCheck("确认无误就开始咯?"))
                 {
-                    if (_checkResult == false)
+                    if (GlobalData.CheckResult == false)
                     {
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         return;
                     }
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                 }
                 ShowLoading(true);
 
                 if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
                 {
                     await GetCheck("Cookies不能为空");
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     ShowLoading(false);
                     return;
                 }
@@ -76,7 +64,7 @@ namespace AtelierMisaka.Views
                 if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
                 {
                     await GetCheck("保存路径不能为空");
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     ShowLoading(false);
                     return;
                 }
@@ -84,7 +72,7 @@ namespace AtelierMisaka.Views
                 if (!Directory.Exists(GlobalData.VM_MA.SavePath))
                 {
                     await GetCheck("无法找到存储路径");
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     ShowLoading(false);
                     return;
                 }
@@ -96,7 +84,7 @@ namespace AtelierMisaka.Views
                     if (ai == null)
                     {
                         await GetCheck("无法获取作者信息", "请检查Cookies是否过期");
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
@@ -135,14 +123,14 @@ namespace AtelierMisaka.Views
                     {
                         await GetCheck("发生未知错误");
                     }
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     ShowLoading(false);
                     return;
                 }
                 if (_tempBis == null || _tempBis.Count == 0)
                 {
                     await GetCheck("没有可阅读的文章");
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     ShowLoading(false);
                     return;
                 }
@@ -176,12 +164,12 @@ namespace AtelierMisaka.Views
             {
                 if (await GetCheck("确认更改设定吗?"))
                 {
-                    if (_checkResult == false)
+                    if (GlobalData.CheckResult == false)
                     {
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         return;
                     }
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                 }
                 ShowLoading(true);
                 if (_tempSite != GlobalData.VM_MA.Site || _tempArt.PostUrl != GlobalData.VM_MA.Artist.PostUrl)
@@ -189,21 +177,21 @@ namespace AtelierMisaka.Views
                     if (GlobalData.VM_DL.IsDownloading)
                     {
                         await GetCheck("当前还在下载中，不能更换");
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
                     if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
                     {
                         await GetCheck("Cookies不能为空");
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
                     if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
                     {
                         await GetCheck("保存路径不能为空");
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
@@ -211,7 +199,7 @@ namespace AtelierMisaka.Views
                     if (!Directory.Exists(GlobalData.VM_MA.SavePath))
                     {
                         await GetCheck("无法找到存储路径");
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
@@ -222,7 +210,7 @@ namespace AtelierMisaka.Views
                         if (ai == null)
                         {
                             await GetCheck("无法获取作者信息");
-                            _checkResult = null;
+                            GlobalData.CheckResult = null;
                             ShowLoading(false);
                             return;
                         }
@@ -261,14 +249,14 @@ namespace AtelierMisaka.Views
                         {
                             await GetCheck("发生未知错误");
                         }
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
                     if (_tempBis == null || _tempBis.Count == 0)
                     {
                         await GetCheck("没有可阅读的文章");
-                        _checkResult = null;
+                        GlobalData.CheckResult = null;
                         ShowLoading(false);
                         return;
                     }
@@ -313,7 +301,7 @@ namespace AtelierMisaka.Views
                 if (_tempSP != GlobalData.VM_MA.SavePath)
                 {
                     await GetCheck("保存路径的修改", "将在下次生效");
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     _tempSP = GlobalData.VM_MA.SavePath;
                 }
 
@@ -345,80 +333,6 @@ namespace AtelierMisaka.Views
                         }
                     });
                     GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                    #region old
-                    /*
-                    DateTime dt = DateTime.Parse(_tempDate);
-                    DateTime dp = DateTime.Parse(GlobalData.VM_MA.Date);
-                    if (dt > dp)
-                    {
-                        for (int i = 0; i < _tempBis.Count; i++)
-                        {
-                            if (_tempBis[i].Skip)
-                            {
-                                _tempBis[i].Skip = false;
-                                DownloadItem di = null;
-                                string ct = _tempBis[i].CreateDate.ToString("yyyyMMdd_HHmm");
-                                string sp = $"{GlobalData.VM_DL.SavePath}\\{_tempBis[i].CreateDate.ToString("yyyyMMdd_HHmm")}_{(_tempBis[i].Title.Length > 20 ? _tempBis[i].Title.Substring(0, 20) : _tempBis[i].Title)}";
-                                if (!string.IsNullOrEmpty(_tempBis[i].CoverPic))
-                                {
-                                    di = new DownloadItem
-                                    {
-                                        FileName = $"Cover.{_tempBis[i].CoverPic.Split('.').Last()}",
-                                        Link = _tempBis[i].CoverPic,
-                                        SavePath = sp,
-                                        CTime = _tempBis[i].CreateDate
-                                    };
-                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
-                                }
-                                for (int j = 0; j < _tempBis[i].ContentUrls.Count; j++)
-                                {
-                                    di = new DownloadItem
-                                    {
-                                        FileName = _tempBis[i].FileNames[j],
-                                        Link = _tempBis[i].ContentUrls[j],
-                                        SavePath = sp,
-                                        CTime = _tempBis[i].CreateDate
-                                    };
-                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
-                                }
-                                for (int k = 0; k < _tempBis[i].MediaUrls.Count; k++)
-                                {
-                                    di = new DownloadItem
-                                    {
-                                        FileName = _tempBis[i].MediaNames[k],
-                                        Link = _tempBis[i].MediaUrls[k],
-                                        SavePath = sp,
-                                        CTime = _tempBis[i].CreateDate
-                                    };
-                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
-                                }
-                                Directory.CreateDirectory(sp);
-                                if (_tempBis[i].Comments.Count > 0)
-                                {
-                                    File.WriteAllLines(System.IO.Path.Combine(sp, "Comment.txt"), _tempBis[i].Comments);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int i = GlobalData.VM_DL.DownLoadItemList.Count - 1; i >= 0; i++)
-                        {
-                            if (GlobalData.VM_DL.DownLoadItemList[i].CTime < dt)
-                            {
-                                if (GlobalData.VM_DL.DownLoadItemList[i].DLStatus == DownloadStatus.Downloading)
-                                {
-                                    GlobalData.VM_DL.DownLoadItemList[i].DClient.CancelAsync();
-                                }
-                                else if (GlobalData.VM_DL.DownLoadItemList[i].DLStatus == DownloadStatus.Waiting)
-                                {
-                                    GlobalData.VM_DL.DownLoadItemList[i].DLStatus = DownloadStatus.Cancel;
-                                }
-                            }
-                        }
-                    }
-                    /**/
-                    #endregion
                     _tempDate = GlobalData.VM_MA.Date;
                     _tempUD = GlobalData.VM_MA.UseDate;
                 }
@@ -442,7 +356,7 @@ namespace AtelierMisaka.Views
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
             {
                 await GetCheck("Cookies不能为空");
-                _checkResult = null;
+                GlobalData.CheckResult = null;
                 return;
             }
             ShowLoading(true);
@@ -465,25 +379,13 @@ namespace AtelierMisaka.Views
         {
             if (await GetCheck("退出软件吗?"))
             {
-                if (_checkResult == false)
+                if (GlobalData.CheckResult == false)
                 {
-                    _checkResult = null;
+                    GlobalData.CheckResult = null;
                     return;
                 }
                 Application.Current.Shutdown();
             }
-        }
-
-        private void Btn_Check_Click(object sender, RoutedEventArgs e)
-        {
-            _checkResult = true;
-            GlobalData.VM_MA.ShowCheck = false;
-        }
-
-        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            _checkResult = false;
-            GlobalData.VM_MA.ShowCheck = false;
         }
 
         private async Task<bool> GetCheck(params string[] msgs)
@@ -495,10 +397,9 @@ namespace AtelierMisaka.Views
                 mss += msgs[i];
             }
             GlobalData.VM_MA.Messages = mss;
-
-            GlobalData.VM_MA.ShowCheck = true;
-            GlobalData.VM_MA.MLeft = (cas.ActualWidth - 400) / 2;
-            GlobalData.VM_MA.MTop = (cas.ActualHeight - 300) / 2;
+            
+            GlobalData.VM_MA.MLeft = (ActualWidth - 400) / 2;
+            GlobalData.VM_MA.MTop = (ActualHeight - 270) / 2;
             while (GlobalData.VM_MA.ShowCheck)
             {
                 await Task.Delay(500);
@@ -532,10 +433,7 @@ namespace AtelierMisaka.Views
                     Dispatcher.Invoke(() => GlobalData.VM_MA.ArtistList.Add(new ArtistInfo()));
                 }
             }
-            catch
-            {
-
-            }
+            catch { }
         }
 
         private void LoadSetting()
@@ -586,10 +484,7 @@ namespace AtelierMisaka.Views
                 }
                 GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
             }
-            catch
-            {
-
-            }
+            catch { }
         }
 
         private void Lst_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -653,36 +548,5 @@ namespace AtelierMisaka.Views
         {
             _isOverDropBtn = false;
         }
-
-        #region MoveCheck
-
-        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            _mouseD = true;
-            _mouM = e.GetPosition(cas);
-        }
-
-        private void Grid_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_mouseD)
-            {
-                var mm = e.GetPosition(cas);
-                GlobalData.VM_MA.MLeft += (mm.X - _mouM.X);
-                GlobalData.VM_MA.MTop += (mm.Y - _mouM.Y);
-                _mouM = mm;
-            }
-        }
-
-        private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            _mouseD = false;
-        }
-
-        private void Grid_MouseLeave(object sender, MouseEventArgs e)
-        {
-            _mouseD = false;
-        }
-
-        #endregion
     }
 }

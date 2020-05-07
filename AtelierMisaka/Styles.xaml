@@ -82,7 +82,7 @@
                                     <Button Tag="Close" Command="{x:Static SystemCommands.CloseWindowCommand}"/>
                                 </StackPanel>
                             </Grid>
-                            <AdornerDecorator Grid.Row="1" KeyboardNavigation.IsTabStop="False">
+                            <AdornerDecorator Grid.RowSpan="2" KeyboardNavigation.IsTabStop="False">
                                 <ContentPresenter KeyboardNavigation.TabNavigation="Cycle"/>
                             </AdornerDecorator>
                             <ResizeGrip x:Name="ResizeGrip"
@@ -107,9 +107,6 @@
 
     <Style TargetType="{x:Type Button}">
         <Setter Property="Cursor" Value="Hand"/>
-    </Style>
-
-    <Style TargetType="{x:Type FrameworkElement}">
         <Setter Property="Focusable" Value="False"/>
     </Style>
 
@@ -246,7 +243,7 @@
         </Setter>
     </Style>
     <Style TargetType="{x:Type ListBoxItem}" x:Key="LBI_Document">
-        <Setter Property="Width" Value="418"/>
+        <Setter Property="Width" Value="425"/>
         <Setter Property="Height" Value="360"/>
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>

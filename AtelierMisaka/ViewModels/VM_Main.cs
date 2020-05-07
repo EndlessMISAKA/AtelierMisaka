@@ -1,13 +1,10 @@
-﻿using AtelierMisaka.Commands;
-using AtelierMisaka.Models;
+﻿using AtelierMisaka.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace AtelierMisaka.ViewModels
@@ -16,10 +13,29 @@ namespace AtelierMisaka.ViewModels
     {
         #region MainWindow
 
+        private double _mLeft = 0d;
+        private double _mTop = 0d;
         private int _lZindex = 3;
+        private ShowType _showList = ShowType.All;
         private IList<BaseItem> _itemList = null;
+        private IList<BaseItem> _itemList_Zero = null;
+        private IList<BaseItem> _itemList_Link = null;
         private BaseItem _selectedDocument = null;
         private UserControl _popPage = null;
+
+        public ShowType ShowList
+        {
+            get => _showList;
+            set
+            {
+                if (_showList != value)
+                {
+                    _showList = value;
+                    RaisePropertyChanged();
+                    RaisePropertyChanged("ItemList");
+                }
+            }
+        }
 
         public int LZindex
         {
@@ -36,12 +52,25 @@ namespace AtelierMisaka.ViewModels
 
         public IList<BaseItem> ItemList
         {
-            get => _itemList;
+            get
+            {
+                switch (_showList)
+                {
+                    case ShowType.OnlyZero:
+                        return _itemList_Zero;
+                    case ShowType.OnlyHttp:
+                        return _itemList_Link;
+                    default:
+                        return _itemList;
+                }
+            }
             set
             {
                 if (_itemList != value)
                 {
                     _itemList = value;
+                    _itemList_Zero = _itemList.Where(x => x.IsZero).ToList();
+                    _itemList_Link = _itemList.Where(x => x.HasLink).ToList();
                     RaisePropertyChanged();
                 }
             }
@@ -68,6 +97,32 @@ namespace AtelierMisaka.ViewModels
                 if (_popPage != value)
                 {
                     _popPage = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public double MLeft
+        {
+            get => _mLeft;
+            set
+            {
+                if (_mLeft != value)
+                {
+                    _mLeft = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public double MTop
+        {
+            get => _mTop;
+            set
+            {
+                if (_mTop != value)
+                {
+                    _mTop = value;
                     RaisePropertyChanged();
                 }
             }
@@ -101,8 +156,6 @@ namespace AtelierMisaka.ViewModels
         private bool _showCheck = false;
         private bool _showLoad = false;
         private bool _isStarted = false;
-        private double _mLeft = 0d;
-        private double _mTop = 0d;
         private Regex _regex = new Regex(@"^\d+\.\d+\.\d+\.\d+:\d+$");
         private IList<ArtistInfo> _artistListFanbox = new ObservableCollection<ArtistInfo>();
         private IList<ArtistInfo> _artistListPatreon = new ObservableCollection<ArtistInfo>();
@@ -236,8 +289,8 @@ namespace AtelierMisaka.ViewModels
                 {
                     _messages = value;
                     RaisePropertyChanged();
-                    ShowCheck = true;
                 }
+                ShowCheck = true;
             }
         }
 
@@ -521,32 +574,6 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
-        public double MLeft
-        {
-            get => _mLeft;
-            set
-            {
-                if (_mLeft != value)
-                {
-                    _mLeft = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public double MTop
-        {
-            get => _mTop;
-            set
-            {
-                if (_mTop != value)
-                {
-                    _mTop = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
         #endregion
 
         #region Document
@@ -598,7 +625,11 @@ namespace AtelierMisaka.ViewModels
         {
             get
             {
-                return _selectedDocument.IsLiked;
+                if (null != _selectedDocument)
+                {
+                    return _selectedDocument.IsLiked;
+                }
+                return false;
             }
             set
             {

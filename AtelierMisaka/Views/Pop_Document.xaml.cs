@@ -1,10 +1,7 @@
 ﻿using AtelierMisaka.Models;
 using System;
-using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace AtelierMisaka.Views
@@ -14,9 +11,6 @@ namespace AtelierMisaka.Views
     /// </summary>
     public partial class Pop_Document : UserControl
     {
-        private bool _mouseD = false;
-        private Point _mouM = new Point(0, 0);
-
         public Pop_Document()
         {
             InitializeComponent();
@@ -131,46 +125,5 @@ namespace AtelierMisaka.Views
                 }
             }
         }
-
-        #region Check
-        
-        private void Btn_Check_Click(object sender, RoutedEventArgs e)
-        {
-            GlobalData.VM_MA.ShowCheck = false;
-        }
-
-        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            GlobalData.VM_MA.ShowCheck = false;
-        }
-
-        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            _mouseD = true;
-            _mouM = e.GetPosition(cas);
-        }
-
-        private void Grid_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_mouseD)
-            {
-                var mm = e.GetPosition(cas);
-                GlobalData.VM_MA.MLeft += (mm.X - _mouM.X);
-                GlobalData.VM_MA.MTop += (mm.Y - _mouM.Y);
-                _mouM = mm;
-            }
-        }
-
-        private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            _mouseD = false;
-        }
-
-        private void Grid_MouseLeave(object sender, MouseEventArgs e)
-        {
-            _mouseD = false;
-        }
-
-        #endregion
     }
 }

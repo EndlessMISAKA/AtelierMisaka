@@ -2,9 +2,6 @@
 using AtelierMisaka.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka.ViewModels
@@ -14,14 +11,15 @@ namespace AtelierMisaka.ViewModels
         private bool _isDownloading = false;
         private bool _isChangeThread = false;
         private bool _isChangeProxy = false;
-        private bool _isLoading = false;
         private bool _showCheck = false;
         private bool _isQuest = false;
         private string _btnText = "全部开始";
         private string _savePath = string.Empty;
         private string _tempAI = string.Empty;
         private int _threadCount = 3;
-        
+        private double _mLeft = 0d;
+        private double _mTop = 0d;
+
         private List<DownloadItem> _dlClients = new List<DownloadItem>();
 
         private IList<DownloadItem> _downLoadList = null;
@@ -154,6 +152,32 @@ namespace AtelierMisaka.ViewModels
                 if (_isChangeProxy != value)
                 {
                     _isChangeProxy = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public double MLeft
+        {
+            get => _mLeft;
+            set
+            {
+                if (_mLeft != value)
+                {
+                    _mLeft = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public double MTop
+        {
+            get => _mTop;
+            set
+            {
+                if (_mTop != value)
+                {
+                    _mTop = value;
                     RaisePropertyChanged();
                 }
             }

@@ -14,145 +14,153 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border BorderBrush="#3F3F41" BorderThickness="0,0,0,2"/>
-        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-            <RadioButton x:Name="zzxz" Style="{StaticResource RB_Setting}" Content="正在下载" FontSize="40" Height="60" IsChecked="True"/>
-            <RadioButton x:Name="yxz" Style="{StaticResource RB_Setting}" Content="已下载列表" FontSize="40" Height="60"/>
-            <Button Style="{StaticResource BTN_Setting}" Margin="60,0" Content="{Binding BtnText}" FontSize="30"
-                    Command="{Binding QuestCommand}"/>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="线程数:"/>
-                <ComboBox Style="{StaticResource ComB}" SelectedValue="{Binding ThreadCount}">
-                    <sys:Int32>1</sys:Int32>
-                    <sys:Int32>2</sys:Int32>
-                    <sys:Int32>3</sys:Int32>
-                    <sys:Int32>4</sys:Int32>
-                    <sys:Int32>5</sys:Int32>
-                    <sys:Int32>6</sys:Int32>
-                    <sys:Int32>7</sys:Int32>
-                    <sys:Int32>8</sys:Int32>
-                    <sys:Int32>9</sys:Int32>
-                </ComboBox>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border BorderBrush="#3F3F41" BorderThickness="0,0,0,2"/>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <RadioButton x:Name="zzxz" Style="{StaticResource RB_Setting}" Content="正在下载" FontSize="40" Height="60" IsChecked="True"/>
+                <RadioButton x:Name="yxz" Style="{StaticResource RB_Setting}" Content="已下载列表" FontSize="40" Height="60"/>
+                <Button Style="{StaticResource BTN_Setting}" Margin="60,0" Content="{Binding BtnText}" FontSize="30"
+                        Command="{Binding QuestCommand}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource TBL_Setting}" Text="线程数:"/>
+                    <ComboBox Style="{StaticResource ComB}" SelectedValue="{Binding ThreadCount}">
+                        <sys:Int32>1</sys:Int32>
+                        <sys:Int32>2</sys:Int32>
+                        <sys:Int32>3</sys:Int32>
+                        <sys:Int32>4</sys:Int32>
+                        <sys:Int32>5</sys:Int32>
+                        <sys:Int32>6</sys:Int32>
+                        <sys:Int32>7</sys:Int32>
+                        <sys:Int32>8</sys:Int32>
+                        <sys:Int32>9</sys:Int32>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
-        <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
-                 Visibility="{Binding ElementName=zzxz, Path=IsChecked, Converter={StaticResource btvc}}"
-                 VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding DownLoadItemList}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ListBox.Style>
-                <Style TargetType="ListBox">
-                    <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Download}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBox">
-                                <Grid Margin="0">
-                                    <ScrollViewer Style="{StaticResource for_scrollviewer}">
-                                        <ItemsPresenter/>
-                                    </ScrollViewer>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="ItemTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Grid Height="40" Background="#2D2D30">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="40"/>
-                                        <ColumnDefinition Width="460"/>
-                                        <ColumnDefinition Width="240"/>
-                                        <ColumnDefinition Width="240"/>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="150"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Image Source="{Binding DLStatus, Converter={StaticResource etic}}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
-                                    <Grid Grid.Column="2">
-                                        <TextBlock Text="{Binding ErrorMsg}" Style="{StaticResource TBL_DL}"/>
-                                        <StackPanel x:Name="sp" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
-                                            <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
-                                            <local:ButtonEx Style="{StaticResource BTN_Play}" DLS="{Binding DLStatus}"/>
-                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="{Binding DLStatus}"/>
-                                            <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="Common"/>
-                                        </StackPanel>
+            <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
+                     Visibility="{Binding ElementName=zzxz, Path=IsChecked, Converter={StaticResource btvc}}"
+                     VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding DownLoadItemList}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Download}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBox">
+                                    <Grid Margin="0">
+                                        <ScrollViewer Style="{StaticResource for_scrollviewer}">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
                                     </Grid>
-                                    <Grid Grid.Column="3" HorizontalAlignment="Center">
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ItemTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <Grid Height="40" Background="#2D2D30">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="170"/>
-                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="460"/>
+                                            <ColumnDefinition Width="240"/>
+                                            <ColumnDefinition Width="240"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
                                         </Grid.ColumnDefinitions>
-                                        <ProgressBar Value="{Binding Percent}" Style="{StaticResource PB_Download}"/>
-                                        <TextBlock Text="{Binding PercentString}" Style="{StaticResource TBL_DL}"
+                                        <Image Source="{Binding DLStatus, Converter={StaticResource etic}}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
+                                        <Grid Grid.Column="2">
+                                            <TextBlock Text="{Binding ErrorMsg}" Style="{StaticResource TBL_DL}"/>
+                                            <StackPanel x:Name="sp" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
+                                                <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
+                                                <local:ButtonEx Style="{StaticResource BTN_Play}" DLS="{Binding DLStatus}"/>
+                                                <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="{Binding DLStatus}"/>
+                                                <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="Common"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Grid.Column="3" HorizontalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="170"/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ProgressBar Value="{Binding Percent}" Style="{StaticResource PB_Download}"/>
+                                            <TextBlock Text="{Binding PercentString}" Style="{StaticResource TBL_DL}"
                                                    Grid.Column="1" HorizontalAlignment="Center" Margin="0"/>
+                                        </Grid>
+                                        <TextBlock Grid.Column="4" Text="{Binding SpeedString}" Style="{StaticResource TBL_DL}"/>
+                                        <TextBlock Grid.Column="5" Text="{Binding SizeString}" Style="{StaticResource TBL_DL}"/>
                                     </Grid>
-                                    <TextBlock Grid.Column="4" Text="{Binding SpeedString}" Style="{StaticResource TBL_DL}"/>
-                                    <TextBlock Grid.Column="5" Text="{Binding SizeString}" Style="{StaticResource TBL_DL}"/>
-                                </Grid>
-                                <DataTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="sp" Property="Visibility" Value="Visible"/>
-                                    </Trigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.Style>
-        </ListBox>
+                                    <DataTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="sp" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Style>
+            </ListBox>
 
-        <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
-                 Visibility="{Binding ElementName=yxz, Path=IsChecked, Converter={StaticResource btvc}}"
-                 VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding CompletedList}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" FontSize="15">
-            <ListBox.Style>
-                <Style TargetType="ListBox">
-                    <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Download}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBox">
-                                <Grid Margin="0">
-                                    <ScrollViewer Style="{StaticResource for_scrollviewer}">
-                                        <ItemsPresenter/>
-                                    </ScrollViewer>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="ItemTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Grid Height="40" Background="#2D2D30">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="300"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
-                                    <StackPanel x:Name="sp" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
-                                        <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
-                                        <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="File"/>
-                                        <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Folder"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding SavePath}" Grid.Column="2" Style="{StaticResource TBL_DL}"/>
-                                </Grid>
-                                <DataTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="sp" Property="Visibility" Value="Visible"/>
-                                    </Trigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.Style>
-        </ListBox>
+            <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
+                     Visibility="{Binding ElementName=yxz, Path=IsChecked, Converter={StaticResource btvc}}"
+                     VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding CompletedList}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" FontSize="15">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Download}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBox">
+                                    <Grid Margin="0">
+                                        <ScrollViewer Style="{StaticResource for_scrollviewer}">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ItemTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <Grid Height="40" Background="#2D2D30">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="300"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
+                                        <StackPanel x:Name="sp" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
+                                            <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
+                                            <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="File"/>
+                                            <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Folder"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding SavePath}" Grid.Column="2" Style="{StaticResource TBL_DL}"/>
+                                    </Grid>
+                                    <DataTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="sp" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Style>
+            </ListBox>
+        </Grid>
 
-        <Grid Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}" Grid.RowSpan="2">
-            <Border Background="Black" Opacity="0.5" BorderThickness="0"/>
-            <Grid Width="400" Height="200" Background="#2D2D30">
+        <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}" Grid.RowSpan="2">
+            <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
+            <Grid Width="400" Height="200" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
+                  MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
+                  MouseLeave="Grid_MouseLeave">
                 <Grid.Effect>
                     <DropShadowEffect/>
                 </Grid.Effect>
@@ -170,6 +178,6 @@
                     <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
                 </StackPanel>
             </Grid>
-        </Grid>
+        </Canvas>
     </Grid>
 </Window>

@@ -107,11 +107,17 @@
                 <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="退出"/>
             </StackPanel>
         </StackPanel>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White" Margin="10,5">
-            <Run Text="Produced By: "/>
-            <Hyperlink Command="{x:Static basens:GlobalData.OpenBrowserCommand}" CommandParameter="https://github.com/EndlessMISAKA">EndlessMISAKA</Hyperlink>
-        </TextBlock>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="3" Focusable="False"
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,5" Orientation="Horizontal">
+            <TextBlock Foreground="White" Margin="15,0">
+                <Run Text="Produced By: "/>
+                <Hyperlink Command="{x:Static basens:GlobalData.OpenBrowserCommand}" CommandParameter="https://github.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
+            </TextBlock>
+            <TextBlock Foreground="White">
+                <Run Text="Twitter: "/>
+                <Hyperlink Command="{x:Static basens:GlobalData.OpenBrowserCommand}" CommandParameter="https://twitter.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="15,1" Focusable="False"
                 Command="{x:Static basens:GlobalData.BackCommand}" CommandParameter="{x:Static basens:BackType.Pop}"
                 Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
             <Button.Template>
@@ -131,7 +137,7 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="3, 35" Focusable="False"
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="55, 1" Focusable="False"
                 Command="{x:Static basens:GlobalData.ShowDLCommand}" Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
@@ -150,24 +156,5 @@
             <Path x:Name="p2" Style="{StaticResource Pa_Load}" Data="M155,100 A55,55 0 1 0 100,155" Stroke="DeepSkyBlue"/>
             <Path x:Name="p3" Style="{StaticResource Pa_Load}" Data="M75,100 A25,25 0 1 0 100,75" Stroke="Red"/>
         </Grid>
-        <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}">
-            <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
-            <Grid Width="400" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
-                  MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
-                  MouseLeave="Grid_MouseLeave">
-                <Grid.Effect>
-                    <DropShadowEffect/>
-                </Grid.Effect>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="60"/>
-                </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
-                    <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
-                </StackPanel>
-            </Grid>
-        </Canvas>
     </Grid>
 </UserControl>

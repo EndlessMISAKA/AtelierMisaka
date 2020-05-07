@@ -1,16 +1,11 @@
 ﻿using AtelierMisaka.Models;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.IO;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace AtelierMisaka.Views
 {
@@ -20,8 +15,9 @@ namespace AtelierMisaka.Views
     public partial class Downloader : Window
     {
         IList<BaseItem> _baseItems = null;
-        //string _tempAI = string.Empty;
-        
+        bool _mouseD = false;
+        Point _mouM = new Point(0, 0);
+
         public Downloader(IList<BaseItem> bis, string savepath)
         {
             InitializeComponent();
@@ -208,21 +204,14 @@ namespace AtelierMisaka.Views
         {
             if (VM_DD.DownLoadItemList.Count > 0)
             {
+                VM_DD.MLeft = (ActualWidth - 400) / 2;
+                VM_DD.MTop = (ActualHeight - 300) / 2;
                 VM_DD.ShowCheck = true;
                 e.Cancel = true;
             }
         }
 
-        private void Btn_Close_Click(object sender, RoutedEventArgs e)
-        {
-            this.Hide();
-            VM_DD.ShowCheck = false;
-        }
-
-        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            VM_DD.ShowCheck = false;
-        }
+        #region TitleButton
 
         private void CanResizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -253,5 +242,49 @@ namespace AtelierMisaka.Views
         {
             SystemCommands.RestoreWindow(this);
         }
+
+        #endregion
+
+        #region Check
+
+        private void Btn_Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            VM_DD.ShowCheck = false;
+        }
+
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            VM_DD.ShowCheck = false;
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _mouseD = true;
+            _mouM = e.GetPosition(cas);
+        }
+
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseD)
+            {
+                var mm = e.GetPosition(cas);
+                VM_DD.MLeft += (mm.X - _mouM.X);
+                VM_DD.MTop += (mm.Y - _mouM.Y);
+                _mouM = mm;
+            }
+        }
+
+        private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _mouseD = false;
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            _mouseD = false;
+        }
+
+        #endregion
     }
 }

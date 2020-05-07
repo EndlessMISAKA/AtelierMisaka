@@ -3,13 +3,11 @@ using AtelierMisaka.Models;
 using AtelierMisaka.ViewModels;
 using AtelierMisaka.Views;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +22,7 @@ namespace AtelierMisaka
         public static Dictionary<string, List<DLSP>> DownloadLogs = null;
         public static DB_Layer Dbl = new DB_Layer();
         public static Downloader DownLP = null;
+        public static bool? CheckResult = false;
 
         private static Lazy<FanboxUtils> _utilFanbox = new Lazy<FanboxUtils>();
         private static Lazy<FantiaUtils> _utilFantia = new Lazy<FantiaUtils>();
@@ -64,17 +63,23 @@ namespace AtelierMisaka
                 return;
             }
             bi.NeedLoadCover = false;
-            //bool flag = false;
             BaseUtils bu = GetUtils();
             bu.GetCover(bi);
-            //await Task.Run(() =>
-            //{
-            //    flag = bu.GetCover(bi);
-            //});
-            //if (!flag)
-            //{
-            //    bi.NeedLoadCover = true;
-            //}
+        });
+
+        public static CommonCommand ExitCommand = new CommonCommand(async () =>
+        {
+            VM_MA.Messages = "退出软件吗？";
+            while (VM_MA.ShowCheck)
+            {
+                await Task.Delay(200);
+            }
+            if (CheckResult == false)
+            {
+                CheckResult = null;
+                return;
+            }
+            System.Windows.Application.Current.Shutdown();
         });
 
         public static CommonCommand ShowDLCommand = new CommonCommand(() =>
@@ -307,5 +312,12 @@ namespace AtelierMisaka
         Cancel,
         Common,
         Null
+    }
+
+    public enum ShowType
+    {
+        All,
+        OnlyZero,
+        OnlyHttp
     }
 }

@@ -1,19 +1,5 @@
-﻿using AtelierMisaka.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AtelierMisaka
 {
@@ -22,6 +8,9 @@ namespace AtelierMisaka
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _mouseD = false;
+        private Point _mouM = new Point(0, 0);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -33,11 +22,15 @@ namespace AtelierMisaka
             GlobalData.VM_MA = (ViewModels.VM_Main)DataContext;
             GlobalData.Init();
         }
-
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             GlobalData.BackCommand.Execute(BackType.Main);
+            GlobalData.VM_MA.MLeft = (ActualWidth - 400) / 2;
+            GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
         }
+
+        #region TitleButton
 
         private void CanResizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -51,7 +44,7 @@ namespace AtelierMisaka
 
         private void CloseWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            this.Close();
+            GlobalData.ExitCommand.Execute(null);
         }
 
         private void MaximizeWindow(object sender, ExecutedRoutedEventArgs e)
@@ -68,5 +61,50 @@ namespace AtelierMisaka
         {
             SystemCommands.RestoreWindow(this);
         }
+
+        #endregion
+
+        #region Check
+
+        private void Btn_Check_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalData.CheckResult = true;
+            GlobalData.VM_MA.ShowCheck = false;
+        }
+
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalData.CheckResult = false;
+            GlobalData.VM_MA.ShowCheck = false;
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _mouseD = true;
+            _mouM = e.GetPosition(cas);
+        }
+
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseD)
+            {
+                var mm = e.GetPosition(cas);
+                GlobalData.VM_MA.MLeft += (mm.X - _mouM.X);
+                GlobalData.VM_MA.MTop += (mm.Y - _mouM.Y);
+                _mouM = mm;
+            }
+        }
+
+        private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _mouseD = false;
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            _mouseD = false;
+        }
+
+        #endregion
     }
 }

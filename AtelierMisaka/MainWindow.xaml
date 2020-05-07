@@ -12,100 +12,147 @@
         <vm:VM_Main/>
     </Window.DataContext>
     <Grid>
-        <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True"
-                 VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Single" ItemsSource="{Binding ItemList}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" Panel.ZIndex="1" SelectedItem="{Binding SelectedDocument}">
-            <ListBox.Style>
-                <Style TargetType="ListBox">
-                    <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Document}"/>
-                    <Setter Property="ItemsPanel">
-                        <Setter.Value>
-                            <ItemsPanelTemplate>
-                                <WrapPanel/>
-                            </ItemsPanelTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBox">
-                                <Grid Margin="0">
-                                    <ScrollViewer Style="{StaticResource for_scrollviewer}">
-                                        <ItemsPresenter/>
-                                    </ScrollViewer>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="ItemTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Grid Width="418" Height="360">
-                                    <Grid Width="410" Height="351" Background="Gray">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="231"/>
-                                            <RowDefinition Height="60"/>
-                                            <RowDefinition Height="30"/>
-                                            <RowDefinition Height="30"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.Effect>
-                                            <DropShadowEffect/>
-                                        </Grid.Effect>
-                                        <Border Grid.RowSpan="4" BorderBrush="Red" BorderThickness="2" Visibility="{Binding IsZero, Converter={StaticResource btvc}}"/>
-                                        <Button Tag="{Binding CoverPic}" IsEnabled="{Binding NeedLoadCover}" Margin="10,10,10,0"
-                                                Command="{x:Static local:GlobalData.GetCoverCommand}" CommandParameter="{Binding}">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                                                        <Border Background="Black" Opacity="0.5" BorderThickness="0"/>
-                                                        <TextBlock x:Name="txt" Text="{Binding CoverTxt}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        <Image x:Name="cov" Source="{Binding ImgData, Converter={StaticResource btcc}}" Stretch="Fill"/>
-                                                    </Grid>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                        <Button Grid.Row="1" HorizontalAlignment="Left" Margin="10,0" Content="{Binding Title}"
-                                                Command="{x:Static local:GlobalData.ShowDocumentCommand}" CommandParameter="{Binding}"
-                                                Background="Transparent" FontSize="20" HorizontalContentAlignment="Left" FontWeight="Bold">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="Transparent" BorderThickness="0" Width="{TemplateBinding Width}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="15,0">
+                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="全部显示" Margin="15,0"
+                             IsChecked="{Binding ShowList, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ShowType.All}}"/>
+                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="没有文件"
+                             IsChecked="{Binding ShowList, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ShowType.OnlyZero}}"/>
+                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="包含链接" Margin="15,0"
+                             IsChecked="{Binding ShowList, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ShowType.OnlyHttp}}"/>
+                <Button Width="27" Height="27" Focusable="False" Command="{x:Static local:GlobalData.BackCommand}"
+                        CommandParameter="{x:Static local:BackType.Main}" VerticalAlignment="Center">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                                <Ellipse Width="27" Height="27" Fill="Gray"/>
+                                <Path Data="M5,10 A4,4 0 1 0 10,5 M12,12 L18,18 M23,19 A3,3 0 1 0 19,23" Stroke="#2D2D30" StrokeThickness="2.5"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" Width="27" Height="27"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+            <Grid Grid.Row="1" Panel.ZIndex="1">
+                <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" VerticalAlignment="Top"
+                     VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Single" ItemsSource="{Binding ItemList}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedDocument}" Margin="0,5">
+                    <ListBox.Style>
+                        <Style TargetType="ListBox">
+                            <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Document}"/>
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBox">
+                                        <Grid Margin="0">
+                                            <ScrollViewer Style="{StaticResource for_scrollviewer}">
+                                                <ItemsPresenter/>
+                                            </ScrollViewer>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="ItemTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <Grid Width="423" Height="360">
+                                            <Grid Width="413" Height="351" Background="Gray">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="231"/>
+                                                    <RowDefinition Height="60"/>
+                                                    <RowDefinition Height="30"/>
+                                                    <RowDefinition Height="30"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.Effect>
+                                                    <DropShadowEffect/>
+                                                </Grid.Effect>
+                                                <Border Grid.RowSpan="4" BorderBrush="Red" BorderThickness="2" Visibility="{Binding IsZero, Converter={StaticResource btvc}}"/>
+                                                <Button Tag="{Binding CoverPic}" IsEnabled="{Binding NeedLoadCover}" Margin="10,10,10,0"
+                                                    Command="{x:Static local:GlobalData.GetCoverCommand}" CommandParameter="{Binding}">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                                                                <Border Background="Black" Opacity="0.5" BorderThickness="0"/>
+                                                                <TextBlock x:Name="txt" Text="{Binding CoverTxt}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                <Image x:Name="cov" Source="{Binding ImgData, Converter={StaticResource btcc}}" Stretch="Fill"/>
+                                                            </Grid>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                                <Path Data="M17.5,4.53499984741211 C20.814000129699707,4.53499984741211 23.5,7.248999977111816 23.5,10.5350000858306885 C23.5,15.3329999446868896 20.3420000076293945,19.28000020980835 14.3939999938011169,22.253999710083008 C13.8310000002384186,22.53600025177002 13.2310000002384186,22.53600025177002 12.7939999938011169,22.253999710083008 C6.7420000076293945,19.28000020980835 3.5,15.3329999446868896 3.5,10.5350000858306885 C3.5,7.248999977111816 6.214000129699707,4.53499984741211 9.5,4.53499984741211 C11.075000047683716,4.53499984741211 12.4510000228881836,5.034000396728516 13.5,5.984000015258789 C14.6510000228881836,5.034000396728516 16.075000047683716,4.53499984741211 17.5,4.53499984741211z"
+                                                  Fill="Pink" Width="27" Height="27" Margin="10,0" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                  Visibility="{Binding IsLiked, Converter={StaticResource btvc}}">
+                                                </Path>
+                                                <Button Grid.Row="1" HorizontalAlignment="Left" Margin="10,0" Content="{Binding Title}"
+                                                    Command="{x:Static local:GlobalData.ShowDocumentCommand}" CommandParameter="{Binding}"
+                                                    Background="Transparent" FontSize="20" HorizontalContentAlignment="Left" FontWeight="Bold">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="Transparent" BorderThickness="0" Width="{TemplateBinding Width}"
                                                             Height="{TemplateBinding Height}" Cursor="Hand">
-                                                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                        <TextBlock Grid.Row="2" HorizontalAlignment="Left" Margin="10,0" FontSize="15">
+                                                                <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                                <TextBlock Grid.Row="2" HorizontalAlignment="Left" Margin="10,0" FontSize="15">
                                             <Run Text="发布时间:"/>
                                             <Run Text="{Binding CreateDateStr, Mode=OneWay}"/>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="10,0" FontSize="15">
+                                                </TextBlock>
+                                                <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="10,0" FontSize="15">
                                             <Run Text="$"/>
                                             <Run Text="{Binding Fee}"/>
-                                        </TextBlock>
-                                        <TextBlock Grid.Row="3" HorizontalAlignment="Left" Margin="10,0" FontSize="15" Text="{Binding FileCount}"/>
-                                        <TextBlock Grid.Row="3" HorizontalAlignment="Right" Margin="10,0" FontSize="15" Text="检测到网站链接"
-                                                   Visibility="{Binding HasLink, Converter={StaticResource btvc}}" Foreground="Red"/>
-                                    </Grid>
-                                </Grid>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.Style>
-        </ListBox>
-        <ContentControl Content="{Binding PopPage}" Panel.ZIndex="{Binding LZindex}"/>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="3" Focusable="False"
-                Command="{x:Static local:GlobalData.BackCommand}" CommandParameter="{x:Static local:BackType.Main}">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                        <Ellipse Width="27" Height="27" Fill="Gray"/>
-                        <Path Data="M5,10 A4,4 0 1 0 10,5 M12,12 L18,18 M23,19 A3,3 0 1 0 19,23" Stroke="#2D2D30" StrokeThickness="2.5"
-                              HorizontalAlignment="Center" VerticalAlignment="Center" Width="27" Height="27"/>
-                    </Grid>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+                                                </TextBlock>
+                                                <TextBlock Grid.Row="3" HorizontalAlignment="Left" Margin="10,0" FontSize="15" Text="{Binding FileCount}"/>
+                                                <TextBlock Grid.Row="3" HorizontalAlignment="Right" Margin="10,0" FontSize="15" Text="检测到网站链接"
+                                                       Visibility="{Binding HasLink, Converter={StaticResource btvc}}" Foreground="Red"/>
+                                            </Grid>
+                                        </Grid>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Style>
+                </ListBox>
+            </Grid>
+            <Grid Grid.RowSpan="2" Panel.ZIndex="{Binding LZindex}">
+                <ContentControl Content="{Binding PopPage}"/>
+            </Grid>
+        </Grid>
+        <Grid Grid.RowSpan="2">
+            <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}">
+                <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
+                <Grid Width="400" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
+                      MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
+                      MouseLeave="Grid_MouseLeave">
+                    <Grid.Effect>
+                        <DropShadowEffect/>
+                    </Grid.Effect>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="60"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
+                        <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
+                    </StackPanel>
+                </Grid>
+            </Canvas>
+        </Grid>
     </Grid>
 </Window>
