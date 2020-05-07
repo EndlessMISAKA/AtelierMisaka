@@ -43,8 +43,8 @@
             </StackPanel>
             <Grid Grid.Row="1" Panel.ZIndex="1">
                 <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" VerticalAlignment="Top"
-                     VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Single" ItemsSource="{Binding ItemList}"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedDocument}" Margin="0,5">
+                         VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Single" ItemsSource="{Binding ItemList}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedDocument}" Margin="0,5">
                     <ListBox.Style>
                         <Style TargetType="ListBox">
                             <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Document}"/>
@@ -82,7 +82,7 @@
                                                 </Grid.Effect>
                                                 <Border Grid.RowSpan="4" BorderBrush="Red" BorderThickness="2" Visibility="{Binding IsZero, Converter={StaticResource btvc}}"/>
                                                 <Button Tag="{Binding CoverPic}" IsEnabled="{Binding NeedLoadCover}" Margin="10,10,10,0"
-                                                    Command="{x:Static local:GlobalData.GetCoverCommand}" CommandParameter="{Binding}">
+                                                        Command="{x:Static local:GlobalData.GetCoverCommand}" CommandParameter="{Binding}">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
                                                             <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -94,8 +94,8 @@
                                                     </Button.Template>
                                                 </Button>
                                                 <Path Data="M17.5,4.53499984741211 C20.814000129699707,4.53499984741211 23.5,7.248999977111816 23.5,10.5350000858306885 C23.5,15.3329999446868896 20.3420000076293945,19.28000020980835 14.3939999938011169,22.253999710083008 C13.8310000002384186,22.53600025177002 13.2310000002384186,22.53600025177002 12.7939999938011169,22.253999710083008 C6.7420000076293945,19.28000020980835 3.5,15.3329999446868896 3.5,10.5350000858306885 C3.5,7.248999977111816 6.214000129699707,4.53499984741211 9.5,4.53499984741211 C11.075000047683716,4.53499984741211 12.4510000228881836,5.034000396728516 13.5,5.984000015258789 C14.6510000228881836,5.034000396728516 16.075000047683716,4.53499984741211 17.5,4.53499984741211z"
-                                                  Fill="Pink" Width="27" Height="27" Margin="10,0" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                                  Visibility="{Binding IsLiked, Converter={StaticResource btvc}}">
+                                                      Fill="Pink" Width="27" Height="27" Margin="10,0" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                      Visibility="{Binding IsLiked, Converter={StaticResource btvc}}">
                                                 </Path>
                                                 <Button Grid.Row="1" HorizontalAlignment="Left" Margin="10,0" Content="{Binding Title}"
                                                     Command="{x:Static local:GlobalData.ShowDocumentCommand}" CommandParameter="{Binding}"

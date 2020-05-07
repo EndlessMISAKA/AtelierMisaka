@@ -8,7 +8,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" Style="{StaticResource WindowStyle}"
         Background="#2D2D30" Closing="Window_Closing"
-        Title="Downloader" Height="720" Width="1280" WindowStartupLocation="CenterOwner">
+        Title="Alchemy Cauldron" Height="720" Width="1280" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:VM_Download x:Name="VM_DD"/>
     </Window.DataContext>
@@ -77,7 +77,8 @@
                                         <TextBlock Grid.Column="1" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
                                         <Grid Grid.Column="2">
                                             <TextBlock Text="{Binding ErrorMsg}" Style="{StaticResource TBL_DL}"/>
-                                            <StackPanel x:Name="sp" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
+                                            <StackPanel x:Name="sp" Orientation="Horizontal" HorizontalAlignment="Center"
+                                                        Visibility="Hidden" Background="#2D2D30">
                                                 <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
                                                 <local:ButtonEx Style="{StaticResource BTN_Play}" DLS="{Binding DLStatus}"/>
                                                 <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="{Binding DLStatus}"/>
