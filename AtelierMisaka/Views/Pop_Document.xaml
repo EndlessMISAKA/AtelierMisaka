@@ -33,9 +33,19 @@
                     </Figure>
                 </Paragraph>
                 <Paragraph>
-                    <TextBlock x:Name="title" FontSize="40" Text="{Binding Title_Document}"/>
+                    <TextBlock FontSize="40" Text="{Binding Title_Document}"/>
                     <LineBreak/>
-                    <TextBlock x:Name="ctime" FontSize="25" Text="{Binding Date_Document}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="25" Text="发布于:"/>
+                        <TextBlock FontSize="25" Text="{Binding Date_Document}"/>
+                        <TextBlock FontSize="25" Text="      更新于:"/>
+                        <TextBlock FontSize="25" Text="{Binding UpDate_Document}"/>
+                    </StackPanel>
+                    <LineBreak/>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding Site_Document}">
+                        <TextBlock FontSize="25" Text="过期时间:"/>
+                        <TextBlock FontSize="25" Text="{Binding DeadDate_Document}"/>
+                    </StackPanel>
                     <LineBreak/>
                 </Paragraph>
                 <Paragraph x:Name="MainBody" FontSize="20"/>

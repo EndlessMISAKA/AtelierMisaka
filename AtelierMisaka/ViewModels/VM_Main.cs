@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Windows.Controls;
 
 namespace AtelierMisaka.ViewModels
 {
@@ -21,7 +20,7 @@ namespace AtelierMisaka.ViewModels
         private IList<BaseItem> _itemList_Zero = null;
         private IList<BaseItem> _itemList_Link = null;
         private BaseItem _selectedDocument = null;
-        private UserControl _popPage = null;
+        private System.Windows.Controls.UserControl _popPage = null;
 
         public ShowType ShowList
         {
@@ -89,7 +88,7 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
-        public UserControl PopPage
+        public System.Windows.Controls.UserControl PopPage
         {
             get => _popPage;
             set
@@ -648,6 +647,30 @@ namespace AtelierMisaka.ViewModels
             get
             {
                 return IsShowDocument ? _selectedDocument.CreateDate.ToString("yyyy/MM/dd HH:mm") : string.Empty;
+            }
+        }
+
+        public string UpDate_Document
+        {
+            get
+            {
+                return IsShowDocument ? _selectedDocument.UpdateDate.ToString("yyyy/MM/dd HH:mm") : string.Empty;
+            }
+        }
+
+        public string DeadDate_Document
+        {
+            get
+            {
+                return IsShowDocument ? ((_selectedDocument is FantiaItem) ? (_selectedDocument as FantiaItem).DeadDate : string.Empty) : string.Empty;
+            }
+        }
+
+        public System.Windows.Visibility Site_Document
+        {
+            get
+            {
+                return IsShowDocument ? ((_site == SiteType.Fantia) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed) : System.Windows.Visibility.Collapsed;
             }
         }
 

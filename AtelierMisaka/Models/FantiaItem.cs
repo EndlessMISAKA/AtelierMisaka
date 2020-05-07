@@ -6,6 +6,7 @@ namespace AtelierMisaka.Models
     {
         private List<string> _fees = new List<string>();
         private List<string> _pTitles = new List<string>();
+        private string _deadDate = string.Empty;
 
         public string FID
         {
@@ -46,6 +47,19 @@ namespace AtelierMisaka.Models
                 if (_pTitles != value)
                 {
                     _pTitles = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public string DeadDate
+        {
+            get => _deadDate;
+            set
+            {
+                if (_deadDate != value)
+                {
+                    _deadDate = value;
                     RaisePropertyChanged();
                 }
             }

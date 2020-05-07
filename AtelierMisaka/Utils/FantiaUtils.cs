@@ -214,6 +214,14 @@ namespace AtelierMisaka
                         fi.CoverPic = jfp.post.thumb.original;
                         fi.CoverPicThumb = jfp.post.thumb.ogp;
                     }
+                    if (DateTime.TryParse(jfp.post.deadline, out DateTime dt))
+                    {
+                        fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    }
+                    else
+                    {
+                        fi.DeadDate = "无";
+                    }
 					
                     foreach (var ct in jfp.post.post_contents)
                     {
@@ -269,8 +277,9 @@ namespace AtelierMisaka
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 throw;
             }
         }

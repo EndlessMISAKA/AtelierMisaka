@@ -18,7 +18,7 @@ namespace AtelierMisaka.Models
 		public DateTime posted_at { get; set; }
 		public DateTime converted_at { get; set; }
 		public Post_Contents[] post_contents { get; set; }
-		public DateTime deadline { get; set; }
+		public string deadline { get; set; }
 		public Links links { get; set; }
 	}
 
