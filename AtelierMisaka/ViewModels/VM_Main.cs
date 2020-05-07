@@ -132,19 +132,21 @@ namespace AtelierMisaka.ViewModels
 
         #region Setting
 
-        private ArtistInfo _artist = new ArtistInfo();
         private SiteType _site = SiteType.Fanbox;
 
+        private ArtistInfo _artistFanbox = null;
         private string _cookiesFanbox = string.Empty;
         private string _proxyFanbox = string.Empty;
         private string _savePathFanbox = string.Empty;
         private bool _useProxyFanbox = true;
 
+        private ArtistInfo _artistPatreon = null;
         private string _cookiesPatreon = string.Empty;
         private string _proxyPatreon = string.Empty;
         private string _savePathPatreon = string.Empty;
         private bool _useProxyPatreon = true;
 
+        private ArtistInfo _artistFantia = null;
         private string _cookiesFantia = string.Empty;
         private string _proxyFantia = string.Empty;
         private string _savePathFantia = string.Empty;
@@ -175,6 +177,7 @@ namespace AtelierMisaka.ViewModels
                 {
                     _site = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged("Artist");
                     RaisePropertyChanged("ArtistList");
                     RaisePropertyChanged("Cookies");
                     RaisePropertyChanged("UseProxy");
@@ -182,23 +185,50 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged("SavePath");
                     RaisePropertyChanged("CookieTag");
                     RaisePropertyChanged("PostUrlTag");
-                    if (ArtistList.Count > 0)
-                        Artist = ArtistList.Last();
+                    RaisePropertyChanged("HasSelected");
                 }
             }
         }
 
         public ArtistInfo Artist
         {
-            get => _artist;
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _artistFanbox;
+                    case SiteType.Fantia:
+                        return _artistFantia;
+                    default:
+                        return _artistPatreon;
+                }
+            }
             set
             {
-                if (_artist != value)
+                switch (_site)
                 {
-                    _artist = value;
-                    RaisePropertyChanged();
-                    RaisePropertyChanged("HasSelected");
+                    case SiteType.Fanbox:
+                        if (_artistFanbox != value)
+                        {
+                            _artistFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_artistFantia != value)
+                        {
+                            _artistFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_artistPatreon != value)
+                        {
+                            _artistPatreon = value;
+                        }
+                        break;
                 }
+                RaisePropertyChanged();
+                RaisePropertyChanged("HasSelected");
             }
         }
 
@@ -277,7 +307,7 @@ namespace AtelierMisaka.ViewModels
 
         public bool HasSelected
         {
-            get => (_artist != null) && (_artist.AName != "自定义");
+            get => (Artist != null) && (Artist.AName != "自定义");
         }
 
         public string Messages

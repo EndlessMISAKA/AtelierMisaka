@@ -446,6 +446,7 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
+                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 if (File.Exists("Setting_Patreon.ini"))
                 {
                     var ms = File.ReadAllLines("Setting_Patreon.ini");
@@ -460,6 +461,7 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
+                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 if (File.Exists("Setting_Fantia.ini"))
                 {
                     var ms = File.ReadAllLines("Setting_Fantia.ini");
@@ -474,6 +476,7 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
+                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 if (File.Exists("Setting_Fanbox.ini"))
                 {
                     var ms = File.ReadAllLines("Setting_Fanbox.ini");
@@ -482,7 +485,6 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
-                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
             }
             catch { }
         }
@@ -494,13 +496,13 @@ namespace AtelierMisaka.Views
                 ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
                 SetLastDate(ai.Id);
             }
-            else
-            {
-                if (null == GlobalData.VM_MA.Artist && GlobalData.VM_MA.ArtistList.Count > 0)
-                {
-                    GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
-                }
-            }
+            //else
+            //{
+            //    if (null == GlobalData.VM_MA.Artist && GlobalData.VM_MA.ArtistList.Count > 0)
+            //    {
+            //        GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
+            //    }
+            //}
         }
 
         private void SetLastDate(string id)

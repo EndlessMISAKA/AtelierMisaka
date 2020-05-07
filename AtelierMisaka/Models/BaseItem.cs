@@ -17,6 +17,7 @@ namespace AtelierMisaka.Models
         protected bool _needLoadCover = true;
         protected bool _skip = false;
         protected bool _isLiked = false;
+        protected bool? _hasLink = null;
         protected byte[] _imgData = null;
         private int _percent = 0;
 
@@ -38,7 +39,14 @@ namespace AtelierMisaka.Models
 
         public bool HasLink
         {
-            get => _comments.FindIndex(x => x.Contains("http")) != -1;
+            get
+            {
+                if (null == _hasLink)
+                {
+                    _hasLink = ((_comments.FindIndex(x => x.Contains("http") || x.Contains("<引用链接")) != -1) == true);
+                }
+                return _hasLink == true;
+            }
         }
 
         public string Link
