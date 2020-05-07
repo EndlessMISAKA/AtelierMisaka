@@ -22,8 +22,8 @@ namespace AtelierMisaka.Models
 		public string title { get; set; }
 		public string coverImageUrl { get; set; }
 		public int feeRequired { get; set; }
-		public DateTime publishedDatetime { get; set; }
-		public DateTime updatedDatetime { get; set; }
+		public string publishedDatetime { get; set; }
+		public string updatedDatetime { get; set; }
 		public string type { get; set; }
 		public ItemBody body { get; set; }
 		public bool isLiked { get; set; }

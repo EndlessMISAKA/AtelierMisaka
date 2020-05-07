@@ -194,15 +194,20 @@ namespace AtelierMisaka
                 var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
                 if (null != jfp.post)
 				{
-					if (GlobalData.OverTime(jfp.post.converted_at))
-					{
-						return;
-					}
-					FantiaItem fi = new FantiaItem()
+                    FantiaItem fi = new FantiaItem();
+                    if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
                     {
-                        CreateDate = jfp.post.posted_at,
-                        UpdateDate = jfp.post.converted_at
-                    };
+                        fi.CreateDate = dt;
+                    }
+                    if (DateTime.TryParse(jfp.post.converted_at, out dt))
+                    {
+                        fi.UpdateDate = dt;
+                    }
+
+                    if (GlobalData.OverTime(fi.UpdateDate))
+                    {
+                        return;
+                    }
                     fi.FID = jfp.post.id.ToString();
                     fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title));
                     if (!string.IsNullOrEmpty(jfp.post.comment))
@@ -215,7 +220,7 @@ namespace AtelierMisaka
                         fi.CoverPic = jfp.post.thumb.original;
                         fi.CoverPicThumb = jfp.post.thumb.ogp;
                     }
-                    if (DateTime.TryParse(jfp.post.deadline, out DateTime dt))
+                    if (DateTime.TryParse(jfp.post.deadline, out dt))
                     {
                         fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
                     }
@@ -275,7 +280,15 @@ namespace AtelierMisaka
                     bis.Add(fi);
                     if (null != jfp.post.links && null != jfp.post.links.previous)
                     {
-                        if (!GlobalData.OverTime(jfp.post.links.previous.converted_at))
+                        if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
+                        {
+                            if (!DateTime.TryParse(jfp.post.links.previous.posted_at, out dtp))
+                            {
+                                GetUrls_Loop(jfp.post.links.previous.id, bis);
+                                return;
+                            }
+                        }
+                        if (!GlobalData.OverTime(dtp))
                         {
                             GetUrls_Loop(jfp.post.links.previous.id, bis);
                         }
@@ -299,9 +312,16 @@ namespace AtelierMisaka
                     {
                         FID = jfp.post.id.ToString(),
                         Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title)),
-                        CreateDate = jfp.post.posted_at,
-                        UpdateDate = jfp.post.converted_at
                     };
+                    if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
+                    {
+                        fi.CreateDate = dt;
+                    }
+                    if (DateTime.TryParse(jfp.post.converted_at, out dt))
+                    {
+                        fi.UpdateDate = dt;
+                    }
+
                     if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
                         fi.Comments.Add(jfp.post.comment);
@@ -311,6 +331,14 @@ namespace AtelierMisaka
                     {
                         fi.CoverPic = jfp.post.thumb.original;
                         fi.CoverPicThumb = jfp.post.thumb.ogp;
+                    }
+                    if (DateTime.TryParse(jfp.post.deadline, out dt))
+                    {
+                        fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    }
+                    else
+                    {
+                        fi.DeadDate = "无";
                     }
 
                     var contents = jfp.post.post_contents;
@@ -366,7 +394,15 @@ namespace AtelierMisaka
                     bis.Add(fi);
                     if (null != jfp.post.links && null != jfp.post.links.previous)
                     {
-                        if (!GlobalData.OverTime(jfp.post.links.previous.converted_at))
+                        if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
+                        {
+                            if (!DateTime.TryParse(jfp.post.links.previous.posted_at, out dtp))
+                            {
+                                GetUrls_Loop(jfp.post.links.previous.id, bis);
+                                return;
+                            }
+                        }
+                        if (!GlobalData.OverTime(dtp))
                         {
                             GetUrls_Loop(jfp.post.links.previous.id, bis);
                         }

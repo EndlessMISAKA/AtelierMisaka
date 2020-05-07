@@ -15,8 +15,8 @@ namespace AtelierMisaka.Models
 		public string title { get; set; }
 		public string comment { get; set; }
 		public Thumb thumb { get; set; }
-		public DateTime posted_at { get; set; }
-		public DateTime converted_at { get; set; }
+		public string posted_at { get; set; }
+		public string converted_at { get; set; }
 		public Post_Contents[] post_contents { get; set; }
 		public string deadline { get; set; }
 		public Links links { get; set; }
@@ -42,7 +42,7 @@ namespace AtelierMisaka.Models
 	{
 		public int id { get; set; }
 		public string posted_at { get; set; }
-		public DateTime converted_at { get; set; }
+		public string converted_at { get; set; }
 	}
 
 	public class Post_Contents

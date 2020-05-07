@@ -194,12 +194,18 @@ namespace AtelierMisaka
                         PID = po.id,
                         Fee = po.feeRequired.ToString(),
                         Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(po.title.Trim())),
-                        CreateDate = po.publishedDatetime,
-                        UpdateDate = po.updatedDatetime,
                         CoverPic = po.coverImageUrl,
                         CoverPicThumb = po.coverImageUrl,
                         IsLiked = po.isLiked
                     };
+                    if (DateTime.TryParse(po.publishedDatetime, out DateTime dt))
+                    {
+                        pi.CreateDate = dt;
+                    }
+                    if (DateTime.TryParse(po.updatedDatetime, out dt))
+                    {
+                        pi.UpdateDate = dt;
+                    }
                     if (GlobalData.OverPayment(int.Parse(pi.Fee)) || GlobalData.OverTime(pi.UpdateDate))
                     {
                         pi.Skip = true;
