@@ -153,6 +153,7 @@ namespace AtelierMisaka
             }
             catch (Exception ex)
             {
+                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
                 if (ex is WebException || ex is System.Net.Sockets.SocketException)
                 {
                     return ex.Message.Contains("401") ? ErrorType.Cookies : ErrorType.Web;

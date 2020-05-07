@@ -168,6 +168,11 @@ namespace AtelierMisaka
             ShowDLCommand.Execute(null);
         });
 
+        public static void ErrorLog(string msg)
+        {
+            File.AppendAllText("error.log", DateTime.Now.ToString() + Environment.NewLine + msg);
+        }
+
         public static BaseUtils GetUtils()
         {
             switch (VM_MA.Site)
@@ -223,11 +228,14 @@ namespace AtelierMisaka
 
         public static string ReplacePath(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return string.Empty;
+            }
             foreach (char c in _invalid)
             {
                 path = path.Replace(c.ToString(), "_");
             }
-
             return path;
         }
 

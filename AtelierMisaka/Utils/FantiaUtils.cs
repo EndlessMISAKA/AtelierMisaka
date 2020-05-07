@@ -156,6 +156,7 @@ namespace AtelierMisaka
             catch (Exception ex)
             {
                 bis = new List<BaseItem>();
+                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
                 if (ex is WebException || ex is System.Net.Sockets.SocketException)
                 {
                     return ex.Message.Contains("401") ? ErrorType.Cookies : ErrorType.Web;
@@ -225,7 +226,11 @@ namespace AtelierMisaka
 					
                     foreach (var ct in jfp.post.post_contents)
                     {
-                        var fee = ct.plan.price;
+                        var fee = 0;
+                        if (null != ct.plan)
+                        {
+                            fee = ct.plan.price;
+                        }
                         var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
@@ -277,9 +282,8 @@ namespace AtelierMisaka
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
                 throw;
             }
         }
@@ -312,7 +316,11 @@ namespace AtelierMisaka
                     var contents = jfp.post.post_contents;
                     foreach (var ct in contents)
                     {
-                        var fee = ct.plan.price;
+                        var fee = 0;
+                        if (null != ct.plan)
+                        {
+                            fee = ct.plan.price;
+                        }
                         var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
