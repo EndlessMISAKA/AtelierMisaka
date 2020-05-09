@@ -398,13 +398,27 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fanbox:
                         if (_cookiesFanbox != value)
                         {
-                            _cookiesFanbox = value;
+                            if (!value.StartsWith("FANBOXSESSID="))
+                            {
+                                _cookiesFanbox = $"FANBOXSESSID={value}";
+                            }
+                            else
+                            {
+                                _cookiesFanbox = value;
+                            }
                         }
                         break;
                     case SiteType.Fantia:
                         if (_cookiesFantia != value)
                         {
-                            _cookiesFantia = value;
+                            if (!value.StartsWith("_session_id="))
+                            {
+                                _cookiesFantia = $"_session_id={value}";
+                            }
+                            else
+                            {
+                                _cookiesFantia = value;
+                            }
                         }
                         break;
                     default:
