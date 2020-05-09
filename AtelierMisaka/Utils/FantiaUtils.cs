@@ -18,21 +18,22 @@ namespace AtelierMisaka
         readonly Regex _artUrl = new Regex(@"^https://fantia.jp/fanclubs/(\d+)$");
         readonly string _nextP = "fa fa-angle-right";
 
-        public override ArtistInfo GetArtistInfo(string url)
+        public override ErrorType GetArtistInfo(string url, out ArtistInfo ai)
         {
             try
             {
+                ai = null;
                 Match ma = _artUrl.Match(url);
                 if (!ma.Success)
                 {
-                    return null;
+                    return ErrorType.Path;
                 }
                 string cid = ma.Groups[1].Value;
                 
                 var jfa = JsonConvert.DeserializeObject<JsonData_Fantia_Artist>(GetWebCode($"https://fantia.jp/api/v1/fanclubs/{cid}"));
-                if(null != jfa.fanclub)
+                if (null != jfa.fanclub)
                 {
-                    var ai = new ArtistInfo()
+                    ai = new ArtistInfo()
                     {
                         Id = cid,
                         AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name)),
@@ -41,25 +42,31 @@ namespace AtelierMisaka
                         PayLow = GlobalData.VM_MA.Artist.PayLow,
                         PayHigh = GlobalData.VM_MA.Artist.PayHigh
                     };
-                    return ai;
+                    return ErrorType.NoError;
                 }
+                return ErrorType.IO;
             }
-            catch
+            catch (Exception ex)
             {
-
+                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
+                ai = null;
+                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                {
+                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                }
+                return ErrorType.UnKnown;
             }
-            return null;
         }
 
-        public override List<ArtistInfo> GetArtistList()
+        public override ErrorType GetArtistList(out List<ArtistInfo> ais)
         {
             try
             {
-                List<ArtistInfo> ais = new List<ArtistInfo>();
+                List<ArtistInfo> tt = new List<ArtistInfo>();
                 //有料
-                ais.AddRange(GetArtistListFromWebCode("not_"));
+                tt.AddRange(GetArtistListFromWebCode("not_"));
                 //無料
-                ais.AddRange(GetArtistListFromWebCode(string.Empty));
+                tt.AddRange(GetArtistListFromWebCode(string.Empty));
                 
                 var tais = GlobalData.VM_MA.ArtistList.ToList();
                 if (tais.Count == 0)
@@ -68,14 +75,21 @@ namespace AtelierMisaka
                 }
                 tais.ForEach(x =>
                 {
-                    if (!ais.Contains(x))
-                        ais.Add(x);
+                    if (!tt.Contains(x))
+                        tt.Add(x);
                 });
-                return ais;
+                ais = tt;
+                return ErrorType.NoError;
             }
-            catch
+            catch (Exception ex)
             {
-                return new List<ArtistInfo>() { new ArtistInfo() };
+                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
+                ais = new List<ArtistInfo>() { new ArtistInfo() };
+                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                {
+                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                }
+                return ErrorType.UnKnown;
             }
         }
 
@@ -123,7 +137,7 @@ namespace AtelierMisaka
             }
             catch
             {
-                return new List<ArtistInfo>();
+                throw;
             }
         }
 

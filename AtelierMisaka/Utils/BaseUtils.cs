@@ -6,9 +6,9 @@ namespace AtelierMisaka
 {
     public abstract class BaseUtils
     {
-        public abstract ArtistInfo GetArtistInfo(string url);
+        public abstract ErrorType GetArtistInfo(string url, out ArtistInfo ai);
 
-        public abstract List<ArtistInfo> GetArtistList();
+        public abstract ErrorType GetArtistList(out List<ArtistInfo> ais);
 
         public abstract bool GetCover(BaseItem bi);
 

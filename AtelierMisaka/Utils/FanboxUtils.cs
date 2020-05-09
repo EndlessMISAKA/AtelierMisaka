@@ -19,7 +19,7 @@ namespace AtelierMisaka
         Regex _artUrl2 = new Regex(@"^https://(\w+)\.fanbox\.cc/?$");
         Regex _csrfToken = new Regex("csrfToken\":\"(\\w+)\"");
 
-        public override ArtistInfo GetArtistInfo(string url)
+        public override ErrorType GetArtistInfo(string url, out ArtistInfo ai)
         {
             try
             {
@@ -29,30 +29,38 @@ namespace AtelierMisaka
                     ma = _artUrl2.Match(url);
                     if (!ma.Success)
                     {
-                        return null;
+                        ai = null;
+                        return ErrorType.Path;
                     }
                 }
                 _referer = $"https://www.fanbox.cc/@{ma.Groups[1].Value}";
 
-                var ai = GetInfo(ma.Groups[1].Value);
+                ai = GetInfo(ma.Groups[1].Value);
                 if (null != ai)
                 {
                     ai.PayLow = GlobalData.VM_MA.Artist.PayLow;
                     ai.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
+                    return ErrorType.NoError;
                 }
-                return ai;
+                return ErrorType.IO;
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
+                ai = new ArtistInfo();
+                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                {
+                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                }
+                return ErrorType.UnKnown;
             }
         }
 
-        public override List<ArtistInfo> GetArtistList()
+        public override ErrorType GetArtistList(out List<ArtistInfo> ais)
         {
             try
             {
-                List<ArtistInfo> ais = new List<ArtistInfo>();
+                ais = new List<ArtistInfo>();
                 var tais = GlobalData.VM_MA.ArtistList.ToList();
                 if (tais.Count == 0)
                 {
@@ -72,13 +80,20 @@ namespace AtelierMisaka
                             ais.Add(ai);
                         }
                     }
+                    ais.AddRange(tais);
+                    return ErrorType.NoError;
                 }
-                ais.AddRange(tais);
-                return ais;
+                return ErrorType.IO;
             }
-            catch
+            catch (Exception ex)
             {
-                return new List<ArtistInfo>() { new ArtistInfo() };
+                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
+                ais = new List<ArtistInfo>() { new ArtistInfo() };
+                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                {
+                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                }
+                return ErrorType.UnKnown;
             }
         }
 
@@ -106,12 +121,12 @@ namespace AtelierMisaka
                     }
                     return ai;
                 }
+                return null;
             }
             catch
             {
-
+                throw;
             }
-            return null;
         }
 
         public override bool GetCover(BaseItem bi)

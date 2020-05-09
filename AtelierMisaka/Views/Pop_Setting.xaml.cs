@@ -80,7 +80,32 @@ namespace AtelierMisaka.Views
                 _utils = GlobalData.GetUtils();
                 if (!GlobalData.VM_MA.HasSelected)
                 {
-                    var ai = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl));
+                    ArtistInfo ai = null;
+                    var _ret = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl, out ai));
+                    if (_ret != ErrorType.NoError)
+                    {
+                        switch (_ret)
+                        {
+                            case ErrorType.Path:
+                                await GetCheck("输入的链接有误");
+                                break;
+                            case ErrorType.IO:
+                                await GetCheck("无法转换json数据", "请联系开发者");
+                                break;
+                            case ErrorType.Web:
+                                await GetCheck("网络错误");
+                                break;
+                            case ErrorType.UnKnown:
+                                await GetCheck("未知错误", "请联系开发者");
+                                break;
+                            case ErrorType.Cookies:
+                                await GetCheck("请确认Cookie是否过期");
+                                break;
+                        }
+                        GlobalData.CheckResult = null;
+                        ShowLoading(false);
+                        return;
+                    }
                     if (ai == null)
                     {
                         await GetCheck("无法获取作者信息", "请检查Cookies是否过期");
@@ -206,7 +231,32 @@ namespace AtelierMisaka.Views
                     _utils = GlobalData.GetUtils();
                     if (!GlobalData.VM_MA.HasSelected)
                     {
-                        var ai = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl));
+                        ArtistInfo ai = null;
+                        var _ret = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl, out ai));
+                        if (_ret != ErrorType.NoError)
+                        {
+                            switch (_ret)
+                            {
+                                case ErrorType.Path:
+                                    await GetCheck("输入的链接有误");
+                                    break;
+                                case ErrorType.IO:
+                                    await GetCheck("无法转换json数据", "请联系开发者");
+                                    break;
+                                case ErrorType.Web:
+                                    await GetCheck("网络错误");
+                                    break;
+                                case ErrorType.UnKnown:
+                                    await GetCheck("未知错误", "请联系开发者");
+                                    break;
+                                case ErrorType.Cookies:
+                                    await GetCheck("请确认Cookie是否过期");
+                                    break;
+                            }
+                            GlobalData.CheckResult = null;
+                            ShowLoading(false);
+                            return;
+                        }
                         if (ai == null)
                         {
                             await GetCheck("无法获取作者信息");
@@ -360,11 +410,32 @@ namespace AtelierMisaka.Views
                 return;
             }
             ShowLoading(true);
-            _utils = GlobalData.GetUtils();
-            var ais = await Task.Run(() =>
+            List<ArtistInfo> ais = null;
+            var ret = await Task.Run(() =>
             {
-                return _utils.GetArtistList();
+                return GlobalData.GetUtils().GetArtistList(out ais);
             });
+            if (ret != ErrorType.NoError)
+            {
+                switch (ret)
+                {
+                    case ErrorType.IO:
+                        await GetCheck("无法转换json数据", "请联系开发者");
+                        break;
+                    case ErrorType.Web:
+                        await GetCheck("网络错误");
+                        break;
+                    case ErrorType.UnKnown:
+                        await GetCheck("未知错误", "请联系开发者");
+                        break;
+                    case ErrorType.Cookies:
+                        await GetCheck("请确认Cookie是否过期");
+                        break;
+                }
+                GlobalData.CheckResult = null;
+                ShowLoading(false);
+                return;
+            }
             GlobalData.VM_MA.ArtistList = new System.Collections.ObjectModel.ObservableCollection<ArtistInfo>();
             foreach (var ai in ais)
             {
