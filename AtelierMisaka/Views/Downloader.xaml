@@ -82,7 +82,7 @@
                                                 <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
                                                 <local:ButtonEx Style="{StaticResource BTN_Play}" DLS="{Binding DLStatus}"/>
                                                 <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="{Binding DLStatus}"/>
-                                                <local:ButtonEx Style="{StaticResource BTN_Ex}" DLS="Common"/>
+                                                <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Cancel"/>
                                             </StackPanel>
                                         </Grid>
                                         <Grid Grid.Column="3" HorizontalAlignment="Center">
