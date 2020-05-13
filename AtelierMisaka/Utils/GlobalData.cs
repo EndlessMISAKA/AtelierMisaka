@@ -19,13 +19,15 @@ namespace AtelierMisaka
         public static VM_Main VM_MA = null;
         public static VM_Download VM_DL = null;
         public static SynchronizationContext SyContext = null;
-        public static Dictionary<string, List<DLSP>> DownloadLogs = null;
-        public static DB_Layer Dbl = new DB_Layer();
         public static Downloader DownLP = null;
         public static bool? CheckResult = false;
 
+        public static CLastDateDic LastDateDic = null;
+        public static DownloadLogList DLLogs = null;
+
         private static Lazy<FanboxUtils> _utilFanbox = new Lazy<FanboxUtils>();
         private static Lazy<FantiaUtils> _utilFantia = new Lazy<FantiaUtils>();
+        private static Lazy<PatreonUtils> _utilPatreon = new Lazy<PatreonUtils>();
 
         private static Pop_Setting _pop_Setting = null;
         private static Pop_Document _pop_Document = null;
@@ -55,7 +57,7 @@ namespace AtelierMisaka
             VM_MA.LZindex = 3;
         });
 
-        public static ParamCommand<BaseItem> GetCoverCommand = new ParamCommand<BaseItem>(async (bi) =>
+        public static ParamCommand<BaseItem> GetCoverCommand = new ParamCommand<BaseItem>((bi) =>
         {
             VM_MA.SelectedDocument = bi;
             if (string.IsNullOrEmpty(bi.CoverPic))
@@ -76,7 +78,6 @@ namespace AtelierMisaka
             }
             if (CheckResult == false)
             {
-                CheckResult = null;
                 return;
             }
             System.Windows.Application.Current.Shutdown();
@@ -101,12 +102,9 @@ namespace AtelierMisaka
         {
             if (VM_MA.IsLiked_Document)
                 return;
-            ErrorType et = ErrorType.NoError;
-            await Task.Run(() =>
-            {
-                et = GetUtils().LikePost(VM_MA.SelectedDocument.ID, VM_MA.Artist.Cid);
-            });
-            if (et == ErrorType.NoError)
+
+            var ret = await GetUtils().LikePost(VM_MA.SelectedDocument.ID, VM_MA.Artist.Cid);
+            if (ret.Error == ErrorType.NoError)
             {
                 VM_MA.IsLiked_Document = true;
             }
@@ -115,18 +113,7 @@ namespace AtelierMisaka
                 if (VM_MA.IsLiked_Document)
                     return;
 
-                switch (et)
-                {
-                    case ErrorType.Security:
-                        VM_MA.Messages = $"认证机制出错{Environment.NewLine}请联系开发者";
-                        break;
-                    case ErrorType.Web:
-                        VM_MA.Messages = $"网络错误，请重试";
-                        break;
-                    default:
-                        VM_MA.Messages = $"尚未支持此站点";
-                        break;
-                }
+                VM_MA.Messages = ret.Msgs;
             }
         });
 
@@ -182,8 +169,20 @@ namespace AtelierMisaka
                 case SiteType.Fantia:
                     return _utilFantia.Value;
                 default:
-                    return null;
+                    return _utilPatreon.Value;
             }
+        }
+
+        public static async Task<bool> SetProxy(CefSharp.Wpf.ChromiumWebBrowser cwb, string Address)
+        {
+            return await CefSharp.Cef.UIThreadTaskFactory.StartNew(delegate
+            {
+                var rc = cwb.GetBrowser().GetHost().RequestContext;
+                var v = new Dictionary<string, object>();
+                v["mode"] = "fixed_servers";
+                v["server"] = Address;
+                return rc.SetPreference("proxy", v, out string error);
+            });
         }
 
         public static void Init()
@@ -191,6 +190,8 @@ namespace AtelierMisaka
             _pop_Setting = new Pop_Setting();
             _pop_Document = new Pop_Document();
             SyContext = SynchronizationContext.Current;
+            DLLogs = new DownloadLogList();
+            LastDateDic = new CLastDateDic();
         }
 
         public static bool OverPayment(int feeRequired)
@@ -319,7 +320,8 @@ namespace AtelierMisaka
         Error,
         Cancel,
         Common,
-        Null
+        Null,
+        WriteFile
     }
 
     public enum ShowType
