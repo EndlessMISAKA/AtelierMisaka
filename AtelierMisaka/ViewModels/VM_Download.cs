@@ -2,6 +2,7 @@
 using AtelierMisaka.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka.ViewModels
@@ -13,12 +14,13 @@ namespace AtelierMisaka.ViewModels
         private bool _isChangeProxy = false;
         private bool _showCheck = false;
         private bool _isQuest = false;
-        private string _btnText = "全部开始";
         private string _savePath = string.Empty;
         private string _tempAI = string.Empty;
+        private string _tempAN = string.Empty;
         private int _threadCount = 3;
         private double _mLeft = 0d;
         private double _mTop = 0d;
+        private SiteType _tempSite = SiteType.Fanbox;
 
         private List<DownloadItem> _dlClients = new List<DownloadItem>();
 
@@ -38,25 +40,31 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged();
                     if (_isDownloading)
                     {
-                        if (_dlClients.Count > _threadCount)
+                        lock (lock_Dl)
                         {
-                            for (int i = _dlClients.Count - 1; i >= _threadCount; i++)
+                            if (_dlClients.Count > _threadCount)
                             {
-                                _dlClients[i].Pause();
-                                _dlClients.RemoveAt(i);
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < _downLoadList.Count; i++)
-                            {
-                                if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
+                                for (int i = _dlClients.Count - 1; i >= _threadCount; i++)
                                 {
-                                    _dlClients.Add(_downLoadList[i]);
-                                    _downLoadList[i].Start();
-                                    if (_dlClients.Count >= _threadCount)
+                                    _dlClients[i].Pause();
+                                    _dlClients.RemoveAt(i);
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < _downLoadList.Count; i++)
+                                {
+                                    if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
                                     {
-                                        break;
+                                        if (!_dlClients.Contains(_downLoadList[i]))
+                                        {
+                                            _dlClients.Add(_downLoadList[i]);
+                                        }
+                                        _downLoadList[i].Start();
+                                        if (_dlClients.Count >= _threadCount)
+                                        {
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -68,15 +76,7 @@ namespace AtelierMisaka.ViewModels
 
         public string BtnText
         {
-            get => _btnText;
-            set
-            {
-                if (_btnText != value)
-                {
-                    _btnText = value;
-                    RaisePropertyChanged();
-                }
-            }
+            get => _isDownloading ? "全部暂停" : "全部开始";
         }
 
         public string SavePath
@@ -105,6 +105,32 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public string TempAN
+        {
+            get => _tempAN;
+            set
+            {
+                if (_tempAN != value)
+                {
+                    _tempAN = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public SiteType TempSite
+        {
+            get => _tempSite;
+            set
+            {
+                if (_tempSite != value)
+                {
+                    _tempSite = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public bool ShowCheck
         {
             get => _showCheck;
@@ -127,6 +153,7 @@ namespace AtelierMisaka.ViewModels
                 {
                     _isDownloading = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged("BtnText");
                 }
             }
         }
@@ -229,28 +256,32 @@ namespace AtelierMisaka.ViewModels
                 _isQuest = true;
                 await Task.Run(() =>
                 {
-                    _isDownloading = !_isDownloading;
-                    if (_isDownloading)
+                    IsDownloading = !_isDownloading;
+                    lock (lock_Dl)
                     {
-                        BtnText = "全部暂停";
-                        for (int i = 0; i < _downLoadList.Count; i++)
+                        if (_isDownloading)
                         {
-                            if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
+                            for (int i = 0; i < _downLoadList.Count; i++)
                             {
-                                _dlClients.Add(_downLoadList[i]);
-                                _downLoadList[i].Start();
-                                if (_dlClients.Count >= _threadCount)
+                                if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
                                 {
-                                    break;
+                                    if (!_dlClients.Contains(_downLoadList[i]))
+                                    {
+                                        _dlClients.Add(_downLoadList[i]);
+                                    }
+                                    _downLoadList[i].Start();
+                                    if (_dlClients.Count >= _threadCount)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        BtnText = "全部开始";
-                        _dlClients.ForEach(x => x.Pause());
-                        _dlClients.Clear();
+                        else
+                        {
+                            _dlClients.ForEach(x => x.Pause());
+                            _dlClients.Clear();
+                        }
                     }
                 });
                 _isQuest = false;
@@ -261,12 +292,155 @@ namespace AtelierMisaka.ViewModels
             });
         }
 
+        public ParamCommand<DownloadItem> DownloadCommand
+        {
+            get => new ParamCommand<DownloadItem>((di) =>
+            {
+                if (di.DLStatus == DownloadStatus.Downloading)
+                {
+                    PauseCommand.Execute(di);
+                }
+                else if (di.DLStatus == DownloadStatus.Paused || di.DLStatus == DownloadStatus.Waiting)
+                {
+                    StartCommand.Execute(di);
+                }
+            });
+        }
+
+        public ParamCommand<DownloadItem> OptionCommand
+        {
+            get => new ParamCommand<DownloadItem>((di) =>
+            {
+                switch (di.DLStatus)
+                {
+                    case DownloadStatus.Waiting:
+                        ToFirstCommand.Execute(di);
+                        break;
+                    case DownloadStatus.Cancel:
+                        ReStartCommand.Execute(di);
+                        break;
+                    case DownloadStatus.Common:
+                        CancelCommand.Execute(di);
+                        break;
+                    default:
+                        ReStartCommand.Execute(di);
+                        break;
+                }
+            });
+        }
+
         public ParamCommand<DownloadItem> MoveToComLCommand
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
                 _downLoadList.Remove(di);
                 _completedList.Insert(0, di);
+            });
+        }
+
+        public ParamCommand<object[]> AddCommand
+        {
+            get => new ParamCommand<object[]>((args) =>
+            {
+                DownloadItem di = null;
+                int index = (int)args[2];
+                switch (GlobalData.VM_MA.Site)
+                {
+                    case SiteType.Fanbox:
+                        {
+                            BaseItem bi = (BaseItem)args[1];
+                            {
+                                string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{bi.Title}";
+                                Directory.CreateDirectory(sp);
+                                if (!Directory.Exists(sp))
+                                {
+                                    sp = GlobalData.ReplacePath(sp);
+                                    Directory.CreateDirectory(sp);
+                                }
+                                if ((bool)args[0])
+                                {
+                                    di = new DownloadItem
+                                    {
+                                        FileName = bi.FileNames[index],
+                                        Link = bi.ContentUrls[index],
+                                        SavePath = sp,
+                                        CTime = bi.CreateDate,
+                                        SourceDocu = bi,
+                                        AId = _tempAI
+                                    };
+                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
+                                }
+                                else
+                                {
+                                    di = new DownloadItem
+                                    {
+                                        FileName = bi.MediaNames[index],
+                                        Link = bi.MediaUrls[index],
+                                        SavePath = sp,
+                                        CTime = bi.CreateDate,
+                                        SourceDocu = bi,
+                                        AId = _tempAI
+                                    };
+                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
+                                }
+                            }
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        {
+                            FantiaItem fi = (FantiaItem)args[1];
+                            string sp = $"{_savePath}\\{_tempAN}\\{fi.CreateDate.ToString("yyyyMMdd_HHmm")}_{fi.Title}";
+                            Directory.CreateDirectory(sp);
+                            if (!Directory.Exists(sp))
+                            {
+                                sp = GlobalData.ReplacePath(sp);
+                                Directory.CreateDirectory(sp);
+                            }
+                            var nsp = $"{sp}\\{fi.PTitles[index]}";
+                            if (!Directory.Exists(nsp))
+                            {
+                                Directory.CreateDirectory(nsp);
+                                if (!Directory.Exists(nsp))
+                                {
+                                    sp = GlobalData.ReplacePath(nsp);
+                                    Directory.CreateDirectory(nsp);
+                                }
+                            }
+                            di = new DownloadItem
+                            {
+                                FileName = fi.FileNames[index],
+                                Link = fi.ContentUrls[index],
+                                SavePath = nsp,
+                                SourceDocu = fi,
+                                AId = _tempAI
+                            };
+                            di.CheckTempFile();
+                            GlobalData.VM_DL.DownLoadItemList.Add(di);
+                        }
+                        break;
+                    default:
+                        {
+                            BaseItem bi = (BaseItem)args[1];
+                            string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_{bi.Title}";
+                            Directory.CreateDirectory(sp);
+                            if (!Directory.Exists(sp))
+                            {
+                                sp = GlobalData.ReplacePath(sp);
+                                Directory.CreateDirectory(sp);
+                            }
+                            di = new DownloadItem
+                            {
+                                FileName = bi.FileNames[index],
+                                Link = bi.ContentUrls[index],
+                                SavePath = sp,
+                                CTime = bi.CreateDate,
+                                SourceDocu = bi,
+                                AId = _tempAI
+                            };
+                            GlobalData.VM_DL.DownLoadItemList.Add(di);
+                        }
+                        break;
+                }
             });
         }
 
@@ -288,7 +462,10 @@ namespace AtelierMisaka.ViewModels
                             {
                                 if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
                                 {
-                                    _dlClients.Add(_downLoadList[i]);
+                                    if (!_dlClients.Contains(_downLoadList[i]))
+                                    {
+                                        _dlClients.Add(_downLoadList[i]);
+                                    }
                                     _downLoadList[i].Start();
                                 }
                             }
@@ -300,9 +477,11 @@ namespace AtelierMisaka.ViewModels
                         if (_dlClients.Count == 0)
                         {
                             IsDownloading = false;
-                            BtnText = "全部开始";
-                            GlobalData.VM_MA.LastDate = DateTime.Now;
-                            GlobalData.Dbl.UpdateDate(_tempAI, GlobalData.VM_MA.LastDate);
+                            if (_downLoadList.Count == 0)
+                            {
+                                GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                            }
                         }
                     }
                 }
@@ -348,13 +527,22 @@ namespace AtelierMisaka.ViewModels
             {
                 if (_dlClients.Count < _threadCount)
                 {
-                    _dlClients.Add(di);
-                    di.Start();
-                    //if (_dlClients.Count == _threadCount)
-                    //{
-                    //    BtnText = "全部暂停";
-                    //    _isDownloading = true;
-                    //}
+                    lock (lock_Dl)
+                    {
+                        if (_dlClients.Count < _threadCount)
+                        {
+                            if (!_dlClients.Contains(di))
+                            {
+                                _dlClients.Add(di);
+                            }
+                            di.ReTryCount = 0;
+                            di.Start();
+                            if (_dlClients.Count == _threadCount || _dlClients.Count == _downLoadList.Count)
+                            {
+                                IsDownloading = true;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -367,11 +555,8 @@ namespace AtelierMisaka.ViewModels
         {
             get => new ParamCommand<DownloadItem>(async (di) =>
             {
-                var flag = await di.Pause();
-                if (flag && _isDownloading)
-                {
-                    BeginNextCommand.Execute(di);
-                }
+                await di.Pause();
+                BeginNextCommand.Execute(di);
             });
         }
 
@@ -381,10 +566,12 @@ namespace AtelierMisaka.ViewModels
             {
                 if (di.DLStatus == DownloadStatus.Downloading)
                 {
-                    await di.Pause();
-                    di.Start();
+                    if (await di.Pause())
+                    {
+                        di.Start();
+                    }
                 }
-                else
+                else if (di.DLStatus != DownloadStatus.WriteFile)
                 {
                     di.DLStatus = DownloadStatus.Waiting;
                     _downLoadList.Remove(di);
@@ -402,11 +589,8 @@ namespace AtelierMisaka.ViewModels
                 
                 if (di.DLStatus == DownloadStatus.Downloading)
                 {
-                    var flag = await di.Cancel();
-                    if (flag)
-                    {
-                        BeginNextCommand.Execute(di);
-                    }
+                    await di.Cancel();
+                    BeginNextCommand.Execute(di);
                 }
                 else
                 {

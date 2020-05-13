@@ -274,13 +274,9 @@ namespace AtelierMisaka.Models
 
         public async void Start()
         {
-            if (_ds != DownloadStatus.Downloading)
+            if (_ds == DownloadStatus.Waiting || _ds == DownloadStatus.Paused)
             {
                 DLStatus = DownloadStatus.Downloading;
-                while (_isStop)
-                {
-                    await Task.Delay(300);
-                }
                 _dlRet = await Task.Run(() =>
                 {
                     try
@@ -291,7 +287,10 @@ namespace AtelierMisaka.Models
                         {
                             _request.Proxy = GlobalData.VM_MA.MyProxy;
                         }
-                        _request.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                        if (GlobalData.VM_DL.TempSite != SiteType.Patreon)
+                        {
+                            _request.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                        }
                         _request.AddRange("bytes", _totalRC);
                         HttpWebResponse response = _request.GetResponse() as HttpWebResponse;
                         if (_contentLength == 0)
@@ -306,6 +305,7 @@ namespace AtelierMisaka.Models
                                 ContentLength = -1;
                             }
                         }
+                        _fullPath = Path.Combine(_savePath, _fileName);
                         using (Stream sm = response.GetResponseStream())
                         {
                             byte[] arra = new byte[1024];
@@ -323,7 +323,8 @@ namespace AtelierMisaka.Models
                                     }
                                     i = sm.Read(arra, 0, arra.Length);
                                 }
-                                
+
+                                DLStatus = DownloadStatus.WriteFile;
                                 if (File.Exists(_fullPath))
                                 {
                                     string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
@@ -333,7 +334,15 @@ namespace AtelierMisaka.Models
                                     _fullPath = Path.Combine(_savePath, _fileName);
                                 }
                                 File.WriteAllBytes(_fullPath, _dlData);
-                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, _fullPath, _link);
+                                GlobalData.DLLogs.Add(new DownloadLog()
+                                {
+                                    CId = AId,
+                                    PId = SourceDocu.ID,
+                                    Url = _link.Split('?').First(),
+                                    SavePath = _savePath,
+                                    FileName = _fileName,
+                                    Site = GlobalData.VM_DL.TempSite
+                                });
                                 Array.Clear(_dlData, 0, _dlData.Length);
                                 _dlData = null;
                                 GC.Collect(9);
@@ -366,7 +375,15 @@ namespace AtelierMisaka.Models
                                     fs.Flush();
                                 }
                                 File.Move(_fullPath, _fullPath.Substring(0, _fullPath.Length - 4));
-                                GlobalData.Dbl.InsertLog(AId, SourceDocu.ID, _fullPath, _link);
+                                GlobalData.DLLogs.Add(new DownloadLog()
+                                {
+                                    CId = AId,
+                                    PId = SourceDocu.ID,
+                                    Url = _link.Split('?').First(),
+                                    SavePath = _savePath,
+                                    FileName = _fileName,
+                                    Site = GlobalData.VM_DL.TempSite
+                                });
                                 GC.Collect(9);
                             }
                         }
@@ -375,11 +392,7 @@ namespace AtelierMisaka.Models
                     }
                     catch (Exception ex)
                     {
-                        if (ex is IOException)
-                        {
-                            return ErrorType.IO;
-                        }
-                        else if (ex is PathTooLongException)
+                        if (ex is PathTooLongException)
                         {
                             return ErrorType.Path;
                         }
@@ -403,6 +416,8 @@ namespace AtelierMisaka.Models
                 }
                 else if (_ds == DownloadStatus.Downloading)
                 {
+                    DLStatus = DownloadStatus.Waiting;
+                    _request.Abort();
                     if (_dlRet == ErrorType.Web)
                     {
                         ErrorMsg = "网络错误";
@@ -410,14 +425,18 @@ namespace AtelierMisaka.Models
                         {
                             Start();
                         }
+                        else
+                        {
+                            DLStatus = DownloadStatus.Error;
+                            GlobalData.SyContext.Send((dd) =>
+                            {
+                                GlobalData.VM_DL.BeginNextCommand.Execute(dd);
+                            }, this);
+                        }
                     }
                     else
                     {
-                        if (_dlRet == ErrorType.IO)
-                        {
-                            ErrorMsg = "数据流读写出错";
-                        }
-                        else if (_dlRet == ErrorType.Path)
+                        if (_dlRet == ErrorType.Path)
                         {
                             ErrorMsg = "文件路径太长";
                         }
@@ -439,13 +458,14 @@ namespace AtelierMisaka.Models
         {
             if (_ds == DownloadStatus.Downloading)
             {
-                DLStatus = DownloadStatus.Paused;
+                DLStatus = DownloadStatus.Null;
                 _isStop = true;
                 while (_isStop)
                 {
                     await Task.Delay(100);
                 }
                 _request.Abort();
+                DLStatus = DownloadStatus.Paused;
                 return true;
             }
             return false;
@@ -453,6 +473,7 @@ namespace AtelierMisaka.Models
 
         public async Task<bool> Cancel()
         {
+            _isStop = false;
             if (_ds == DownloadStatus.Downloading)
             {
                 DLStatus = DownloadStatus.Cancel;
@@ -485,6 +506,27 @@ namespace AtelierMisaka.Models
                 GC.Collect(9);
             }
             return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (null == obj)
+            {
+                return false;
+            }
+            else if (obj is DownloadItem di)
+            {
+                return di.Link == _link;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

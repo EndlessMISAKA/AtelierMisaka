@@ -98,7 +98,7 @@ namespace AtelierMisaka.Views
                 {
                     Hyperlink hl = new Hyperlink(new Run(bi.FileNames[i]))
                     {
-                        Command = GlobalData.DownloadCommand,
+                        Command = GlobalData.VM_DL.AddCommand,
                         CommandParameter = new object[] { true, bi, i }
                     };
                     MainBody.Inlines.Add(hl);
@@ -117,7 +117,7 @@ namespace AtelierMisaka.Views
                 {
                     Hyperlink hl = new Hyperlink(new Run(bi.MediaNames[i]))
                     {
-                        Command = GlobalData.DownloadCommand,
+                        Command = GlobalData.VM_DL.AddCommand,
                         CommandParameter = new object[] { false, bi, i }
                     };
                     MainBody.Inlines.Add(hl);
