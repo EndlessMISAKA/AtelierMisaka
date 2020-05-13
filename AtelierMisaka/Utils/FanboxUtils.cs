@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Threading.Tasks;
 
 namespace AtelierMisaka
 {
@@ -19,82 +19,85 @@ namespace AtelierMisaka
         Regex _artUrl2 = new Regex(@"^https://(\w+)\.fanbox\.cc/?$");
         Regex _csrfToken = new Regex("csrfToken\":\"(\\w+)\"");
 
-        public override ErrorType GetArtistInfo(string url, out ArtistInfo ai)
+        public async override Task<ResultMessage> GetArtistInfo(string url)
         {
-            try
+            return await Task.Run(() =>
             {
-                Match ma = _artUrl.Match(url);
-                if (!ma.Success)
+                try
                 {
-                    ma = _artUrl2.Match(url);
+                    Match ma = _artUrl.Match(url);
                     if (!ma.Success)
                     {
-                        ai = null;
-                        return ErrorType.Path;
-                    }
-                }
-                _referer = $"https://www.fanbox.cc/@{ma.Groups[1].Value}";
-
-                ai = GetInfo(ma.Groups[1].Value);
-                if (null != ai)
-                {
-                    ai.PayLow = GlobalData.VM_MA.Artist.PayLow;
-                    ai.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
-                    return ErrorType.NoError;
-                }
-                return ErrorType.IO;
-            }
-            catch (Exception ex)
-            {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
-                ai = new ArtistInfo();
-                if (ex is WebException || ex is System.Net.Sockets.SocketException)
-                {
-                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
-                }
-                return ErrorType.UnKnown;
-            }
-        }
-
-        public override ErrorType GetArtistList(out List<ArtistInfo> ais)
-        {
-            try
-            {
-                ais = new List<ArtistInfo>();
-                var tais = GlobalData.VM_MA.ArtistList.ToList();
-                if (tais.Count == 0)
-                {
-                    tais.Add(new ArtistInfo());
-                }
-
-                var jfp = JsonConvert.DeserializeObject<JsonData_Fanbox_Plan>(GetWebCode("https://api.fanbox.cc/plan.listSupporting", "https://www.fanbox.cc/creators/supporting"));
-                if (null != jfp.body)
-                {
-                    foreach(var pl in jfp.body)
-                    {
-                        var ai = GetInfo(pl.creatorId, $"https://www.fanbox.cc/@{pl.creatorId}");
-                        if (null != ai)
+                        ma = _artUrl2.Match(url);
+                        if (!ma.Success)
                         {
-                            ai.PayHigh = pl.fee.ToString();
-                            tais.Remove(ai);
-                            ais.Add(ai);
+                            return ResultHelper.PathError();
                         }
                     }
-                    ais.AddRange(tais);
-                    return ErrorType.NoError;
+                    _referer = $"https://www.fanbox.cc/@{ma.Groups[1].Value}";
+
+                    var ai = GetInfo(ma.Groups[1].Value);
+                    if (null != ai)
+                    {
+                        ai.PayLow = GlobalData.VM_MA.Artist.PayLow;
+                        ai.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
+                        return ResultHelper.NoError(ai);
+                    }
+                    return ResultHelper.IOError();
                 }
-                return ErrorType.IO;
-            }
-            catch (Exception ex)
-            {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
-                ais = new List<ArtistInfo>() { new ArtistInfo() };
-                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                catch (Exception ex)
                 {
-                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                    {
+                        return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
+                    }
+                    return ResultHelper.UnKnownError();
                 }
-                return ErrorType.UnKnown;
-            }
+            });
+        }
+
+        public async override Task<ResultMessage> GetArtistList()
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    var ais = new List<ArtistInfo>();
+                    var tais = GlobalData.VM_MA.ArtistList.ToList();
+                    if (tais.Count == 0)
+                    {
+                        tais.Add(new ArtistInfo());
+                    }
+
+                    var jfp = JsonConvert.DeserializeObject<JsonData_Fanbox_Plan>(GetWebCode("https://api.fanbox.cc/plan.listSupporting", "https://www.fanbox.cc/creators/supporting"));
+                    if (null != jfp.body)
+                    {
+                        foreach (var pl in jfp.body)
+                        {
+                            var ai = GetInfo(pl.creatorId, $"https://www.fanbox.cc/@{pl.creatorId}");
+                            if (null != ai)
+                            {
+                                ai.PayHigh = pl.fee.ToString();
+                                tais.Remove(ai);
+                                ais.Add(ai);
+                            }
+                        }
+                        ais.AddRange(tais);
+                        return ResultHelper.NoError(ais);
+                    }
+                    return ResultHelper.IOError();
+                }
+                catch (Exception ex)
+                {
+                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                    {
+                        return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
+                    }
+                    return ResultHelper.UnKnownError();
+                }
+            });
         }
 
         private ArtistInfo GetInfo(string cid, string referer = null)
@@ -148,37 +151,36 @@ namespace AtelierMisaka
             }
         }
 
-        public override ErrorType GetPostIDs(string uid, out IList<BaseItem> bis)
+        public async override Task<ResultMessage> GetPostIDs(string uid)
         {
-            bis = new List<BaseItem>();
-            try
+            return await Task.Run(() =>
             {
-                string url = $"https://api.fanbox.cc/post.listCreator?creatorId={uid}&limit=10";
-                if (string.IsNullOrEmpty(_referer))
+                var bis = new List<BaseItem>();
+                try
                 {
-                    _referer = $"https://{uid}.fanbox.cc";
-                }
+                    string url = $"https://api.fanbox.cc/post.listCreator?creatorId={uid}&limit=10";
+                    if (string.IsNullOrEmpty(_referer))
+                    {
+                        _referer = $"https://{uid}.fanbox.cc";
+                    }
 
-                string nurl = GetUrls(GetWebCode(url), bis);
-                if (!string.IsNullOrEmpty(nurl))
-                {
-                    GetPostIDs_Next(nurl, bis);
+                    string nurl = GetUrls(GetWebCode(url), bis);
+                    if (!string.IsNullOrEmpty(nurl))
+                    {
+                        GetPostIDs_Next(nurl, bis);
+                    }
+                    return ResultHelper.NoError(bis);
                 }
-                return ErrorType.NoError;
-            }
-            catch (Exception ex)
-            {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
-                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                catch (Exception ex)
                 {
-                    return ex.Message.Contains("401") ? ErrorType.Cookies : ErrorType.Web;
+                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                    {
+                        return ex.Message.Contains("401") ? ResultHelper.CookieError() : ResultHelper.WebError();
+                    }
+                    return ResultHelper.UnKnownError();
                 }
-                else if (ex is IOException)
-                {
-                    return ErrorType.IO;
-                }
-                return ErrorType.UnKnown;
-            }
+            });
         }
 
         private void GetPostIDs_Next(string url, IList<BaseItem> bis)
@@ -332,41 +334,44 @@ namespace AtelierMisaka
             return null;
         }
 
-        public override ErrorType LikePost(string pid, string cid)
+        public async override Task<ResultMessage> LikePost(string pid, string cid)
         {
-            if (string.IsNullOrEmpty(_x_csrf_token))
+            return await Task.Run(() =>
             {
-                if (!UpdateToken(pid, cid))
-                {
-                    return ErrorType.Security;
-                }
-            }
-            try
-            {
-                WebClient wc = new WebClient();
-                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
-                wc.Headers.Set(HttpRequestHeader.ContentType, "application/json");
-                wc.Headers.Set("Origin", "https://www.fanbox.cc");
-                wc.Headers.Add(HttpRequestHeader.Referer, $"https://www.fanbox.cc/@{cid}/posts/{pid}");
-                wc.Headers.Add("x-csrf-token", _x_csrf_token);
-                if (GlobalData.VM_MA.UseProxy)
-                    wc.Proxy = GlobalData.VM_MA.MyProxy;
-
-                wc.UploadString("https://api.fanbox.cc/post.likePost", $"{{\"postId\":\"{pid}\"}}");
-
-                return ErrorType.NoError;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("400"))
+                if (string.IsNullOrEmpty(_x_csrf_token))
                 {
                     if (!UpdateToken(pid, cid))
                     {
-                        return ErrorType.Security;
+                        return ResultHelper.SecurityError("");
                     }
                 }
-                return ErrorType.Web;
-            }
+                try
+                {
+                    WebClient wc = new WebClient();
+                    wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                    wc.Headers.Set(HttpRequestHeader.ContentType, "application/json");
+                    wc.Headers.Set("Origin", "https://www.fanbox.cc");
+                    wc.Headers.Add(HttpRequestHeader.Referer, $"https://www.fanbox.cc/@{cid}/posts/{pid}");
+                    wc.Headers.Add("x-csrf-token", _x_csrf_token);
+                    if (GlobalData.VM_MA.UseProxy)
+                        wc.Proxy = GlobalData.VM_MA.MyProxy;
+
+                    wc.UploadString("https://api.fanbox.cc/post.likePost", $"{{\"postId\":\"{pid}\"}}");
+
+                    return ResultHelper.NoError(null);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("400"))
+                    {
+                        if (!UpdateToken(pid, cid))
+                        {
+                            return ResultHelper.SecurityError("");
+                        }
+                    }
+                    return ResultHelper.WebError();
+                }
+            });
         }
 
         public bool UpdateToken(string pid, string cid)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AtelierMisaka
 {
@@ -18,79 +19,81 @@ namespace AtelierMisaka
         readonly Regex _artUrl = new Regex(@"^https://fantia.jp/fanclubs/(\d+)$");
         readonly string _nextP = "fa fa-angle-right";
 
-        public override ErrorType GetArtistInfo(string url, out ArtistInfo ai)
+        public async override Task<ResultMessage> GetArtistInfo(string url)
         {
-            try
+            return await Task.Run(() =>
             {
-                ai = null;
-                Match ma = _artUrl.Match(url);
-                if (!ma.Success)
+                try
                 {
-                    return ErrorType.Path;
-                }
-                string cid = ma.Groups[1].Value;
-                
-                var jfa = JsonConvert.DeserializeObject<JsonData_Fantia_Artist>(GetWebCode($"https://fantia.jp/api/v1/fanclubs/{cid}"));
-                if (null != jfa.fanclub)
-                {
-                    ai = new ArtistInfo()
+                    Match ma = _artUrl.Match(url);
+                    if (!ma.Success)
                     {
-                        Id = cid,
-                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name)),
-                        Cid = cid,
-                        PostUrl = $"https://fantia.jp/fanclubs/{cid}",
-                        PayLow = GlobalData.VM_MA.Artist.PayLow,
-                        PayHigh = GlobalData.VM_MA.Artist.PayHigh
-                    };
-                    return ErrorType.NoError;
+                        return ResultHelper.PathError();
+                    }
+                    string cid = ma.Groups[1].Value;
+
+                    var jfa = JsonConvert.DeserializeObject<JsonData_Fantia_Artist>(GetWebCode($"https://fantia.jp/api/v1/fanclubs/{cid}"));
+                    if (null != jfa.fanclub)
+                    {
+                        var ai = new ArtistInfo()
+                        {
+                            Id = cid,
+                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name)),
+                            Cid = cid,
+                            PostUrl = $"https://fantia.jp/fanclubs/{cid}",
+                            PayLow = GlobalData.VM_MA.Artist.PayLow,
+                            PayHigh = GlobalData.VM_MA.Artist.PayHigh
+                        };
+                        return ResultHelper.NoError(ai);
+                    }
+                    return ResultHelper.IOError();
                 }
-                return ErrorType.IO;
-            }
-            catch (Exception ex)
-            {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
-                ai = null;
-                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                catch (Exception ex)
                 {
-                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                    {
+                        return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
+                    }
+                    return ResultHelper.UnKnownError();
                 }
-                return ErrorType.UnKnown;
-            }
+            });
         }
 
-        public override ErrorType GetArtistList(out List<ArtistInfo> ais)
+        public async override Task<ResultMessage> GetArtistList()
         {
-            try
+            return await Task.Run(() =>
             {
-                List<ArtistInfo> tt = new List<ArtistInfo>();
-                //有料
-                tt.AddRange(GetArtistListFromWebCode("not_"));
-                //無料
-                tt.AddRange(GetArtistListFromWebCode(string.Empty));
-                
-                var tais = GlobalData.VM_MA.ArtistList.ToList();
-                if (tais.Count == 0)
+                try
                 {
-                    tais.Add(new ArtistInfo());
+                    List<ArtistInfo> ais = new List<ArtistInfo>();
+                    //有料
+                    ais.AddRange(GetArtistListFromWebCode("not_"));
+                    //無料
+                    ais.AddRange(GetArtistListFromWebCode(string.Empty));
+
+                    var tais = GlobalData.VM_MA.ArtistList.ToList();
+                    if (tais.Count == 0)
+                    {
+                        tais.Add(new ArtistInfo());
+                    }
+                    tais.ForEach(x =>
+                    {
+                        if (!ais.Contains(x))
+                            ais.Add(x);
+                    });
+                    return ResultHelper.NoError(ais);
                 }
-                tais.ForEach(x =>
+                catch (Exception ex)
                 {
-                    if (!tt.Contains(x))
-                        tt.Add(x);
-                });
-                ais = tt;
-                return ErrorType.NoError;
-            }
-            catch (Exception ex)
-            {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
-                ais = new List<ArtistInfo>() { new ArtistInfo() };
-                if (ex is WebException || ex is System.Net.Sockets.SocketException)
-                {
-                    return ex.Message.Contains("40") ? ErrorType.Cookies : ErrorType.Web;
+                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                    {
+                        return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
+                    }
+                    return ResultHelper.UnKnownError();
                 }
-                return ErrorType.UnKnown;
-            }
+            });
         }
 
         private List<ArtistInfo> GetArtistListFromWebCode(string free, int index = 1)
@@ -160,27 +163,25 @@ namespace AtelierMisaka
             }
         }
 
-        public override ErrorType GetPostIDs(string uid, out IList<BaseItem> bis)
+        public async override Task<ResultMessage> GetPostIDs(string uid)
         {
-            try
+            return await Task.Run(() =>
             {
-                bis = GetPostIDsFromWebCode(uid);
-                return ErrorType.NoError;
-            }
-            catch (Exception ex)
-            {
-                bis = new List<BaseItem>();
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
-                if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                try
                 {
-                    return ex.Message.Contains("401") ? ErrorType.Cookies : ErrorType.Web;
+                    var bis = GetPostIDsFromWebCode(uid);
+                    return ResultHelper.NoError(bis);
                 }
-                else if (ex is IOException)
+                catch (Exception ex)
                 {
-                    return ErrorType.IO;
+                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    if (ex is WebException || ex is System.Net.Sockets.SocketException)
+                    {
+                        return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
+                    }
+                    return ResultHelper.UnKnownError();
                 }
-                return ErrorType.UnKnown;
-            }
+            });
         }
 
         private IList<BaseItem> GetPostIDsFromWebCode(string uid)
@@ -453,9 +454,9 @@ namespace AtelierMisaka
             }
         }
 
-        public override ErrorType LikePost(string pid, string cid)
+        public async override Task<ResultMessage> LikePost(string pid, string cid)
         {
-            return ErrorType.UnKnown;
+            return await Task.Run(() => ResultHelper.UnKnownError("未支持的功能"));
         }
     }
 }
