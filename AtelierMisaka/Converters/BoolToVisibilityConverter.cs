@@ -15,7 +15,7 @@ namespace AtelierMisaka.Converters
             }
             else
             {
-                return Visibility.Collapsed;
+                return Visibility.Hidden;
             }
         }
 
