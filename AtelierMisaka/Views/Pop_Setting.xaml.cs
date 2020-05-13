@@ -29,6 +29,8 @@ namespace AtelierMisaka.Views
         private bool _tempUP = false;
         private bool _tempUD = false;
 
+        private bool _second = false;
+
         private IList<BaseItem> _tempBis = null;
 
         public Pop_Setting()
@@ -40,282 +42,22 @@ namespace AtelierMisaka.Views
 
         private async void Btn_Star_Click(object sender, RoutedEventArgs e)
         {
+            if (_second) return;
+            _second = true;
+
+            if (await GetCheck(GlobalData.VM_MA.IsStarted ? "确认更改设定吗?" : "确认无误就开始咯?"))
+            {
+                if (GlobalData.CheckResult == false)
+                {
+                    _second = false;
+                    return;
+                }
+            }
             if (!GlobalData.VM_MA.IsStarted)
             {
-                if (await GetCheck("确认无误就开始咯?"))
-                {
-                    if (GlobalData.CheckResult == false)
-                    {
-                        GlobalData.CheckResult = null;
-                        return;
-                    }
-                    GlobalData.CheckResult = null;
-                }
                 ShowLoading(true);
-
-                if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
+                if (await Begin())
                 {
-                    await GetCheck("Cookies不能为空");
-                    GlobalData.CheckResult = null;
-                    ShowLoading(false);
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
-                {
-                    await GetCheck("保存路径不能为空");
-                    GlobalData.CheckResult = null;
-                    ShowLoading(false);
-                    return;
-                }
-                Directory.CreateDirectory(GlobalData.VM_MA.SavePath);
-                if (!Directory.Exists(GlobalData.VM_MA.SavePath))
-                {
-                    await GetCheck("无法找到存储路径");
-                    GlobalData.CheckResult = null;
-                    ShowLoading(false);
-                    return;
-                }
-                
-                _utils = GlobalData.GetUtils();
-                if (!GlobalData.VM_MA.HasSelected)
-                {
-                    ArtistInfo ai = null;
-                    var _ret = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl, out ai));
-                    if (_ret != ErrorType.NoError)
-                    {
-                        switch (_ret)
-                        {
-                            case ErrorType.Path:
-                                await GetCheck("输入的链接有误");
-                                break;
-                            case ErrorType.IO:
-                                await GetCheck("无法转换json数据", "请联系开发者");
-                                break;
-                            case ErrorType.Web:
-                                await GetCheck("网络错误");
-                                break;
-                            case ErrorType.UnKnown:
-                                await GetCheck("未知错误", "请联系开发者");
-                                break;
-                            case ErrorType.Cookies:
-                                await GetCheck("请确认Cookie是否过期");
-                                break;
-                        }
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    if (ai == null)
-                    {
-                        await GetCheck("无法获取作者信息", "请检查Cookies是否过期");
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    GlobalData.VM_MA.Artist = ai;
-                    if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
-                    {
-                        if (GlobalData.VM_MA.ArtistList.Count > 0)
-                        {
-                            GlobalData.VM_MA.ArtistList[GlobalData.VM_MA.ArtistList.Count - 1] = GlobalData.VM_MA.Artist;
-                        }
-                        else
-                        {
-                            GlobalData.VM_MA.ArtistList.Add(GlobalData.VM_MA.Artist);
-                        }
-                    }
-                    SetLastDate(ai.Id);
-                }
-                Task.Run(() => SaveSetting());
-                GlobalData.DownloadLogs = await Task.Run(() => GlobalData.Dbl.GetLog(GlobalData.VM_MA.Artist.Id));
-                var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid, out _tempBis));
-                if (ret != ErrorType.NoError)
-                {
-                    if (ret == ErrorType.Web)
-                    {
-                        await GetCheck("发生网络错误", "请确认网络连接");
-                    }
-                    else if (ret == ErrorType.Cookies)
-                    {
-                        await GetCheck("请更换Cookies");
-                    }
-                    else if (ret == ErrorType.IO)
-                    {
-                        await GetCheck("磁盘读写出错");
-                    }
-                    else
-                    {
-                        await GetCheck("发生未知错误");
-                    }
-                    GlobalData.CheckResult = null;
-                    ShowLoading(false);
-                    return;
-                }
-                if (_tempBis == null || _tempBis.Count == 0)
-                {
-                    await GetCheck("没有可阅读的文章");
-                    GlobalData.CheckResult = null;
-                    ShowLoading(false);
-                    return;
-                }
-                GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                GlobalData.DownLP?.Close();
-                GlobalData.DownLP = new Downloader(_tempBis, GlobalData.VM_MA.SavePath);
-                GlobalData.DownLP.Show();
-                GlobalData.DownLP.LoadData();
-                GlobalData.BackCommand.Execute(BackType.Pop);
-
-                _tempArt = new ArtistInfo()
-                {
-                    Id = GlobalData.VM_MA.Artist.Id,
-                    AName = GlobalData.VM_MA.Artist.AName,
-                    PayLow = GlobalData.VM_MA.Artist.PayLow,
-                    PayHigh = GlobalData.VM_MA.Artist.PayHigh,
-                    PostUrl = GlobalData.VM_MA.Artist.PostUrl,
-                };
-                _tempSite = GlobalData.VM_MA.Site;
-                _tempCookies = GlobalData.VM_MA.Cookies;
-                _tempProxy = GlobalData.VM_MA.Proxy;
-                _tempDate = GlobalData.VM_MA.Date;
-                _tempSP = GlobalData.VM_MA.SavePath;
-                _tempUP = GlobalData.VM_MA.UseProxy;
-                _tempUD = GlobalData.VM_MA.UseDate;
-
-                ShowLoading(false);
-                GlobalData.VM_MA.IsStarted = true;
-            }
-            else
-            {
-                if (await GetCheck("确认更改设定吗?"))
-                {
-                    if (GlobalData.CheckResult == false)
-                    {
-                        GlobalData.CheckResult = null;
-                        return;
-                    }
-                    GlobalData.CheckResult = null;
-                }
-                ShowLoading(true);
-                if (_tempSite != GlobalData.VM_MA.Site || _tempArt.PostUrl != GlobalData.VM_MA.Artist.PostUrl)
-                {
-                    if (GlobalData.VM_DL.IsDownloading)
-                    {
-                        await GetCheck("当前还在下载中，不能更换");
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
-                    {
-                        await GetCheck("Cookies不能为空");
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
-                    {
-                        await GetCheck("保存路径不能为空");
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    Directory.CreateDirectory(GlobalData.VM_MA.SavePath);
-                    if (!Directory.Exists(GlobalData.VM_MA.SavePath))
-                    {
-                        await GetCheck("无法找到存储路径");
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    _utils = GlobalData.GetUtils();
-                    if (!GlobalData.VM_MA.HasSelected)
-                    {
-                        ArtistInfo ai = null;
-                        var _ret = await Task.Run(() => _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl, out ai));
-                        if (_ret != ErrorType.NoError)
-                        {
-                            switch (_ret)
-                            {
-                                case ErrorType.Path:
-                                    await GetCheck("输入的链接有误");
-                                    break;
-                                case ErrorType.IO:
-                                    await GetCheck("无法转换json数据", "请联系开发者");
-                                    break;
-                                case ErrorType.Web:
-                                    await GetCheck("网络错误");
-                                    break;
-                                case ErrorType.UnKnown:
-                                    await GetCheck("未知错误", "请联系开发者");
-                                    break;
-                                case ErrorType.Cookies:
-                                    await GetCheck("请确认Cookie是否过期");
-                                    break;
-                            }
-                            GlobalData.CheckResult = null;
-                            ShowLoading(false);
-                            return;
-                        }
-                        if (ai == null)
-                        {
-                            await GetCheck("无法获取作者信息");
-                            GlobalData.CheckResult = null;
-                            ShowLoading(false);
-                            return;
-                        }
-                        GlobalData.VM_MA.Artist = ai;
-                        if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
-                        {
-                            if (GlobalData.VM_MA.ArtistList.Count > 0)
-                            {
-                                GlobalData.VM_MA.ArtistList[GlobalData.VM_MA.ArtistList.Count - 1] = GlobalData.VM_MA.Artist;
-                            }
-                            else
-                            {
-                                GlobalData.VM_MA.ArtistList.Add(GlobalData.VM_MA.Artist);
-                            }
-                        }
-                        SetLastDate(ai.Id);
-                    }
-                    Task.Run(() => SaveSetting());
-                    GlobalData.DownloadLogs = await Task.Run(() => GlobalData.Dbl.GetLog(GlobalData.VM_MA.Artist.Id));
-                    var ret = await Task.Run(() => _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid, out _tempBis));
-                    if (ret != ErrorType.NoError)
-                    {
-                        if (ret == ErrorType.Web)
-                        {
-                            await GetCheck("发生网络错误", "请确认网络连接");
-                        }
-                        else if (ret == ErrorType.Cookies)
-                        {
-                            await GetCheck("请更换Cookies");
-                        }
-                        else if (ret == ErrorType.IO)
-                        {
-                            await GetCheck("磁盘读写出错");
-                        }
-                        else
-                        {
-                            await GetCheck("发生未知错误");
-                        }
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    if (_tempBis == null || _tempBis.Count == 0)
-                    {
-                        await GetCheck("没有可阅读的文章");
-                        GlobalData.CheckResult = null;
-                        ShowLoading(false);
-                        return;
-                    }
-                    GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                    GlobalData.DownLP?.Close();
-                    GlobalData.DownLP = new Downloader(_tempBis, GlobalData.VM_MA.SavePath);
-                    GlobalData.DownLP.Show();
-                    GlobalData.DownLP.LoadData();
-                    GlobalData.BackCommand.Execute(BackType.Pop);
                     _tempArt = new ArtistInfo()
                     {
                         Id = GlobalData.VM_MA.Artist.Id,
@@ -329,29 +71,66 @@ namespace AtelierMisaka.Views
                     _tempProxy = GlobalData.VM_MA.Proxy;
                     _tempDate = GlobalData.VM_MA.Date;
                     _tempSP = GlobalData.VM_MA.SavePath;
+                    _tempUP = GlobalData.VM_MA.UseProxy;
+                    _tempUD = GlobalData.VM_MA.UseDate;
 
                     ShowLoading(false);
+                    GlobalData.VM_MA.IsStarted = true;
+                }
+            }
+            else
+            {
+                if (_tempSite != GlobalData.VM_MA.Site || _tempArt.PostUrl != GlobalData.VM_MA.Artist.PostUrl)
+                {
+                    ShowLoading(true);
+                    if (GlobalData.VM_DL.IsDownloading)
+                    {
+                        await GetCheck("当前还在下载中，不能更换");
+                        ShowLoading(false);
+                        _second = false;
+                        return;
+                    }
+                    if (await Begin())
+                    {
+                        _tempArt = new ArtistInfo()
+                        {
+                            Id = GlobalData.VM_MA.Artist.Id,
+                            AName = GlobalData.VM_MA.Artist.AName,
+                            PayLow = GlobalData.VM_MA.Artist.PayLow,
+                            PayHigh = GlobalData.VM_MA.Artist.PayHigh,
+                            PostUrl = GlobalData.VM_MA.Artist.PostUrl,
+                        };
+                        _tempSite = GlobalData.VM_MA.Site;
+                        _tempCookies = GlobalData.VM_MA.Cookies;
+                        _tempProxy = GlobalData.VM_MA.Proxy;
+                        _tempDate = GlobalData.VM_MA.Date;
+                        _tempSP = GlobalData.VM_MA.SavePath;
+                    }
+                    ShowLoading(false);
+                    _second = false;
                     return;
                 }
 
                 if (_tempArt.PayLow != GlobalData.VM_MA.Artist.PayLow || _tempArt.PayHigh != GlobalData.VM_MA.Artist.PayHigh)
                 {
-                    await Task.Run(() =>
+                    if (GlobalData.VM_MA.Site == SiteType.Fanbox)
                     {
-                        foreach (var bi in _tempBis)
+                        await Task.Run(() =>
                         {
-                            bi.Skip = GlobalData.OverPayment(int.Parse(bi.Fee));
-                        }
-                    });
-                    GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                    _tempArt.PayLow = GlobalData.VM_MA.Artist.PayLow;
-                    _tempArt.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
+                            foreach (var bi in _tempBis)
+                            {
+                                bi.Skip = GlobalData.OverPayment(int.Parse(bi.Fee));
+                            }
+                        });
+                        GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
+                        _tempArt.PayLow = GlobalData.VM_MA.Artist.PayLow;
+                        _tempArt.PayHigh = GlobalData.VM_MA.Artist.PayHigh;
+                    }
                 }
 
                 if (_tempSP != GlobalData.VM_MA.SavePath)
                 {
                     await GetCheck("保存路径的修改", "将在下次生效");
-                    GlobalData.CheckResult = null;
                     _tempSP = GlobalData.VM_MA.SavePath;
                 }
 
@@ -397,8 +176,106 @@ namespace AtelierMisaka.Views
                 }
 
                 ShowLoading(false);
+                GlobalData.BackCommand.Execute(BackType.Pop);
             }
+            _second = false;
+        }
+
+        private async Task<bool> Begin()
+        {
+            if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
+            {
+                await GetCheck("Cookies不能为空");
+                ShowLoading(false);
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
+            {
+                await GetCheck("保存路径不能为空");
+                ShowLoading(false);
+                return false;
+            }
+            Directory.CreateDirectory(GlobalData.VM_MA.SavePath);
+            if (!Directory.Exists(GlobalData.VM_MA.SavePath))
+            {
+                await GetCheck("无法找到存储路径");
+                ShowLoading(false);
+                return false;
+            }
+
+            ResultMessage _ret = null;
+            _utils = GlobalData.GetUtils();
+            if (_utils is PatreonUtils)
+            {
+                _ret = await (_utils as PatreonUtils).InitBrowser();
+                if (_ret.Error != ErrorType.NoError)
+                {
+                    await GetCheck(_ret.Msgs);
+                    ShowLoading(false);
+                    return false;
+                }
+                else if ((bool)_ret.Result)
+                {
+                    while (GlobalData.VM_MA.ShowLogin)
+                    {
+                        await Task.Delay(1000);
+                    }
+                    if (!GlobalData.VM_MA.IsInitialized)
+                    {
+                        ShowLoading(false);
+                        return false;
+                    }
+                }
+            }
+            if (!GlobalData.VM_MA.HasSelected)
+            {
+                ArtistInfo ai = null;
+                _ret = await _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl);
+                if (_ret.Error != ErrorType.NoError)
+                {
+                    await GetCheck(_ret.Msgs);
+                    ShowLoading(false);
+                    return false;
+                }
+                ai = (ArtistInfo)_ret.Result;
+                GlobalData.VM_MA.Artist = ai;
+                if (!GlobalData.VM_MA.ArtistList.Contains(GlobalData.VM_MA.Artist))
+                {
+                    if (GlobalData.VM_MA.ArtistList.Count > 0)
+                    {
+                        GlobalData.VM_MA.ArtistList[GlobalData.VM_MA.ArtistList.Count - 1] = GlobalData.VM_MA.Artist;
+                    }
+                    else
+                    {
+                        GlobalData.VM_MA.ArtistList.Add(GlobalData.VM_MA.Artist);
+                    }
+                }
+                SetLastDate(ai.Id);
+            }
+            Task.Run(() => SaveSetting());
+            await Task.Run(() => GlobalData.DLLogs.LoadData(GlobalData.VM_MA.Artist.Id, GlobalData.VM_MA.Site));
+            _ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
+            if (_ret.Error != ErrorType.NoError)
+            {
+                await GetCheck(_ret.Msgs);
+                ShowLoading(false);
+                return false;
+            }
+            _tempBis = (List<BaseItem>)_ret.Result;
+            if (_tempBis.Count == 0)
+            {
+                await GetCheck("没有可阅读的文章");
+                ShowLoading(false);
+                return false;
+            }
+            GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
+            GlobalData.DownLP?.Close();
+            GlobalData.DownLP = new Downloader(_tempBis);
+            GlobalData.DownLP.Show();
+            GlobalData.DownLP.LoadData();
             GlobalData.BackCommand.Execute(BackType.Pop);
+            return true;
         }
 
         private async void Btn_GetList_Click(object sender, RoutedEventArgs e)
@@ -406,36 +283,42 @@ namespace AtelierMisaka.Views
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
             {
                 await GetCheck("Cookies不能为空");
-                GlobalData.CheckResult = null;
                 return;
             }
             ShowLoading(true);
-            List<ArtistInfo> ais = null;
-            var ret = await Task.Run(() =>
+            await Task.Delay(100);
+            ResultMessage _ret = null;
+            _utils = GlobalData.GetUtils();
+            if (_utils is PatreonUtils)
             {
-                return GlobalData.GetUtils().GetArtistList(out ais);
-            });
-            if (ret != ErrorType.NoError)
-            {
-                switch (ret)
+                _ret = await (_utils as PatreonUtils).InitBrowser();
+                if (_ret.Error != ErrorType.NoError)
                 {
-                    case ErrorType.IO:
-                        await GetCheck("无法转换json数据", "请联系开发者");
-                        break;
-                    case ErrorType.Web:
-                        await GetCheck("网络错误");
-                        break;
-                    case ErrorType.UnKnown:
-                        await GetCheck("未知错误", "请联系开发者");
-                        break;
-                    case ErrorType.Cookies:
-                        await GetCheck("请确认Cookie是否过期");
-                        break;
+                    await GetCheck(_ret.Msgs);
+                    ShowLoading(false);
+                    return;
                 }
-                GlobalData.CheckResult = null;
+                else if ((bool)_ret.Result)
+                {
+                    while (GlobalData.VM_MA.ShowLogin)
+                    {
+                        await Task.Delay(1000);
+                    }
+                    if (!GlobalData.VM_MA.IsInitialized)
+                    {
+                        ShowLoading(false);
+                        return;
+                    }
+                }
+            }
+            _ret = await _utils.GetArtistList();
+            if (_ret.Error != ErrorType.NoError)
+            {
+                await GetCheck(_ret.Msgs);
                 ShowLoading(false);
                 return;
             }
+            List<ArtistInfo> ais = (List<ArtistInfo>)_ret.Result;
             GlobalData.VM_MA.ArtistList = new System.Collections.ObjectModel.ObservableCollection<ArtistInfo>();
             foreach (var ai in ais)
             {
@@ -452,7 +335,6 @@ namespace AtelierMisaka.Views
             {
                 if (GlobalData.CheckResult == false)
                 {
-                    GlobalData.CheckResult = null;
                     return;
                 }
                 Application.Current.Shutdown();
@@ -567,18 +449,11 @@ namespace AtelierMisaka.Views
                 ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
                 SetLastDate(ai.Id);
             }
-            //else
-            //{
-            //    if (null == GlobalData.VM_MA.Artist && GlobalData.VM_MA.ArtistList.Count > 0)
-            //    {
-            //        GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
-            //    }
-            //}
         }
 
         private void SetLastDate(string id)
         {
-            if (GlobalData.Dbl.GetLastDate(id, out DateTime dt) == true)
+            if (GlobalData.LastDateDic.TryGetValue(GlobalData.VM_MA.Site, id, out DateTime dt))
             {
                 GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm:ss");
                 GlobalData.VM_MA.UseDate = true;
