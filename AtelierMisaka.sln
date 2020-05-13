@@ -7,14 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtelierMisaka", "AtelierMis
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Debug|x64.ActiveCfg = Debug|x64
+		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Debug|x64.Build.0 = Debug|x64
+		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|x64.ActiveCfg = Release|x64
+		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
