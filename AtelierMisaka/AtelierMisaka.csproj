@@ -113,18 +113,16 @@
     <Compile Include="Models\JsonData_Fanbox.cs" />
     <Compile Include="Models\JsonData_Fantia.cs" />
     <Compile Include="Models\ArtistInfo.cs" />
-    <Compile Include="Models\DLSP.cs" />
     <Compile Include="Models\DownloadItem.cs" />
     <Compile Include="Models\FantiaItem.cs" />
     <Compile Include="Models\JsonData_Patreon.cs" />
     <Compile Include="Models\PatreonItem.cs" />
     <Compile Include="Models\ResultMessage.cs" />
-    <Compile Include="ResultHelper.cs" />
+    <Compile Include="Utils\ResultHelper.cs" />
     <Compile Include="SQLite\SQLite.cs" />
     <Compile Include="SQLite\SQLiteAsync.cs" />
     <Compile Include="Utils\PatreonUtils.cs" />
     <Compile Include="Utils\BaseUtils.cs" />
-    <Compile Include="Utils\DataBase.cs" />
     <Compile Include="Utils\FantiaUtils.cs" />
     <Compile Include="Utils\GlobalData.cs" />
     <Compile Include="Utils\FanboxUtils.cs" />
@@ -233,9 +231,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\Btn_Paused.png" />
-    <Content Include="Database.mdb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
