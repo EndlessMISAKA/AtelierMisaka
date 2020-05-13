@@ -1,20 +1,21 @@
 ﻿using AtelierMisaka.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AtelierMisaka
 {
     public abstract class BaseUtils
     {
-        public abstract ErrorType GetArtistInfo(string url, out ArtistInfo ai);
+        public abstract Task<ResultMessage> GetArtistInfo(string url);
 
-        public abstract ErrorType GetArtistList(out List<ArtistInfo> ais);
+        public abstract Task<ResultMessage> GetArtistList();
 
         public abstract bool GetCover(BaseItem bi);
 
-        public abstract ErrorType GetPostIDs(string uid, out IList<BaseItem> bis);
+        public abstract Task<ResultMessage> GetPostIDs(string uid);
 
-        public abstract ErrorType LikePost(string pid, string cid);
+        public abstract Task<ResultMessage> LikePost(string pid, string cid);
 
         protected void Wc_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
