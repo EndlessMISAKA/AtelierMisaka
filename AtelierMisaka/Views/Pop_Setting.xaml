@@ -7,8 +7,7 @@
              xmlns:basens="clr-namespace:AtelierMisaka"
              PreviewMouseDown="UserControl_PreviewMouseDown"
              PreviewKeyDown="UserControl_PreviewKeyDown"
-             mc:Ignorable="d"
-             d:DesignHeight="720" d:DesignWidth="1280">
+             mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="1280">
     <UserControl.Resources>
         <Storyboard x:Key="sb_path" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)">
             <DoubleAnimation RepeatBehavior="Forever" From="360" To="0" Duration="0:0:2" Storyboard.TargetName="p1"/>
@@ -18,11 +17,13 @@
     </UserControl.Resources>
     <Grid Background="#2D2D30">
         <StackPanel Orientation="Vertical" Width="900" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center" Width="600">
+            <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center">
                 <RadioButton Content="Fanbox" Style="{StaticResource RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fanbox}}"/>
                 <RadioButton Content="Fantia" Style="{StaticResource RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fantia}}"/>
+                <RadioButton Content="Patreon" Style="{StaticResource RB_Setting}"
+                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Patreon}}"/>
             </StackPanel>
             <Grid Height="60">
                 <TextBlock Text="作者链接" Style="{StaticResource TBL_Setting}"/>
@@ -155,6 +156,9 @@
             <Path x:Name="p1" Style="{StaticResource Pa_Load}" Data="M15,100 A85,85 0 1 0 100,15" Stroke="Yellow"/>
             <Path x:Name="p2" Style="{StaticResource Pa_Load}" Data="M155,100 A55,55 0 1 0 100,155" Stroke="DeepSkyBlue"/>
             <Path x:Name="p3" Style="{StaticResource Pa_Load}" Data="M75,100 A25,25 0 1 0 100,75" Stroke="Red"/>
+        </Grid>
+        <Grid Visibility="{Binding ShowLogin, Converter={StaticResource btvc}}">
+            <ContentControl Content="{Binding PatreonCefBrowser}" Margin="3,0,3,3"/>
         </Grid>
     </Grid>
 </UserControl>

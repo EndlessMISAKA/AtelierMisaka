@@ -156,6 +156,7 @@ namespace AtelierMisaka.ViewModels
         private bool _useDate = false;
         private bool _showCheck = false;
         private bool _showLoad = false;
+        private bool _showLogin = false;
         private bool _isStarted = false;
         private Regex _regex = new Regex(@"^\d+\.\d+\.\d+\.\d+:\d+$");
         private IList<ArtistInfo> _artistListFanbox = new ObservableCollection<ArtistInfo>();
@@ -165,8 +166,50 @@ namespace AtelierMisaka.ViewModels
         private WebProxy _myProxyFanbox = null;
         private WebProxy _myProxyPatreon = null;
         private WebProxy _myProxyFantia = null;
+
+        private object _patreonBrowser = null;
+        private bool _isInitialized = false;
+
         public DateTime LastDate = DateTime.Parse("2010/01/01");
-        
+
+        public object PatreonCefBrowser
+        {
+            get => _patreonBrowser;
+            set
+            {
+                if (_patreonBrowser != value)
+                {
+                    _patreonBrowser = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool IsInitialized
+        {
+            get => _isInitialized;
+            set
+            {
+                if (_isInitialized != value)
+                {
+                    _isInitialized = value;
+                }
+            }
+        }
+
+        public bool ShowLogin
+        {
+            get => _showLogin;
+            set
+            {
+                if (_showLogin != value)
+                {
+                    _showLogin = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public SiteType Site
         {
             get => _site;
@@ -283,7 +326,7 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fantia:
                         return "例：_session_id=dsadw13232rfcd43tcfwwb6e3f0ec";
                     default:
-                        return "";
+                        return "请输入你的邮箱地址";
                 }
             }
         }
@@ -299,7 +342,7 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fantia:
                         return "https://fantia.jp/fanclubs/12345";
                     default:
-                        return "";
+                        return "https://www.patreon.com/abcd/posts";
                 }
             }
         }
@@ -331,6 +374,10 @@ namespace AtelierMisaka.ViewModels
                 if (_showCheck != value)
                 {
                     _showCheck = value;
+                    if (value)
+                    {
+                        GlobalData.CheckResult = null;
+                    }
                     RaisePropertyChanged();
                 }
             }
