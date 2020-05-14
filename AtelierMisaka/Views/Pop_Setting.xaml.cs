@@ -90,6 +90,7 @@ namespace AtelierMisaka.Views
                         _second = false;
                         return;
                     }
+                    
                     if (await Begin())
                     {
                         _tempArt = new ArtistInfo()
@@ -204,6 +205,7 @@ namespace AtelierMisaka.Views
                 return false;
             }
 
+            GlobalData.DownLP?.Close();
             ResultMessage _ret = null;
             _utils = GlobalData.GetUtils();
             if (_utils is PatreonUtils)
@@ -270,7 +272,7 @@ namespace AtelierMisaka.Views
                 return false;
             }
             GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-            GlobalData.DownLP?.Close();
+            //GlobalData.DownLP?.Close();
             GlobalData.DownLP = new Downloader(_tempBis);
             GlobalData.DownLP.Show();
             GlobalData.DownLP.LoadData();
