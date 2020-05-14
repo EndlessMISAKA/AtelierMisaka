@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AtelierMisaka.Cef;
 using AtelierMisaka.Models;
 using CefSharp;
 using CefSharp.Wpf;
@@ -40,7 +41,7 @@ namespace AtelierMisaka
                             {
                                 await Task.Delay(100);
                             }
-                            if (!await GlobalData.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
+                            if (!await CefHelper.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
                             {
                                 return ResultHelper.WebError($"无法设置代理{Environment.NewLine}请联系开发者");
                             }
@@ -49,15 +50,7 @@ namespace AtelierMisaka
                     }
                     return ResultHelper.NoError(_needLogin);
                 }
-                var cefSettings = new CefSettings()
-                {
-                    IgnoreCertificateErrors = true,
-                    CachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache"),
-                    LogSeverity = LogSeverity.Info,
-                    LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt")
-                };
-                cefSettings.CefCommandLineArgs.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36");
-                Cef.Initialize(cefSettings);
+                CefHelper.Initialize();
                 _cwb = new ChromiumWebBrowser();
                 GlobalData.VM_MA.PatreonCefBrowser = _cwb;
                 if (GlobalData.VM_MA.UseProxy)
@@ -66,7 +59,7 @@ namespace AtelierMisaka
                     {
                         await Task.Delay(100);
                     }
-                    if (!await GlobalData.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
+                    if (!await CefHelper.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
                     {
                         return ResultHelper.WebError($"无法设置代理{Environment.NewLine}请联系开发者");
                     }

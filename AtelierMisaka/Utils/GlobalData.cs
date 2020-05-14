@@ -173,18 +173,6 @@ namespace AtelierMisaka
             }
         }
 
-        public static async Task<bool> SetProxy(CefSharp.Wpf.ChromiumWebBrowser cwb, string Address)
-        {
-            return await CefSharp.Cef.UIThreadTaskFactory.StartNew(delegate
-            {
-                var rc = cwb.GetBrowser().GetHost().RequestContext;
-                var v = new Dictionary<string, object>();
-                v["mode"] = "fixed_servers";
-                v["server"] = Address;
-                return rc.SetPreference("proxy", v, out string error);
-            });
-        }
-
         public static void Init()
         {
             _pop_Setting = new Pop_Setting();
