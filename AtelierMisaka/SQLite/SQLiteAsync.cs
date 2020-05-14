@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Krueger Systems, Inc.
+// Copyright (c) 2012-2019 Krueger Systems, Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,10 +35,7 @@ namespace SQLite
 	/// </summary>
 	public partial class SQLiteAsyncConnection
 	{
-		SQLiteConnectionString _connectionString;
-		SQLiteConnectionWithLock _fullMutexReadConnection;
-		bool isFullMutex;
-		SQLiteOpenFlags _openFlags;
+		readonly SQLiteConnectionString _connectionString;
 
 		/// <summary>
 		/// Constructs a new SQLiteAsyncConnection and opens a pooled SQLite database specified by databasePath.
@@ -55,7 +52,7 @@ namespace SQLite
 		/// the storeDateTimeAsTicks parameter.
 		/// </param>
 		public SQLiteAsyncConnection (string databasePath, bool storeDateTimeAsTicks = true)
-			: this (databasePath, SQLiteOpenFlags.FullMutex | SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create, storeDateTimeAsTicks)
+			: this (new SQLiteConnectionString (databasePath, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.FullMutex, storeDateTimeAsTicks))
 		{
 		}
 
@@ -67,6 +64,7 @@ namespace SQLite
 		/// </param>
 		/// <param name="openFlags">
 		/// Flags controlling how the connection should be opened.
+		/// Async connections should have the FullMutex flag set to provide best performance.
 		/// </param>
 		/// <param name="storeDateTimeAsTicks">
 		/// Specifies whether to store DateTime properties as ticks (true) or strings (false). You
@@ -77,12 +75,20 @@ namespace SQLite
 		/// the storeDateTimeAsTicks parameter.
 		/// </param>
 		public SQLiteAsyncConnection (string databasePath, SQLiteOpenFlags openFlags, bool storeDateTimeAsTicks = true)
+			: this (new SQLiteConnectionString (databasePath, openFlags, storeDateTimeAsTicks))
 		{
-			_openFlags = openFlags;
-			isFullMutex = _openFlags.HasFlag (SQLiteOpenFlags.FullMutex);
-			_connectionString = new SQLiteConnectionString (databasePath, storeDateTimeAsTicks);
-			if(isFullMutex)
-				_fullMutexReadConnection = new SQLiteConnectionWithLock (_connectionString, openFlags) { SkipLock = true };
+		}
+
+		/// <summary>
+		/// Constructs a new SQLiteAsyncConnection and opens a pooled SQLite database
+		/// using the given connection string.
+		/// </summary>
+		/// <param name="connectionString">
+		/// Details on how to find and open the database.
+		/// </param>
+		public SQLiteAsyncConnection (SQLiteConnectionString connectionString)
+		{
+			_connectionString = connectionString;
 		}
 
 		/// <summary>
@@ -94,6 +100,12 @@ namespace SQLite
 		/// Gets the SQLite library version number. 3007014 would be v3.7.14
 		/// </summary>
 		public int LibVersionNumber => GetConnection ().LibVersionNumber;
+
+		/// <summary>
+		/// The format to use when storing DateTime properties as strings. Ignored if StoreDateTimeAsTicks is true.
+		/// </summary>
+		/// <value>The date time string format.</value>
+		public string DateTimeStringFormat => GetConnection ().DateTimeStringFormat;
 
 		/// <summary>
 		/// The amount of time to wait for a table to become unlocked.
@@ -115,9 +127,27 @@ namespace SQLite
 		}
 
 		/// <summary>
+		/// Enables the write ahead logging. WAL is significantly faster in most scenarios
+		/// by providing better concurrency and better disk IO performance than the normal
+		/// jounral mode. You only need to call this function once in the lifetime of the database.
+		/// </summary>
+		public Task EnableWriteAheadLoggingAsync ()
+		{
+			return WriteAsync<object> (conn => {
+				conn.EnableWriteAheadLogging ();
+				return null;
+			});
+		}
+
+		/// <summary>
 		/// Whether to store DateTime properties as ticks (true) or strings (false).
 		/// </summary>
 		public bool StoreDateTimeAsTicks => GetConnection ().StoreDateTimeAsTicks;
+		
+		/// <summary>
+		/// Whether to store TimeSpan properties as ticks (true) or strings (false).
+		/// </summary>
+		public bool StoreTimeSpanAsTicks => GetConnection ().StoreTimeSpanAsTicks;
 
 		/// <summary>
 		/// Whether to writer queries to <see cref="Tracer"/> during execution.
@@ -170,7 +200,7 @@ namespace SQLite
 		/// </summary>
 		public SQLiteConnectionWithLock GetConnection ()
 		{
-			return SQLiteConnectionPool.Shared.GetConnection (_connectionString, _openFlags);
+			return SQLiteConnectionPool.Shared.GetConnection (_connectionString);
 		}
 
 		/// <summary>
@@ -179,14 +209,14 @@ namespace SQLite
 		public Task CloseAsync ()
 		{
 			return Task.Factory.StartNew (() => {
-				SQLiteConnectionPool.Shared.CloseConnection (_connectionString, _openFlags);
+				SQLiteConnectionPool.Shared.CloseConnection (_connectionString);
 			}, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
 		}
 
 		Task<T> ReadAsync<T> (Func<SQLiteConnectionWithLock, T> read)
 		{
 			return Task.Factory.StartNew (() => {
-				var conn = isFullMutex ? _fullMutexReadConnection : GetConnection ();
+				var conn = GetConnection ();
 				using (conn.Lock ()) {
 					return read (conn);
 				}
@@ -201,39 +231,6 @@ namespace SQLite
 					return write (conn);
 				}
 			}, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
-		}
-
-		/// <summary>
-		/// Sets the key used to encrypt/decrypt the database.
-		/// This must be the first thing you call before doing anything else with this connection
-		/// if your database is encrypted.
-		/// This only has an effect if you are using the SQLCipher nuget package.
-		/// </summary>
-		/// <param name="key">Ecryption key plain text that is converted to the real encryption key using PBKDF2 key derivation</param>
-		public Task SetKeyAsync (string key)
-		{
-			if (key == null) throw new ArgumentNullException (nameof (key));
-			return WriteAsync<object> (conn => {
-				conn.SetKey (key);
-				return null;
-			});
-		}
-
-		/// <summary>
-		/// Sets the key used to encrypt/decrypt the database.
-		/// This must be the first thing you call before doing anything else with this connection
-		/// if your database is encrypted.
-		/// This only has an effect if you are using the SQLCipher nuget package.
-		/// </summary>
-		/// <param name="key">256-bit (32 byte) ecryption key data</param>
-		public Task SetKeyAsync (byte[] key)
-		{
-			if (key == null) throw new ArgumentNullException (nameof (key));
-			if (key.Length != 32) throw new ArgumentException ("Key must be 32 bytes (256-bit)", nameof (key));
-			return WriteAsync<object> (conn => {
-				conn.SetKey (key);
-				return null;
-			});
 		}
 
 		/// <summary>
@@ -689,6 +686,19 @@ namespace SQLite
 		}
 
 		/// <summary>
+		/// Backup the entire database to the specified path.
+		/// </summary>
+		/// <param name="destinationDatabasePath">Path to backup file.</param>
+		/// <param name="databaseName">The name of the database to backup (usually "main").</param>
+		public Task BackupAsync (string destinationDatabasePath, string databaseName = "main")
+		{
+			return WriteAsync (conn => {
+				conn.Backup (destinationDatabasePath, databaseName);
+				return 0;
+			});
+		}
+
+		/// <summary>
 		/// Attempts to retrieve an object with the given primary key from the table
 		/// associated with the specified type. Use of this method requires that
 		/// the given type have a designated PrimaryKey (using the PrimaryKeyAttribute).
@@ -1127,11 +1137,6 @@ namespace SQLite
 		}
 	}
 
-	//
-	// TODO: Bind to AsyncConnection.GetConnection instead so that delayed
-	// execution can still work after a Pool.Reset.
-	//
-
 	/// <summary>
 	/// Query to an asynchronous database connection.
 	/// </summary>
@@ -1317,23 +1322,39 @@ namespace SQLite
 	{
 		class Entry
 		{
-			public SQLiteConnectionString ConnectionString { get; private set; }
-			public SQLiteConnectionWithLock Connection { get; private set; }
+			WeakReference<SQLiteConnectionWithLock> connection;
 
-			public Entry (SQLiteConnectionString connectionString, SQLiteOpenFlags openFlags)
+			public SQLiteConnectionString ConnectionString { get; }
+
+			public Entry (SQLiteConnectionString connectionString)
 			{
 				ConnectionString = connectionString;
-				Connection = new SQLiteConnectionWithLock (connectionString, openFlags);
+			}
+
+			public SQLiteConnectionWithLock Connect ()
+			{
+				SQLiteConnectionWithLock c = null;
+				var wc = connection;
+				if (wc == null || !wc.TryGetTarget (out c)) {
+					c = new SQLiteConnectionWithLock (ConnectionString);
+
+					// If the database is FullMutex, then we don't need to bother locking
+					if (ConnectionString.OpenFlags.HasFlag (SQLiteOpenFlags.FullMutex)) {
+						c.SkipLock = true;
+					}
+
+					connection = new WeakReference<SQLiteConnectionWithLock> (c);
+				}
+				return c;
 			}
 
 			public void Close ()
 			{
-				if (Connection == null)
-					return;
-				using (var l = Connection.Lock ()) {
-					Connection.Dispose ();
+				var wc = connection;
+				if (wc != null && wc.TryGetTarget (out var c)) {
+					c.Close ();
 				}
-				Connection = null;
+				connection = null;
 			}
 		}
 
@@ -1351,33 +1372,29 @@ namespace SQLite
 			}
 		}
 
-		public SQLiteConnectionWithLock GetConnection (SQLiteConnectionString connectionString, SQLiteOpenFlags openFlags)
+		public SQLiteConnectionWithLock GetConnection (SQLiteConnectionString connectionString)
 		{
+			var key = connectionString.UniqueKey;
+			Entry entry;
 			lock (_entriesLock) {
-				Entry entry;
-				string key = connectionString.ConnectionString;
-
 				if (!_entries.TryGetValue (key, out entry)) {
-					entry = new Entry (connectionString, openFlags);
+					entry = new Entry (connectionString);
 					_entries[key] = entry;
 				}
-
-				return entry.Connection;
 			}
+			return entry.Connect ();
 		}
 
-		public void CloseConnection (SQLiteConnectionString connectionString, SQLiteOpenFlags openFlags)
+		public void CloseConnection (SQLiteConnectionString connectionString)
 		{
-			var key = connectionString.ConnectionString;
-
+			var key = connectionString.UniqueKey;
 			Entry entry;
 			lock (_entriesLock) {
 				if (_entries.TryGetValue (key, out entry)) {
 					_entries.Remove (key);
 				}
 			}
-
-			entry.Close ();
+			entry?.Close ();
 		}
 
 		/// <summary>
@@ -1399,7 +1416,8 @@ namespace SQLite
 
 	/// <summary>
 	/// This is a normal connection except it contains a Lock method that
-	/// can be used to serialize access to the database.
+	/// can be used to serialize access to the database
+	/// in lieu of using the sqlite's FullMutex support.
 	/// </summary>
 	public class SQLiteConnectionWithLock : SQLiteConnection
 	{
@@ -1409,9 +1427,8 @@ namespace SQLite
 		/// Initializes a new instance of the <see cref="T:SQLite.SQLiteConnectionWithLock"/> class.
 		/// </summary>
 		/// <param name="connectionString">Connection string containing the DatabasePath.</param>
-		/// <param name="openFlags">Open flags.</param>
-		public SQLiteConnectionWithLock (SQLiteConnectionString connectionString, SQLiteOpenFlags openFlags, string databasePassword = "")
-			: base (connectionString.DatabasePath, openFlags, databasePassword, connectionString.StoreDateTimeAsTicks)
+		public SQLiteConnectionWithLock (SQLiteConnectionString connectionString)
+			: base (connectionString)
 		{
 		}
 
