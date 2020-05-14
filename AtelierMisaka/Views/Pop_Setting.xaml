@@ -45,7 +45,7 @@
                             <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="0" Opacity="0.5"/>
                         </Border.Effect>
                         <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="Lst" Focusable="True"
-                                 ItemsSource="{Binding ArtistList}" SelectedItem="{Binding Artist}"
+                                 ItemsSource="{Binding ArtistList}" SelectedItem="{Binding Artist, UpdateSourceTrigger=PropertyChanged}"
                                  SelectionChanged="Lst_SelectionChanged">
                             <ListBox.Style>
                                 <Style TargetType="ListBox">

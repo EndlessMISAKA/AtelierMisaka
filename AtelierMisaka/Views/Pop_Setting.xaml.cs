@@ -272,7 +272,6 @@ namespace AtelierMisaka.Views
                 return false;
             }
             GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-            //GlobalData.DownLP?.Close();
             GlobalData.DownLP = new Downloader(_tempBis);
             GlobalData.DownLP.Show();
             GlobalData.DownLP.LoadData();
@@ -401,7 +400,6 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
-                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 if (File.Exists("Settings\\Setting_Patreon.ini"))
                 {
                     var ms = File.ReadAllLines("Settings\\Setting_Patreon.ini");
@@ -416,7 +414,6 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
-                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 if (File.Exists("Settings\\Setting_Fantia.ini"))
                 {
                     var ms = File.ReadAllLines("Settings\\Setting_Fantia.ini");
@@ -431,7 +428,6 @@ namespace AtelierMisaka.Views
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
-                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
                 if (File.Exists("Settings\\Setting_Fanbox.ini"))
                 {
                     var ms = File.ReadAllLines("Settings\\Setting_Fanbox.ini");
@@ -446,7 +442,7 @@ namespace AtelierMisaka.Views
 
         private void Lst_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(e.AddedItems.Count > 0)
+            if (e.AddedItems.Count > 0)
             {
                 ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
                 SetLastDate(ai.Id);
