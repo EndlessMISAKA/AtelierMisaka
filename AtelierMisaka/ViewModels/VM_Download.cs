@@ -509,6 +509,7 @@ namespace AtelierMisaka.ViewModels
             get => new ParamCommand<DownloadItem>((di) =>
             {
                 GlobalData.ShowDocumentCommand.Execute(di.SourceDocu);
+                System.Windows.Application.Current.MainWindow.Activate();
             });
         }
 

@@ -86,6 +86,7 @@ namespace AtelierMisaka
         public static CommonCommand ShowDLCommand = new CommonCommand(() =>
         {
             DownLP.Show();
+            DownLP.Activate();
         });
 
         public static CommonCommand OpenLinkCommand = new CommonCommand(() =>
