@@ -531,7 +531,7 @@ namespace AtelierMisaka.Models
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return 0;
         }
     }
 }

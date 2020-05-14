@@ -141,7 +141,7 @@ namespace AtelierMisaka.Models
             }
             else if (obj is ArtistInfo ai)
             {
-                return ai.Id == this.Id;
+                return ai.Id == _id;
             }
             else
             {
@@ -151,7 +151,7 @@ namespace AtelierMisaka.Models
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return 0;
         }
     }
 }
