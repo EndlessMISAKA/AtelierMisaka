@@ -91,6 +91,11 @@ namespace AtelierMisaka.Models
             }
         }
 
+        public string SavePathStr
+        {
+            get => _savePath.Replace(GlobalData.VM_DL.SavePath, "{Base Path}");
+        }
+
         public string Link
         {
             get => _link;

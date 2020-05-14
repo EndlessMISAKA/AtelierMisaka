@@ -43,7 +43,7 @@
                     </ComboBox>
                 </StackPanel>
             </StackPanel>
-            <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
+            <ListBox x:Name="Lst_D" Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
                      Visibility="{Binding ElementName=zzxz, Path=IsChecked, Converter={StaticResource btvc}}"
                      VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding DownLoadItemList}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -67,14 +67,14 @@
                                     <Grid Height="40" Background="#2D2D30">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="40"/>
-                                            <ColumnDefinition Width="460"/>
-                                            <ColumnDefinition Width="240"/>
-                                            <ColumnDefinition Width="240"/>
-                                            <ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition MinWidth="460"/>
+                                            <ColumnDefinition Width="240" MinWidth="240"/>
+                                            <ColumnDefinition Width="240" MinWidth="240"/>
+                                            <ColumnDefinition Width="150" MinWidth="150"/>
+                                            <ColumnDefinition Width="150" MinWidth="150"/>
                                         </Grid.ColumnDefinitions>
                                         <Image Source="{Binding DLStatus, Converter={StaticResource etic}}"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding FileName}" Style="{StaticResource TBL_DL}" HorizontalAlignment="Stretch"/>
                                         <Grid Grid.Column="2">
                                             <TextBlock Text="{Binding ErrorMsg}" Style="{StaticResource TBL_DL}"/>
                                             <StackPanel x:Name="sp" Orientation="Horizontal" HorizontalAlignment="Center"
@@ -109,7 +109,7 @@
                 </ListBox.Style>
             </ListBox>
 
-            <ListBox Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
+            <ListBox x:Name="Lst_C" Background="Transparent" BorderThickness="0" VirtualizingPanel.IsVirtualizing="True" Grid.Row="1"
                      Visibility="{Binding ElementName=yxz, Path=IsChecked, Converter={StaticResource btvc}}"
                      VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" ItemsSource="{Binding CompletedList}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" FontSize="15">
@@ -132,17 +132,17 @@
                                 <DataTemplate>
                                     <Grid Height="40" Background="#2D2D30">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="300"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition MinWidth="450"/>
+                                            <ColumnDefinition Width="180"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding FileName}" Style="{StaticResource TBL_DL}"/>
+                                        <TextBlock Grid.Column="0" Text="{Binding FileName}" Style="{StaticResource TBL_DL}" HorizontalAlignment="Stretch"/>
                                         <StackPanel x:Name="sp" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
                                             <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Look"/>
                                             <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="File"/>
                                             <local:ButtonEx Style="{StaticResource BTN_Open}" OpenType="Folder"/>
                                         </StackPanel>
-                                        <TextBlock Text="{Binding SavePath}" Grid.Column="2" Style="{StaticResource TBL_DL}"/>
+                                        <TextBlock Text="{Binding SavePathStr}" Grid.Column="2" Style="{StaticResource TBL_DL}"/>
                                     </Grid>
                                     <DataTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
