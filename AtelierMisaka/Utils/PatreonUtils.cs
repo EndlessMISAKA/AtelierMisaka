@@ -18,7 +18,7 @@ namespace AtelierMisaka
     {
         private ChromiumWebBrowser _cwb;
         private bool _needLogin = false;
-        private readonly Regex _cidRegex = new Regex(@"self"": ""https://www.patreon.com/api/campaigns/{\d+}");
+        private readonly Regex _cidRegex = new Regex(@"self"": ""https://www.patreon.com/api/campaigns/(\d+)");
         private readonly Regex _emailRegex = new Regex(@"email"": ""(.+?)""");
         private readonly Regex _htmlImg = new Regex(@"<p><img.+?></p>");
         private readonly string _postUrl = "https://www.patreon.com/api/posts?include=attachments.null%2Cmedia.null&filter[campaign_id]={0}&sort=-published_at&fields[post]=Ccomment_count%2Ccontent%2Ccurrent_user_can_view%2Ccurrent_user_has_liked%2Cembed%2Cimage%2Cpublished_at%2Cpost_type%2Cthumbnail_url%2Cteaser_text%2Ctitle%2Curl&json-api-use-default-includes=false";
@@ -167,12 +167,12 @@ namespace AtelierMisaka
         {
             try
             {
-                string ss = await GetWebCode(url);
+                string ss = await GetWebCode("view-source:" + url);
                 Match ma = _cidRegex.Match(ss);
                 if (ma.Success)
                 {
                     string _cid = ma.Groups[1].Value;
-                    ss = await GetAPI(string.Format(_artistUrl, _cid));
+                    ss = ChangeUnicode(await GetAPI(string.Format(_artistUrl, _cid)));
                     var jpa = JsonConvert.DeserializeObject<JsonData_Patreon_Artist>(ss);
                     if (null != jpa.data)
                     {
@@ -202,7 +202,7 @@ namespace AtelierMisaka
         {
             try
             {
-                string ss = await GetAPI(_pledgeUrl);
+                string ss = ChangeUnicode(await GetAPI(_pledgeUrl));
                 var jpp = JsonConvert.DeserializeObject<JsonData_Patreon_Pledge>(ss);
                 if (null != jpp.data && null != jpp.included)
                 {
@@ -322,7 +322,7 @@ namespace AtelierMisaka
                         }
                         if (null != jpp.meta.pagination.cursors)
                         {
-                            ss = await GetAPI(string.Format(_nextUrl, uid, jpp.meta.pagination.cursors.next));
+                            ss = ChangeUnicode(await GetAPI(string.Format(_nextUrl, uid, jpp.meta.pagination.cursors.next)));
                             continue;
                         }
                         return ResultHelper.NoError(pis);
@@ -374,40 +374,7 @@ namespace AtelierMisaka
         
         private string ChangeUnicode(string str)
         {
-            MatchCollection mc = Regex.Matches(str, "(\\\\u([\\w]{4}))");
-            HashSet<string> _replaceFlag = new HashSet<string>();
-            if (mc != null && mc.Count > 0)
-            {
-                foreach (Match m2 in mc)
-                {
-                    string v = m2.Value;
-                    if (_unicodeDic.ContainsKey(v))
-                    {
-                        if (_replaceFlag.Add(v))
-                        {
-                            str = str.Replace(v, _unicodeDic[v]);
-                        }
-                    }
-                    else
-                    {
-                        string word = v.Substring(2);
-                        byte[] codes = new byte[2];
-                        int code = Convert.ToInt32(word.Substring(0, 2), 16);
-                        int code2 = Convert.ToInt32(word.Substring(2), 16);
-                        codes[0] = (byte)code2;
-                        codes[1] = (byte)code;
-                        string ss = Encoding.Unicode.GetString(codes);
-                        str = str.Replace(v, ss);
-                        _unicodeDic.Add(v, ss);
-                        _replaceFlag.Add(v);
-                    }
-                }
-                return str;
-            }
-            else
-            {
-                return str;
-            }
+            return str.Replace("\\u00a0", " ").Replace("\\u00A0", " ");
         }
     }
 }
