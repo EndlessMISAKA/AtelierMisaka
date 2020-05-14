@@ -377,9 +377,9 @@ namespace AtelierMisaka.Views
         {
             try
             {
-                string fn = $"Artists_{GlobalData.VM_MA.Site.ToString()}.json";
+                string fn = $"Settings\\Artists_{GlobalData.VM_MA.Site.ToString()}.json";
                 File.WriteAllText(fn, GlobalData.ConverToJson(GlobalData.VM_MA.ArtistList));
-                fn = $"Setting_{GlobalData.VM_MA.Site.ToString()}.ini";
+                fn = $"Settings\\Setting_{GlobalData.VM_MA.Site.ToString()}.ini";
                 File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.Cookies, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
                 if (!string.IsNullOrEmpty(GlobalData.VM_MA.ArtistList.Last().Id))
                 {
@@ -394,45 +394,45 @@ namespace AtelierMisaka.Views
             try
             {
                 GlobalData.VM_MA.Site = SiteType.Patreon;
-                var ais = GlobalData.ReadArtists("Artists_Patreon.json");
+                var ais = GlobalData.ReadArtists("Settings\\Artists_Patreon.json");
                 foreach (var ai in ais)
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
                 GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
-                if (File.Exists("Setting_Patreon.ini"))
+                if (File.Exists("Settings\\Setting_Patreon.ini"))
                 {
-                    var ms = File.ReadAllLines("Setting_Patreon.ini");
+                    var ms = File.ReadAllLines("Settings\\Setting_Patreon.ini");
                     GlobalData.VM_MA.Cookies = ms[0];
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
                 GlobalData.VM_MA.Site = SiteType.Fantia;
-                ais = GlobalData.ReadArtists("Artists_Fantia.json");
+                ais = GlobalData.ReadArtists("Settings\\Artists_Fantia.json");
                 foreach (var ai in ais)
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
                 GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
-                if (File.Exists("Setting_Fantia.ini"))
+                if (File.Exists("Settings\\Setting_Fantia.ini"))
                 {
-                    var ms = File.ReadAllLines("Setting_Fantia.ini");
+                    var ms = File.ReadAllLines("Settings\\Setting_Fantia.ini");
                     GlobalData.VM_MA.Cookies = ms[0];
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
                 GlobalData.VM_MA.Site = SiteType.Fanbox;
-                ais = GlobalData.ReadArtists("Artists_Fanbox.json");
+                ais = GlobalData.ReadArtists("Settings\\Artists_Fanbox.json");
                 foreach (var ai in ais)
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
                 }
                 GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
-                if (File.Exists("Setting_Fanbox.ini"))
+                if (File.Exists("Settings\\Setting_Fanbox.ini"))
                 {
-                    var ms = File.ReadAllLines("Setting_Fanbox.ini");
+                    var ms = File.ReadAllLines("Settings\\Setting_Fanbox.ini");
                     GlobalData.VM_MA.Cookies = ms[0];
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
