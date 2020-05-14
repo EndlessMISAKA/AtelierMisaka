@@ -47,7 +47,6 @@ namespace AtelierMisaka.Cef
                     ? Assembly.LoadFile(archSpecificPath)
                     : null;
             }
-
             return null;
         }
 
