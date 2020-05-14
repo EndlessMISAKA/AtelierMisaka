@@ -133,19 +133,19 @@ namespace AtelierMisaka.ViewModels
 
         private SiteType _site = SiteType.Fanbox;
 
-        private ArtistInfo _artistFanbox = new ArtistInfo();
+        private ArtistInfo _artistFanbox = null;
         private string _cookiesFanbox = string.Empty;
         private string _proxyFanbox = string.Empty;
         private string _savePathFanbox = string.Empty;
         private bool _useProxyFanbox = true;
 
-        private ArtistInfo _artistPatreon = new ArtistInfo();
+        private ArtistInfo _artistPatreon = null;
         private string _cookiesPatreon = string.Empty;
         private string _proxyPatreon = string.Empty;
         private string _savePathPatreon = string.Empty;
         private bool _useProxyPatreon = true;
 
-        private ArtistInfo _artistFantia = new ArtistInfo();
+        private ArtistInfo _artistFantia = null;
         private string _cookiesFantia = string.Empty;
         private string _proxyFantia = string.Empty;
         private string _savePathFantia = string.Empty;
@@ -219,6 +219,7 @@ namespace AtelierMisaka.ViewModels
                 {
                     _site = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged("Artist");
                     RaisePropertyChanged("ArtistList");
                     RaisePropertyChanged("Cookies");
                     RaisePropertyChanged("UseProxy");
@@ -227,7 +228,6 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged("CookieTag");
                     RaisePropertyChanged("PostUrlTag");
                     RaisePropertyChanged("HasSelected");
-                    RaisePropertyChanged("Artist");
                 }
             }
         }
@@ -248,32 +248,29 @@ namespace AtelierMisaka.ViewModels
             }
             set
             {
-                if (null != value)
+                switch (_site)
                 {
-                    switch (_site)
-                    {
-                        case SiteType.Fanbox:
-                            if (_artistFanbox != value)
-                            {
-                                _artistFanbox = value;
-                            }
-                            break;
-                        case SiteType.Fantia:
-                            if (_artistFantia != value)
-                            {
-                                _artistFantia = value;
-                            }
-                            break;
-                        default:
-                            if (_artistPatreon != value)
-                            {
-                                _artistPatreon = value;
-                            }
-                            break;
-                    }
-                    RaisePropertyChanged();
-                    RaisePropertyChanged("HasSelected");
+                    case SiteType.Fanbox:
+                        if (_artistFanbox != value)
+                        {
+                            _artistFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_artistFantia != value)
+                        {
+                            _artistFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_artistPatreon != value)
+                        {
+                            _artistPatreon = value;
+                        }
+                        break;
                 }
+                RaisePropertyChanged();
+                RaisePropertyChanged("HasSelected");
             }
         }
 
