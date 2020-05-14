@@ -1,8 +1,11 @@
-﻿using System;
+﻿using AtelierMisaka.Cef;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -13,5 +16,18 @@ namespace AtelierMisaka
     /// </summary>
     public partial class App : Application
     {
+        static App()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CefHelper.ResolveCefSharpAssembly;
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            SetDllDirectory(CefHelper.cefDirectory);
+            base.OnStartup(e);
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool SetDllDirectory(string path);
     }
 }
