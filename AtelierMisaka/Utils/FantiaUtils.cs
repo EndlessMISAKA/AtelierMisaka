@@ -38,7 +38,7 @@ namespace AtelierMisaka
                         var ai = new ArtistInfo()
                         {
                             Id = cid,
-                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name)),
+                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name.Trim())),
                             Cid = cid,
                             PostUrl = $"https://fantia.jp/fanclubs/{cid}",
                             PayLow = GlobalData.VM_MA.Artist.PayLow,
@@ -114,7 +114,7 @@ namespace AtelierMisaka
                     {
                         Id = cid,
                         Cid = cid,
-                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(ana)),
+                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(ana.Trim())),
                         PostUrl = $"https://fantia.jp/fanclubs/{cid}",
                         PayHigh = "0"
                     };
@@ -224,7 +224,7 @@ namespace AtelierMisaka
                         return;
                     }
                     fi.FID = jfp.post.id.ToString();
-                    fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title));
+                    fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title.Trim()));
                     if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
                         fi.Comments.Add(jfp.post.comment);
@@ -251,7 +251,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title.Trim()))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
@@ -326,7 +326,7 @@ namespace AtelierMisaka
                     FantiaItem fi = new FantiaItem()
                     {
                         FID = jfp.post.id.ToString(),
-                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title)),
+                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title.Trim())),
                     };
                     if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
                     {
@@ -364,7 +364,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title.Trim()))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);

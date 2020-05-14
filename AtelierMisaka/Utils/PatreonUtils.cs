@@ -180,7 +180,7 @@ namespace AtelierMisaka
                         {
                             Id = _cid,
                             Cid = _cid,
-                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpa.data.attributes.name)),
+                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpa.data.attributes.name.Trim())),
                             PostUrl = url,
                             PayLow = GlobalData.VM_MA.Artist.PayLow,
                             PayHigh = GlobalData.VM_MA.Artist.PayHigh
@@ -220,7 +220,7 @@ namespace AtelierMisaka
                         {
                             Id = inclu.id,
                             Cid = inclu.id,
-                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(inclu.attributes.name)),
+                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(inclu.attributes.name.Trim())),
                             PostUrl = inclu.attributes.url,
                             PayHigh = jpp.data[i].attributes.amount_cents.ToString()
                         };
@@ -283,7 +283,7 @@ namespace AtelierMisaka
                                 CreateDate = dt,
                                 UpdateDate = dt,
                                 PID = jpp.data[i].id,
-                                Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpp.data[i].attributes.title)),
+                                Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpp.data[i].attributes.title.Trim())),
                                 IsLiked = jpp.data[i].attributes.current_user_has_liked,
                                 PLink = jpp.data[i].attributes.url
                             };
