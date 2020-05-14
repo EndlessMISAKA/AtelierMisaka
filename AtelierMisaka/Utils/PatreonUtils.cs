@@ -25,6 +25,9 @@ namespace AtelierMisaka
         private readonly string _nextUrl = "https://www.patreon.com/api/posts?include=attachments.null%2Cmedia.null&filter[campaign_id]={0}&page[cursor]={1}&sort=-published_at&fields[post]=Ccomment_count%2Ccontent%2Ccurrent_user_can_view%2Ccurrent_user_has_liked%2Cembed%2Cimage%2Cpublished_at%2Cpost_type%2Cthumbnail_url%2Cteaser_text%2Ctitle%2Curl&json-api-use-default-includes=false";
         private readonly string _artistUrl = "https://www.patreon.com/api/campaigns/{0}?include=null";
         private readonly string _pledgeUrl = "https://www.patreon.com/api/pledges?include=campaign&fields[campaign]=name%2Curl&fields[pledge]=amount_cents%2Cpledge_cap_cents&json-api-use-default-includes=false";
+        private readonly string _webCharSet = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>";
+
+        private Dictionary<string, string> _unicodeDic = new Dictionary<string, string>();
 
         public async Task<ResultMessage> InitBrowser()
         {
@@ -257,7 +260,7 @@ namespace AtelierMisaka
         {
             try
             {
-                string ss = await GetAPI(string.Format(_postUrl, uid));
+                string ss = ChangeUnicode(await GetAPI(string.Format(_postUrl, uid)));
                 List<BaseItem> pis = new List<BaseItem>();
                 while (true)
                 {
@@ -280,7 +283,7 @@ namespace AtelierMisaka
                                 CreateDate = dt,
                                 UpdateDate = dt,
                                 PID = jpp.data[i].id,
-                                Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpp.data[0].attributes.title)),
+                                Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpp.data[i].attributes.title)),
                                 IsLiked = jpp.data[i].attributes.current_user_has_liked,
                                 PLink = jpp.data[i].attributes.url
                             };
@@ -361,12 +364,50 @@ namespace AtelierMisaka
 
         private async Task<string> GetWebContent(string content)
         {
-            _cwb.LoadHtml(content);
+            _cwb.LoadHtml(_webCharSet + content);
             do
             {
                 await Task.Delay(150);
             } while (_cwb.IsLoading);
             return await _cwb.GetTextAsync();
+        }
+        
+        private string ChangeUnicode(string str)
+        {
+            MatchCollection mc = Regex.Matches(str, "(\\\\u([\\w]{4}))");
+            HashSet<string> _replaceFlag = new HashSet<string>();
+            if (mc != null && mc.Count > 0)
+            {
+                foreach (Match m2 in mc)
+                {
+                    string v = m2.Value;
+                    if (_unicodeDic.ContainsKey(v))
+                    {
+                        if (_replaceFlag.Add(v))
+                        {
+                            str = str.Replace(v, _unicodeDic[v]);
+                        }
+                    }
+                    else
+                    {
+                        string word = v.Substring(2);
+                        byte[] codes = new byte[2];
+                        int code = Convert.ToInt32(word.Substring(0, 2), 16);
+                        int code2 = Convert.ToInt32(word.Substring(2), 16);
+                        codes[0] = (byte)code2;
+                        codes[1] = (byte)code;
+                        string ss = Encoding.Unicode.GetString(codes);
+                        str = str.Replace(v, ss);
+                        _unicodeDic.Add(v, ss);
+                        _replaceFlag.Add(v);
+                    }
+                }
+                return str;
+            }
+            else
+            {
+                return str;
+            }
         }
     }
 }
