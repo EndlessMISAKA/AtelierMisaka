@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AtelierMisaka.Cef
+namespace AtelierMisaka
 {
     public static class CefHelper
     {
@@ -32,7 +32,7 @@ namespace AtelierMisaka.Cef
             cefSettings.CefCommandLineArgs.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36");
 
             CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
-            CefSharp.Cef.Initialize(cefSettings);
+            Cef.Initialize(cefSettings);
             initialized = true;
         }
 
