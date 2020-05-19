@@ -38,7 +38,7 @@ namespace AtelierMisaka
                         var ai = new ArtistInfo()
                         {
                             Id = cid,
-                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.fanclub.creator_name.Trim())),
+                            AName = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfa.fanclub.creator_name)),
                             Cid = cid,
                             PostUrl = $"https://fantia.jp/fanclubs/{cid}",
                             PayLow = GlobalData.VM_MA.Artist.PayLow,
@@ -50,7 +50,7 @@ namespace AtelierMisaka
                 }
                 catch (Exception ex)
                 {
-                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                     if (ex is WebException || ex is System.Net.Sockets.SocketException)
                     {
                         return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
@@ -86,7 +86,7 @@ namespace AtelierMisaka
                 }
                 catch (Exception ex)
                 {
-                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                     if (ex is WebException || ex is System.Net.Sockets.SocketException)
                     {
                         return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
@@ -114,7 +114,7 @@ namespace AtelierMisaka
                     {
                         Id = cid,
                         Cid = cid,
-                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(ana.Trim())),
+                        AName = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ana)),
                         PostUrl = $"https://fantia.jp/fanclubs/{cid}",
                         PayHigh = "0"
                     };
@@ -174,7 +174,7 @@ namespace AtelierMisaka
                 }
                 catch (Exception ex)
                 {
-                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                     if (ex is WebException || ex is System.Net.Sockets.SocketException)
                     {
                         return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
@@ -219,12 +219,12 @@ namespace AtelierMisaka
                         fi.UpdateDate = dt;
                     }
 
-                    if (GlobalData.OverTime(fi.UpdateDate))
+                    if (GlobalMethord.OverTime(fi.UpdateDate))
                     {
                         return;
                     }
                     fi.FID = jfp.post.id.ToString();
-                    fi.Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title.Trim()));
+                    fi.Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title));
                     if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
                         fi.Comments.Add(jfp.post.comment);
@@ -241,7 +241,7 @@ namespace AtelierMisaka
                     }
                     else
                     {
-                        fi.DeadDate = "无";
+                        fi.DeadDate = "---";
                     }
 					
                     foreach (var ct in jfp.post.post_contents)
@@ -251,7 +251,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title.Trim()))}";
+                        var stitle = $"${fee}___{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
@@ -275,7 +275,7 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-									fi.Comments.Add($"<图片: {fn}>");
+									fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
 									fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
@@ -284,7 +284,7 @@ namespace AtelierMisaka
                             }
                             else if (ct.category == "file")
 							{
-								fi.Comments.Add($"<文件: {ct.filename}>");
+								fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
 								fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
@@ -303,7 +303,7 @@ namespace AtelierMisaka
                                 return;
                             }
                         }
-                        if (!GlobalData.OverTime(dtp))
+                        if (!GlobalMethord.OverTime(dtp))
                         {
                             GetUrls_Loop(jfp.post.links.previous.id, bis);
                         }
@@ -326,7 +326,7 @@ namespace AtelierMisaka
                     FantiaItem fi = new FantiaItem()
                     {
                         FID = jfp.post.id.ToString(),
-                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfp.post.title.Trim())),
+                        Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title)),
                     };
                     if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
                     {
@@ -353,7 +353,7 @@ namespace AtelierMisaka
                     }
                     else
                     {
-                        fi.DeadDate = "无";
+                        fi.DeadDate = "---";
                     }
 
                     var contents = jfp.post.post_contents;
@@ -364,7 +364,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalData.RemoveLastDot(GlobalData.ReplacePath(ct.title.Trim()))}";
+                        var stitle = $"${fee}___{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
@@ -389,7 +389,7 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-                                    fi.Comments.Add($"<图片: {fn}>");
+                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
                                     fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
@@ -398,7 +398,7 @@ namespace AtelierMisaka
                             }
                             else if (ct.category == "file")
                             {
-                                fi.Comments.Add($"<文件: {ct.filename}>");
+                                fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
                                 fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
@@ -417,7 +417,7 @@ namespace AtelierMisaka
                                 return;
                             }
                         }
-                        if (!GlobalData.OverTime(dtp))
+                        if (!GlobalMethord.OverTime(dtp))
                         {
                             GetUrls_Loop(jfp.post.links.previous.id, bis);
                         }
@@ -456,7 +456,7 @@ namespace AtelierMisaka
 
         public async override Task<ResultMessage> LikePost(string pid, string cid)
         {
-            return await Task.Run(() => ResultHelper.UnKnownError("未支持的功能"));
+            return await Task.Run(() => ResultHelper.UnKnownError(GlobalLanguage.Msg_ErrorUnSupported));
         }
     }
 }

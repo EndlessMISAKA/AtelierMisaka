@@ -17,7 +17,7 @@
 
         public string FileCount
         {
-            get => $"文件数: {_contentUrls.Count} 个;  图片数: {_mediaUrls.Count} 张";
+            get => string.Format(GlobalLanguage.Text_FileImgCou, _contentUrls.Count, _mediaUrls.Count);
         }
     }
 }

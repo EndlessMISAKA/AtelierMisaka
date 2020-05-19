@@ -22,13 +22,16 @@ namespace AtelierMisaka.Views
             var doms = bi.Comments;
             string link = string.Empty;
             bool flag = false;
-            for(int i = 0; i < doms.Count; i++)
+            string _preFile = $"<{GlobalLanguage.Text_FilePref}";
+            string _preImage = $"<{GlobalLanguage.Text_ImagePref}";
+            string _preLink = $"<{GlobalLanguage.Text_LinkPref}";
+            for (int i = 0; i < doms.Count; i++)
             {
                 if (doms[i].Length == 0)
                 {
                     MainBody.Inlines.Add(new LineBreak());
                 }
-                else if (doms[i].StartsWith("<文件:") || doms[i].StartsWith("<图片:"))
+                else if (doms[i].StartsWith(_preFile) || doms[i].StartsWith(_preImage))
                 {
                     MainBody.Inlines.Add(new Run(doms[i]) { Foreground = Brushes.LightSeaGreen });
                     MainBody.Inlines.Add(new LineBreak());
@@ -53,7 +56,7 @@ namespace AtelierMisaka.Views
                             }
                             Hyperlink hl = new Hyperlink(new Run(link))
                             {
-                                Command = GlobalData.OpenBrowserCommand,
+                                Command = GlobalCommand.OpenBrowserCommand,
                                 CommandParameter = link
                             };
                             if (index != 0)
@@ -75,7 +78,7 @@ namespace AtelierMisaka.Views
                                 {
                                     rr.FontSize = 30;
                                 }
-                                else if (dis.StartsWith("<引用"))
+                                else if (dis.StartsWith(_preLink))
                                 {
                                     rr.Foreground = Brushes.LightSkyBlue;
                                 }
@@ -91,7 +94,7 @@ namespace AtelierMisaka.Views
             {
                 MainBody.Inlines.Add(new Run("------------------------------------------------------------------------------------------"));
                 MainBody.Inlines.Add(new LineBreak());
-                MainBody.Inlines.Add(new Run("文件列表: ") { FontSize = 25 });
+                MainBody.Inlines.Add(new Run(GlobalLanguage.Text_FList) { FontSize = 25 });
                 MainBody.Inlines.Add(new LineBreak());
 
                 for (int i = 0; i< bi.ContentUrls.Count; i++)
@@ -110,7 +113,7 @@ namespace AtelierMisaka.Views
             {
                 MainBody.Inlines.Add(new Run("------------------------------------------------------------------------------------------"));
                 MainBody.Inlines.Add(new LineBreak());
-                MainBody.Inlines.Add(new Run("图片列表: ") { FontSize = 25 });
+                MainBody.Inlines.Add(new Run(GlobalLanguage.Text_IList) { FontSize = 25 });
                 MainBody.Inlines.Add(new LineBreak());
 
                 for (int i = 0; i < bi.MediaUrls.Count; i++)

@@ -23,7 +23,7 @@ namespace AtelierMisaka.Models
 
         public string FileCount
         {
-            get => $"文件数: {_contentUrls.Count} 个";
+            get => string.Format(GlobalLanguage.Text_FileCou, _contentUrls.Count);
         }
 
         public List<string> Fees

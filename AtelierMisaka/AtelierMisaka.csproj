@@ -117,6 +117,10 @@
     <Compile Include="Converters\EnumToImageConverter.cs" />
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\NameToWidthConverter.cs" />
+    <Compile Include="Global\GlobalCommand.cs" />
+    <Compile Include="Global\GlobalEnum.cs" />
+    <Compile Include="Global\GlobalLanguage.cs" />
+    <Compile Include="Global\GlobalMethord.cs" />
     <Compile Include="Models\CLastDate.cs" />
     <Compile Include="Models\CLastDateDic.cs" />
     <Compile Include="Models\DownloadLog.cs" />
@@ -135,7 +139,7 @@
     <Compile Include="Utils\PatreonUtils.cs" />
     <Compile Include="Utils\BaseUtils.cs" />
     <Compile Include="Utils\FantiaUtils.cs" />
-    <Compile Include="Utils\GlobalData.cs" />
+    <Compile Include="Global\GlobalData.cs" />
     <Compile Include="Utils\FanboxUtils.cs" />
     <Compile Include="Utils\SQLiteCLastDateHelper.cs" />
     <Compile Include="Utils\SQLiteConnectionFactory.cs" />
@@ -167,7 +171,52 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Styles.xaml">
+    <Page Include="Styles\Style.Controls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\en-US\Style.Messages.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\en-US\Style.Text.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ja-JP\Style.Messages.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ja-JP\Style.Text.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Style.Base.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
+    <Page Include="Styles\Style.en-US.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Style.ja-JP.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Style.zh-CN.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\zh-CN\Style.Messages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\zh-CN\Style.Text.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

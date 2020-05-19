@@ -18,7 +18,7 @@ namespace AtelierMisaka.Converters
             }
             else
             {
-                var flag = value.Equals("自定义");
+                var flag = value.Equals(GlobalLanguage.Text_DefaultAName);
                 return flag ? 40 : 630;
             }
         }

@@ -45,7 +45,7 @@ namespace AtelierMisaka.Views
             if (_second) return;
             _second = true;
 
-            if (await GetCheck(GlobalData.VM_MA.IsStarted ? "确认更改设定吗?" : "确认无误就开始咯?"))
+            if (await GetCheck(GlobalData.VM_MA.IsStarted ? GlobalLanguage.Msg_SecondConf : GlobalLanguage.Msg_StartConf))
             {
                 if (GlobalData.CheckResult == false)
                 {
@@ -85,7 +85,7 @@ namespace AtelierMisaka.Views
                     ShowLoading(true);
                     if (GlobalData.VM_DL.IsDownloading)
                     {
-                        await GetCheck("当前还在下载中，不能更换");
+                        await GetCheck(GlobalLanguage.Msg_IsDownload);
                         ShowLoading(false);
                         _second = false;
                         return;
@@ -120,7 +120,7 @@ namespace AtelierMisaka.Views
                         {
                             foreach (var bi in _tempBis)
                             {
-                                bi.Skip = GlobalData.OverPayment(int.Parse(bi.Fee));
+                                bi.Skip = GlobalMethord.OverPayment(int.Parse(bi.Fee));
                             }
                         });
                         GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
@@ -131,7 +131,7 @@ namespace AtelierMisaka.Views
 
                 if (_tempSP != GlobalData.VM_MA.SavePath)
                 {
-                    await GetCheck("保存路径的修改", "将在下次生效");
+                    await GetCheck(GlobalLanguage.Msg_ChangeSP);
                     _tempSP = GlobalData.VM_MA.SavePath;
                 }
 
@@ -159,7 +159,7 @@ namespace AtelierMisaka.Views
                     {
                         foreach (var bi in _tempBis)
                         {
-                            bi.Skip = GlobalData.OverTime(bi.UpdateDate);
+                            bi.Skip = GlobalMethord.OverTime(bi.UpdateDate);
                         }
                     });
                     GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
@@ -177,7 +177,7 @@ namespace AtelierMisaka.Views
                 }
 
                 ShowLoading(false);
-                GlobalData.BackCommand.Execute(BackType.Pop);
+                GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
             _second = false;
         }
@@ -186,28 +186,28 @@ namespace AtelierMisaka.Views
         {
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
             {
-                await GetCheck("Cookies不能为空");
+                await GetCheck(GlobalLanguage.Msg_CheckCk);
                 ShowLoading(false);
                 return false;
             }
 
             if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
             {
-                await GetCheck("保存路径不能为空");
+                await GetCheck(GlobalLanguage.Msg_CheckSP);
                 ShowLoading(false);
                 return false;
             }
             Directory.CreateDirectory(GlobalData.VM_MA.SavePath);
             if (!Directory.Exists(GlobalData.VM_MA.SavePath))
             {
-                await GetCheck("无法找到存储路径");
+                await GetCheck(GlobalLanguage.Msg_CreateSP);
                 ShowLoading(false);
                 return false;
             }
 
             GlobalData.DownLP?.Close();
             ResultMessage _ret = null;
-            _utils = GlobalData.GetUtils();
+            _utils = GlobalData.CaptureUtil;
             if (_utils is PatreonUtils)
             {
                 _ret = await (_utils as PatreonUtils).InitBrowser();
@@ -267,7 +267,7 @@ namespace AtelierMisaka.Views
             _tempBis = (List<BaseItem>)_ret.Result;
             if (_tempBis.Count == 0)
             {
-                await GetCheck("没有可阅读的文章");
+                await GetCheck(GlobalLanguage.Msg_NoPosts);
                 ShowLoading(false);
                 return false;
             }
@@ -275,7 +275,7 @@ namespace AtelierMisaka.Views
             GlobalData.DownLP = new Downloader(_tempBis);
             GlobalData.DownLP.Show();
             GlobalData.DownLP.LoadData();
-            GlobalData.BackCommand.Execute(BackType.Pop);
+            GlobalCommand.BackCommand.Execute(BackType.Pop);
             return true;
         }
 
@@ -283,13 +283,13 @@ namespace AtelierMisaka.Views
         {
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
             {
-                await GetCheck("Cookies不能为空");
+                await GetCheck(GlobalLanguage.Msg_CheckCk);
                 return;
             }
             ShowLoading(true);
             await Task.Delay(100);
             ResultMessage _ret = null;
-            _utils = GlobalData.GetUtils();
+            _utils = GlobalData.CaptureUtil;
             if (_utils is PatreonUtils)
             {
                 _ret = await (_utils as PatreonUtils).InitBrowser();
@@ -330,16 +330,9 @@ namespace AtelierMisaka.Views
             ShowLoading(false);
         }
 
-        private async void Btn_Back_Click(object sender, RoutedEventArgs e)
+        private void Btn_Back_Click(object sender, RoutedEventArgs e)
         {
-            if (await GetCheck("退出软件吗?"))
-            {
-                if (GlobalData.CheckResult == false)
-                {
-                    return;
-                }
-                Application.Current.Shutdown();
-            }
+            GlobalCommand.ExitCommand.Execute(null);
         }
 
         private async Task<bool> GetCheck(params string[] msgs)
@@ -379,7 +372,7 @@ namespace AtelierMisaka.Views
             try
             {
                 string fn = $"Settings\\Artists_{GlobalData.VM_MA.Site.ToString()}.json";
-                File.WriteAllText(fn, GlobalData.ConverToJson(GlobalData.VM_MA.ArtistList));
+                File.WriteAllText(fn, GlobalMethord.ConverToJson(GlobalData.VM_MA.ArtistList));
                 fn = $"Settings\\Setting_{GlobalData.VM_MA.Site.ToString()}.ini";
                 File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.Cookies, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
                 if (!string.IsNullOrEmpty(GlobalData.VM_MA.ArtistList.Last().Id))
@@ -395,7 +388,7 @@ namespace AtelierMisaka.Views
             try
             {
                 GlobalData.VM_MA.Site = SiteType.Patreon;
-                var ais = GlobalData.ReadArtists("Settings\\Artists_Patreon.json");
+                var ais = GlobalMethord.ReadArtists("Settings\\Artists_Patreon.json");
                 foreach (var ai in ais)
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
@@ -409,7 +402,7 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
                 GlobalData.VM_MA.Site = SiteType.Fantia;
-                ais = GlobalData.ReadArtists("Settings\\Artists_Fantia.json");
+                ais = GlobalMethord.ReadArtists("Settings\\Artists_Fantia.json");
                 foreach (var ai in ais)
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);
@@ -423,7 +416,7 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
                 GlobalData.VM_MA.Site = SiteType.Fanbox;
-                ais = GlobalData.ReadArtists("Settings\\Artists_Fanbox.json");
+                ais = GlobalMethord.ReadArtists("Settings\\Artists_Fanbox.json");
                 foreach (var ai in ais)
                 {
                     GlobalData.VM_MA.ArtistList.Add(ai);

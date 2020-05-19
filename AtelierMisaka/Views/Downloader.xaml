@@ -7,8 +7,8 @@
         xmlns:vm="clr-namespace:AtelierMisaka.ViewModels"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" Style="{StaticResource WindowStyle}"
-        Background="#2D2D30" Closing="Window_Closing"
-        Title="Alchemy Cauldron" Height="720" Width="1280" WindowStartupLocation="CenterOwner">
+        Background="#2D2D30" Closing="Window_Closing" Height="720" Width="1280"
+        Title="{DynamicResource Text_SubTitle}" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:VM_Download x:Name="VM_DD"/>
     </Window.DataContext>
@@ -24,12 +24,12 @@
             </Grid.RowDefinitions>
             <Border BorderBrush="#3F3F41" BorderThickness="0,0,0,2"/>
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                <RadioButton x:Name="zzxz" Style="{StaticResource RB_Setting}" Content="正在下载" FontSize="40" Height="60" IsChecked="True"/>
-                <RadioButton x:Name="yxz" Style="{StaticResource RB_Setting}" Content="已下载列表" FontSize="40" Height="60"/>
+                <RadioButton x:Name="zzxz" Style="{StaticResource RB_Setting}" Content="{DynamicResource Text_DownloadList}" FontSize="40" Height="60" IsChecked="True"/>
+                <RadioButton x:Name="yxz" Style="{StaticResource RB_Setting}" Content="{DynamicResource Text_CompletedList}" FontSize="40" Height="60"/>
                 <Button Style="{StaticResource BTN_Setting}" Margin="60,0" Content="{Binding BtnText}" FontSize="30"
                         Command="{Binding QuestCommand}"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource TBL_Setting}" Text="线程数:"/>
+                    <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Text_ThreadCount}"/>
                     <ComboBox Style="{StaticResource ComB}" SelectedValue="{Binding ThreadCount}">
                         <sys:Int32>1</sys:Int32>
                         <sys:Int32>2</sys:Int32>
@@ -159,7 +159,7 @@
 
         <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}" Grid.RowSpan="2">
             <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
-            <Grid Width="400" Height="200" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
+            <Grid Width="500" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
                   MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
                   MouseLeave="Grid_MouseLeave">
                 <Grid.Effect>
@@ -169,14 +169,10 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource TBL_Setting}" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Run Text="关闭下载界面吗？"/>
-                    <LineBreak/>
-                    <Run Text="可在设定界面重新打开"/>
-                </TextBlock>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <Button Click="Btn_Close_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
-                    <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
+                <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Msg_Close}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
+                    <Button Click="Btn_Close_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_CheckButton}"/>
+                    <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_CancelButton}"/>
                 </StackPanel>
             </Grid>
         </Canvas>

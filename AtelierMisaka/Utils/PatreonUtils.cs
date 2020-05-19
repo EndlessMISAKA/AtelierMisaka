@@ -46,7 +46,7 @@ namespace AtelierMisaka
                             }
                             if (!await CefHelper.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
                             {
-                                return ResultHelper.WebError($"无法设置代理{Environment.NewLine}请联系开发者");
+                                return ResultHelper.WebError(GlobalLanguage.Msg_ErrorWebProxy);
                             }
                         }
                         return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/"));
@@ -64,14 +64,14 @@ namespace AtelierMisaka
                     }
                     if (!await CefHelper.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
                     {
-                        return ResultHelper.WebError($"无法设置代理{Environment.NewLine}请联系开发者");
+                        return ResultHelper.WebError(GlobalLanguage.Msg_ErrorWebProxy);
                     }
                 }
                 return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/"));
             }
             catch (Exception ex)
             {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                 return ResultHelper.UnKnownError();
             }
         }
@@ -89,7 +89,7 @@ namespace AtelierMisaka
                 {
                     if (string.IsNullOrEmpty(htmlc))
                     {
-                        return ResultHelper.WebError("网络错误，请重试");
+                        return ResultHelper.WebError();
                     }
                     Match ma = _emailRegex.Match(htmlc);
                     if (ma.Success)
@@ -109,7 +109,7 @@ namespace AtelierMisaka
                         GlobalData.VM_MA.IsInitialized = true;
                         return ResultHelper.NoError(_needLogin);
                     }
-                    return ResultHelper.CookieError("找不到设置的邮箱地址");
+                    return ResultHelper.CookieError(GlobalLanguage.Msg_ErrorCookiesMail);
                 }
             }
             else
@@ -142,19 +142,16 @@ namespace AtelierMisaka
                     if (ma.Success)
                     {
                         var s = ma.Groups[1].Value;
-                        if (!string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
+                        if (s != GlobalData.VM_MA.Cookies)
                         {
-                            if (s != GlobalData.VM_MA.Cookies)
-                            {
-                                GlobalData.VM_MA.Messages = $"登录的帐号与给定的邮箱不匹配{Environment.NewLine}已自动填入新邮箱";
-                            }
+                            GlobalData.VM_MA.Messages = GlobalLanguage.Msg_ErrorCookiesAuto;
                         }
                         GlobalData.VM_MA.Cookies = s;
                         GlobalData.VM_MA.IsInitialized = true;
                     }
                     else
                     {
-                        GlobalData.VM_MA.Messages = $"无法从网页上获取邮箱{Environment.NewLine}请暂停使用Patreon并联系开发者";
+                        GlobalData.VM_MA.Messages = GlobalLanguage.Msg_ErrorCookiesMail;
                     }
                     _cwb.FrameLoadEnd -= CWebBrowser_LoginCheck;
                     _needLogin = false;
@@ -180,7 +177,7 @@ namespace AtelierMisaka
                         {
                             Id = _cid,
                             Cid = _cid,
-                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpa.data.attributes.name.Trim())),
+                            AName = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jpa.data.attributes.name)),
                             PostUrl = url,
                             PayLow = GlobalData.VM_MA.Artist.PayLow,
                             PayHigh = GlobalData.VM_MA.Artist.PayHigh
@@ -193,7 +190,7 @@ namespace AtelierMisaka
             }
             catch (Exception ex)
             {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                 return ResultHelper.UnKnownError();
             }
         }
@@ -220,7 +217,7 @@ namespace AtelierMisaka
                         {
                             Id = inclu.id,
                             Cid = inclu.id,
-                            AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(inclu.attributes.name.Trim())),
+                            AName = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(inclu.attributes.name)),
                             PostUrl = inclu.attributes.url,
                             PayHigh = jpp.data[i].attributes.amount_cents.ToString()
                         };
@@ -234,7 +231,7 @@ namespace AtelierMisaka
             }
             catch (Exception ex)
             {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                 return ResultHelper.UnKnownError();
             }
         }
@@ -272,7 +269,7 @@ namespace AtelierMisaka
                         {
                             if (DateTime.TryParse(jpp.data[i].attributes.published_at, out DateTime dt))
                             {
-                                if (GlobalData.OverTime(dt))
+                                if (GlobalMethord.OverTime(dt))
                                 {
                                     return ResultHelper.NoError(pis);
                                 }
@@ -283,7 +280,7 @@ namespace AtelierMisaka
                                 CreateDate = dt,
                                 UpdateDate = dt,
                                 PID = jpp.data[i].id,
-                                Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jpp.data[i].attributes.title.Trim())),
+                                Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jpp.data[i].attributes.title)),
                                 IsLiked = jpp.data[i].attributes.current_user_has_liked,
                                 PLink = jpp.data[i].attributes.url
                             };
@@ -301,7 +298,7 @@ namespace AtelierMisaka
                             }
                             if (null != jpp.data[i].attributes.embed)
                             {
-                                pi.Comments.Add($"<引用链接: {jpp.data[i].attributes.embed.url} >");
+                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {jpp.data[i].attributes.embed.url} >");
                             }
 
                             if(null != jpp.data[i].relationships.media)
@@ -315,7 +312,7 @@ namespace AtelierMisaka
                                     }
                                     pi.ContentUrls.Add(inclu.attributes.image_urls.original);
                                     pi.FileNames.Add(inclu.attributes.file_name);
-                                    pi.Comments.Add($"<文件: {inclu.attributes.file_name}>");
+                                    pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {inclu.attributes.file_name}>");
                                 }
                             }
                             pis.Add(pi);
@@ -332,14 +329,14 @@ namespace AtelierMisaka
             }
             catch (Exception ex)
             {
-                GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                 return ResultHelper.UnKnownError();
             }
         }
 
         public async override Task<ResultMessage> LikePost(string pid, string cid)
         {
-            return await Task.Run(() => ResultHelper.UnKnownError("未支持的功能"));
+            return await Task.Run(() => ResultHelper.UnKnownError(GlobalLanguage.Msg_ErrorUnSupported));
         }
 
         private async Task<string> GetWebCode(string url)

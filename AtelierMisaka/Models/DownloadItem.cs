@@ -194,7 +194,7 @@ namespace AtelierMisaka.Models
                 }
                 if (_contentLength == -1)
                 {
-                    return "未知大小";
+                    return GlobalLanguage.Text_UnKnownSize;
                 }
                 var re = _contentLength / 1024d;
                 var dw = "KB";
@@ -425,7 +425,7 @@ namespace AtelierMisaka.Models
                     _request.Abort();
                     if (_dlRet == ErrorType.Web)
                     {
-                        ErrorMsg = "网络错误";
+                        ErrorMsg = GlobalLanguage.Msg_DLErrWeb;
                         if (++_reTryC < 10)
                         {
                             Start();
@@ -443,11 +443,11 @@ namespace AtelierMisaka.Models
                     {
                         if (_dlRet == ErrorType.Path)
                         {
-                            ErrorMsg = "文件路径太长";
+                            ErrorMsg = GlobalLanguage.Msg_DLErrPath;
                         }
                         else
                         {
-                            ErrorMsg = "没有权限";
+                            ErrorMsg = GlobalLanguage.Msg_DLErrSecu;
                         }
                         DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>

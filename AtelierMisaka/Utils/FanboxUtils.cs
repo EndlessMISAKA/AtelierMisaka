@@ -47,7 +47,7 @@ namespace AtelierMisaka
                 }
                 catch (Exception ex)
                 {
-                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                     if (ex is WebException || ex is System.Net.Sockets.SocketException)
                     {
                         return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
@@ -90,7 +90,7 @@ namespace AtelierMisaka
                 }
                 catch (Exception ex)
                 {
-                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                     if (ex is WebException || ex is System.Net.Sockets.SocketException)
                     {
                         return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
@@ -111,7 +111,7 @@ namespace AtelierMisaka
                     {
                         Id = jfa.body.user.userId,
                         Cid = cid,
-                        AName = GlobalData.RemoveLastDot(GlobalData.ReplacePath(jfa.body.user.name.Trim())),
+                        AName = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfa.body.user.name)),
                         PostUrl = referer ?? _referer
                     };
                     foreach (var link in jfa.body.profileLinks)
@@ -173,7 +173,7 @@ namespace AtelierMisaka
                 }
                 catch (Exception ex)
                 {
-                    GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+                    GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
                     if (ex is WebException || ex is System.Net.Sockets.SocketException)
                     {
                         return ex.Message.Contains("401") ? ResultHelper.CookieError() : ResultHelper.WebError();
@@ -210,7 +210,7 @@ namespace AtelierMisaka
                     {
                         PID = po.id,
                         Fee = po.feeRequired.ToString(),
-                        Title = GlobalData.RemoveLastDot(GlobalData.ReplacePath(po.title.Trim())),
+                        Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(po.title)),
                         CoverPic = po.coverImageUrl,
                         CoverPicThumb = po.coverImageUrl,
                         IsLiked = po.isLiked
@@ -223,7 +223,7 @@ namespace AtelierMisaka
                     {
                         pi.UpdateDate = dt;
                     }
-                    if (GlobalData.OverPayment(int.Parse(pi.Fee)) || GlobalData.OverTime(pi.UpdateDate))
+                    if (GlobalMethord.OverPayment(int.Parse(pi.Fee)) || GlobalMethord.OverTime(pi.UpdateDate))
                     {
                         pi.Skip = true;
                     }
@@ -244,7 +244,7 @@ namespace AtelierMisaka
                                         pi.ContentUrls.Add(finfo.url);
                                         var fn = $"{finfo.name}.{finfo.extension}";
                                         pi.FileNames.Add(fn);
-                                        pi.Comments.Add($"<文件: {fn} ({GetSize(finfo.size)})>");
+                                        pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {fn} ({GetSize(finfo.size)})>");
                                     }
                                 }
                                 break;
@@ -261,7 +261,7 @@ namespace AtelierMisaka
                                         pi.MediaUrls.Add(iinfo.originalUrl);
                                         var fn = $"{index++}.{iinfo.extension}";
                                         pi.MediaNames.Add(fn);
-                                        pi.Comments.Add($"<图片: {fn} ({iinfo.width}x{iinfo.height}px)>");
+                                        pi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn} ({iinfo.width}x{iinfo.height}px)>");
                                     }
                                 }
                                 break;
@@ -281,7 +281,7 @@ namespace AtelierMisaka
                                                     pi.ContentUrls.Add(fitem.url);
                                                     var fn = $"{fitem.name}.{fitem.extension}";
                                                     pi.FileNames.Add(fn);
-                                                    pi.Comments.Add($"<文件: {fn} ({GetSize(fitem.size)})>");
+                                                    pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {fn} ({GetSize(fitem.size)})>");
                                                 }
                                                 break;
                                             case "image":
@@ -290,7 +290,7 @@ namespace AtelierMisaka
                                                     pi.MediaUrls.Add(iitem.originalUrl);
                                                     var fn = $"{index_pic++}.{iitem.extension}";
                                                     pi.MediaNames.Add(fn);
-                                                    pi.Comments.Add($"<图片: {fn} ({iitem.width}x{iitem.height}px)>");
+                                                    pi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn} ({iitem.width}x{iitem.height}px)>");
                                                 }
                                                 break;
                                             case "embed":
@@ -299,16 +299,16 @@ namespace AtelierMisaka
                                                     pi.Comments.Add(string.Empty);
                                                     if (eitem.serviceProvider == "twitter" && !string.IsNullOrEmpty(GlobalData.VM_MA.Artist.Twitter))
                                                     {
-                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId} >");
+                                                        pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId} >");
                                                     }
                                                     else if (eitem.serviceProvider == "fanbox")
                                                     {
 
-                                                        pi.Comments.Add($"<引用链接: {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()} >");
+                                                        pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()} >");
                                                     }
                                                     else
                                                     {
-                                                        pi.Comments.Add($"<引用链接: {eitem.serviceProvider} ({eitem.contentId})>");
+                                                        pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {eitem.serviceProvider} ({eitem.contentId})>");
                                                     }
                                                     pi.Comments.Add(string.Empty);
                                                 }
@@ -342,7 +342,7 @@ namespace AtelierMisaka
                 {
                     if (!UpdateToken(pid, cid))
                     {
-                        return ResultHelper.SecurityError("");
+                        return ResultHelper.SecurityError();
                     }
                 }
                 try
@@ -366,7 +366,7 @@ namespace AtelierMisaka
                     {
                         if (!UpdateToken(pid, cid))
                         {
-                            return ResultHelper.SecurityError("");
+                            return ResultHelper.SecurityError();
                         }
                     }
                     return ResultHelper.WebError();
@@ -410,8 +410,8 @@ namespace AtelierMisaka
                 req.Headers.Set("Origin", orig);
                 req.Headers.Set(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
                 req.Referer = referer ?? _referer;
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();//获取返回结果
-                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);//以UTF8标准读取流
+                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+                StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);
                 string respHtml = sr.ReadToEnd();
 
                 sr.Close();
@@ -429,7 +429,7 @@ namespace AtelierMisaka
         {
             if (size <= 0)
             {
-                return "未知大小";
+                return GlobalLanguage.Text_UnKnownSize;
             }
             var re = size / 1024d;
             var dw = "KB";

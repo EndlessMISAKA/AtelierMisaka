@@ -158,6 +158,7 @@ namespace AtelierMisaka.ViewModels
         private bool _showLoad = false;
         private bool _showLogin = false;
         private bool _isStarted = false;
+        private bool _canChangeLang = true;
         private Regex _regex = new Regex(@"^\d+\.\d+\.\d+\.\d+:\d+$");
         private IList<ArtistInfo> _artistListFanbox = new ObservableCollection<ArtistInfo>();
         private IList<ArtistInfo> _artistListPatreon = new ObservableCollection<ArtistInfo>();
@@ -318,6 +319,45 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public int SelectedLang
+        {
+            get => GlobalData.CurrentCulStr;
+            set
+            {
+                if (!GlobalData.CurrentCulStr.Equals(value))
+                {
+                    CanChangeLang = false;
+
+                    GlobalData.CurrentCulStr = value;
+                    GlobalLanguage.SetCulture(GlobalData.CurrentCulStr);
+
+                    CanChangeLang = true;
+                }
+            }
+        }
+
+        public bool CanChangeLang
+        {
+            get => _canChangeLang;
+            set
+            {
+                if (_canChangeLang != value)
+                {
+                    _canChangeLang = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool UpdateCul
+        {
+            set
+            {
+                RaisePropertyChanged("CookieTag");
+                RaisePropertyChanged("PostUrlTag");
+            }
+        }
+
         public string CookieTag
         {
             get
@@ -325,11 +365,11 @@ namespace AtelierMisaka.ViewModels
                 switch (_site)
                 {
                     case SiteType.Fanbox:
-                        return "例：FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4";
+                        return GlobalLanguage.Text_CookiesFanbox;
                     case SiteType.Fantia:
-                        return "例：_session_id=dsadw13232rfcd43tcfwwb6e3f0ec";
+                        return GlobalLanguage.Text_CookiesFantia;
                     default:
-                        return "请输入你的邮箱地址";
+                        return GlobalLanguage.Text_CookiesPatreon;
                 }
             }
         }
@@ -341,18 +381,18 @@ namespace AtelierMisaka.ViewModels
                 switch (_site)
                 {
                     case SiteType.Fanbox:
-                        return "https://www.fanbox.cc/@a or https://a.fanbox.cc/";
+                        return GlobalLanguage.Text_CreatorUrlFanbox;
                     case SiteType.Fantia:
-                        return "https://fantia.jp/fanclubs/12345";
+                        return GlobalLanguage.Text_CreatorUrlFantia;
                     default:
-                        return "https://www.patreon.com/abcd/posts";
+                        return GlobalLanguage.Text_CreatorUrlPatreon;
                 }
             }
         }
 
         public bool HasSelected
         {
-            get => (Artist != null) && (Artist.AName != "自定义");
+            get => (Artist != null) && !string.IsNullOrEmpty(Artist.Id);
         }
 
         public string Messages

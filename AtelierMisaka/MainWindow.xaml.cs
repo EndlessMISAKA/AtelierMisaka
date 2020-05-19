@@ -20,13 +20,13 @@ namespace AtelierMisaka
             CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, RestoreWindow, CanResizeWindow));
 
             GlobalData.VM_MA = (ViewModels.VM_Main)DataContext;
-            GlobalData.Init();
+            GlobalMethord.Init();
         }
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            GlobalData.BackCommand.Execute(BackType.Main);
-            GlobalData.VM_MA.MLeft = (ActualWidth - 400) / 2;
+            GlobalCommand.BackCommand.Execute(BackType.Main);
+            GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
         }
 
@@ -44,7 +44,7 @@ namespace AtelierMisaka
 
         private void CloseWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            GlobalData.ExitCommand.Execute(null);
+            GlobalCommand.ExitCommand.Execute(null);
         }
 
         private void MaximizeWindow(object sender, ExecutedRoutedEventArgs e)

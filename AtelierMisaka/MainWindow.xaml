@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:AtelierMisaka.ViewModels"
         mc:Ignorable="d" Background="#2D2D30" Style="{StaticResource WindowStyle}"
         Loaded="Window_Loaded" WindowStartupLocation="CenterScreen"
-        Title="AtelierMisaka" Height="720" Width="1280">
+        Title="{DynamicResource Text_MainTitle}" Height="720" Width="1280">
     <Window.DataContext>
         <vm:VM_Main/>
     </Window.DataContext>
@@ -22,14 +22,14 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="15,0">
-                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="全部显示" Margin="15,0"
+                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="{DynamicResource Text_ShowAll}" Margin="15,0"
                              IsChecked="{Binding ShowList, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ShowType.All}}"/>
-                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="没有文件"
+                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="{DynamicResource Text_ShowHasNotFile}"
                              IsChecked="{Binding ShowList, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ShowType.OnlyZero}}"/>
-                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="包含链接" Margin="15,0"
+                <RadioButton Style="{StaticResource RB_Setting}" FontSize="25" Height="30" Width="Auto" Content="{DynamicResource Text_ShowHasLink}" Margin="15,0"
                              IsChecked="{Binding ShowList, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ShowType.OnlyHttp}}"/>
-                <Button Width="27" Height="27" Focusable="False" Command="{x:Static local:GlobalData.BackCommand}"
-                        CommandParameter="{x:Static local:BackType.Main}" VerticalAlignment="Center">
+                <Button Width="27" Height="27" Focusable="False" Command="{x:Static local:GlobalCommand.BackCommand}"
+                        CommandParameter="{x:Static local:BackType.Main}" VerticalAlignment="Center" ToolTip="{DynamicResource Text_GoSetting}">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -82,7 +82,7 @@
                                                 </Grid.Effect>
                                                 <Border Grid.RowSpan="4" BorderBrush="Red" BorderThickness="2" Visibility="{Binding IsZero, Converter={StaticResource btvc}}"/>
                                                 <Button Tag="{Binding CoverPic}" IsEnabled="{Binding NeedLoadCover}" Margin="10,10,10,0"
-                                                        Command="{x:Static local:GlobalData.GetCoverCommand}" CommandParameter="{Binding}">
+                                                        Command="{x:Static local:GlobalCommand.GetCoverCommand}" CommandParameter="{Binding}">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
                                                             <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -98,7 +98,7 @@
                                                       Visibility="{Binding IsLiked, Converter={StaticResource btvc}}">
                                                 </Path>
                                                 <Button Grid.Row="1" HorizontalAlignment="Left" Margin="10,0" Content="{Binding Title}"
-                                                    Command="{x:Static local:GlobalData.ShowDocumentCommand}" CommandParameter="{Binding}"
+                                                    Command="{x:Static local:GlobalCommand.ShowDocumentCommand}" CommandParameter="{Binding}"
                                                     Background="Transparent" FontSize="20" HorizontalContentAlignment="Left" FontWeight="Bold">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
@@ -110,7 +110,7 @@
                                                     </Button.Template>
                                                 </Button>
                                                 <TextBlock Grid.Row="2" HorizontalAlignment="Left" Margin="10,0" FontSize="15">
-                                            <Run Text="发布时间:"/>
+                                            <Run Text="{DynamicResource Text_PublishDate}"/>
                                             <Run Text="{Binding CreateDateStr, Mode=OneWay}"/>
                                                 </TextBlock>
                                                 <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="10,0" FontSize="15">
@@ -118,7 +118,7 @@
                                             <Run Text="{Binding Fee}"/>
                                                 </TextBlock>
                                                 <TextBlock Grid.Row="3" HorizontalAlignment="Left" Margin="10,0" FontSize="15" Text="{Binding FileCount}"/>
-                                                <TextBlock Grid.Row="3" HorizontalAlignment="Right" Margin="10,0" FontSize="15" Text="检测到网站链接"
+                                                <TextBlock Grid.Row="3" HorizontalAlignment="Right" Margin="10,0" FontSize="15" Text="{DynamicResource Text_HasLinkWarning}"
                                                        Visibility="{Binding HasLink, Converter={StaticResource btvc}}" Foreground="Red"/>
                                             </Grid>
                                         </Grid>
@@ -136,7 +136,7 @@
         <Grid Grid.RowSpan="2">
             <Canvas x:Name="cas" Visibility="{Binding ShowCheck, Converter={StaticResource btvc}}">
                 <Border Background="Black" Opacity="0.5" BorderThickness="0" Width="{Binding ElementName=cas, Path=ActualWidth}" Height="{Binding ElementName=cas, Path=ActualHeight}"/>
-                <Grid Width="400" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
+                <Grid Width="550" Height="300" Background="#2D2D30" Canvas.Left="{Binding MLeft}" Canvas.Top="{Binding MTop}"
                       MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseMove="Grid_MouseMove" MouseLeftButtonUp="Grid_MouseLeftButtonUp"
                       MouseLeave="Grid_MouseLeave">
                     <Grid.Effect>
@@ -146,10 +146,10 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="60"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Style="{StaticResource TBL_Setting}" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1">
-                        <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="确定"/>
-                        <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="取消"/>
+                    <TextBlock Style="{StaticResource TBL_Setting}" Margin="0" Text="{Binding Messages}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
+                        <Button Click="Btn_Check_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_CheckButton}"/>
+                        <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_CancelButton}"/>
                     </StackPanel>
                 </Grid>
             </Canvas>

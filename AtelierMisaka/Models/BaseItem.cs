@@ -43,7 +43,8 @@ namespace AtelierMisaka.Models
             {
                 if (null == _hasLink)
                 {
-                    _hasLink = ((_comments.FindIndex(x => x.Contains("http") || x.Contains("<引用链接")) != -1) == true);
+                    var reg = $"<{GlobalLanguage.Text_LinkPref}";
+                    _hasLink = ((_comments.FindIndex(x => x.Contains("http") || x.StartsWith(reg)) != -1) == true);
                 }
                 return _hasLink == true;
             }
@@ -104,20 +105,20 @@ namespace AtelierMisaka.Models
             {
                 if (string.IsNullOrEmpty(_coverPic))
                 {
-                    return "无封面";
+                    return GlobalLanguage.Text_NoCov;
                 }
                 else if (!_needLoadCover)
                 {
                     if (_percent >= 0)
                     {
-                        return $"加载中...{_percent}%";
+                        return string.Format(GlobalLanguage.Msg_LoadCov, _percent);
                     }
                     _needLoadCover = true;
-                    return $"网络出错，请重试";
+                    return GlobalLanguage.Msg_CoverErr;
                 }
                 else
                 {
-                    return "点击加载封面图";
+                    return GlobalLanguage.Text_NeedLC;
                 }
             }
         }

@@ -6,7 +6,7 @@ namespace AtelierMisaka.Models
     {
         private string _id = string.Empty;
         private string _cid = string.Empty;
-        private string _aName = "自定义";
+        private string _aName = string.Empty;
         private string _postUrl = string.Empty;
         private string _payLow = string.Empty;
         private string _payHigh = string.Empty;
@@ -40,7 +40,7 @@ namespace AtelierMisaka.Models
 
         public string AName
         {
-            get => _aName;
+            get => string.IsNullOrEmpty(_aName) ? GlobalLanguage.Text_DefaultAName : _aName;
             set
             {
                 if (_aName != value)

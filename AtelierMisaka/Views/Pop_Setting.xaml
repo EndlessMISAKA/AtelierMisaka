@@ -5,9 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AtelierMisaka.Views"
              xmlns:basens="clr-namespace:AtelierMisaka"
+             xmlns:vm="clr-namespace:AtelierMisaka.ViewModels"
              PreviewMouseDown="UserControl_PreviewMouseDown"
              PreviewKeyDown="UserControl_PreviewKeyDown"
-             mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="1280">
+             mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="1280"
+             d:DataContext="{d:DesignInstance Type=vm:VM_Main}">
     <UserControl.Resources>
         <Storyboard x:Key="sb_path" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)">
             <DoubleAnimation RepeatBehavior="Forever" From="360" To="0" Duration="0:0:2" Storyboard.TargetName="p1"/>
@@ -26,10 +28,10 @@
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Patreon}}"/>
             </StackPanel>
             <Grid Height="60">
-                <TextBlock Text="作者链接" Style="{StaticResource TBL_Setting}"/>
+                <TextBlock Text="{DynamicResource Text_CreatorUrl}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Name="popt" Style="{StaticResource TB_Setting}" Tag="{Binding PostUrlTag}" Text="{Binding Artist.PostUrl, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Background="#2D2D30" Visibility="{Binding HasSelected, Converter={StaticResource btvc}}" Padding="10,0"
-                           HorizontalAlignment="Right" Width="726" Margin="22,0" FontSize="28" Foreground="White" VerticalAlignment="Center">
+                           HorizontalAlignment="Right" Width="726" Margin="22,0" FontSize="29" Foreground="White" VerticalAlignment="Center">
                     <Run Text="{Binding Artist.AName}"/>
                     <Run Text="--"/>
                     <Run Text="{Binding Artist.Id}"/>
@@ -81,46 +83,54 @@
                 </local:PopupEx>
             </Grid>
             <Grid Height="60">
-                <TextBlock Text="付费区间" Style="{StaticResource TBL_Setting}"/>
+                <TextBlock Text="{DynamicResource Text_Cost}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="150,0" HorizontalAlignment="Left" Tag="0" Text="{Binding Artist.PayLow, UpdateSourceTrigger=PropertyChanged}"/>
-                <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="320,0"/>
+                <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="0,0,560,0"/>
                 <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="0,0,390,0" Tag="∞" Text="{Binding Artist.PayHigh, UpdateSourceTrigger=PropertyChanged}"/>
-            </Grid>
-            <Grid Height="60">
-                <TextBlock Text="保存路径" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="例：E:\Setu" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}"/>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="20,0">
+                    <TextBlock Text="{DynamicResource Text_Language}" Style="{StaticResource TBL_Setting}" Margin="10,0"/>
+                    <ComboBox Style="{StaticResource ComB_Lang}" SelectedIndex="{Binding SelectedLang}" IsEnabled="{Binding CanChangeLang}">
+                        <TextBlock Text="{DynamicResource Text_ZH}"/>
+                        <TextBlock Text="{DynamicResource Text_JP}"/>
+                        <TextBlock Text="{DynamicResource Text_EN}"/>
+                    </ComboBox>
+                </StackPanel>
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="Cookies" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Height="60">
-                <CheckBox Style="{StaticResource CB_Setting}" Content="代理设置" IsChecked="{Binding UseProxy}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="例：127.0.0.1:1080" IsEnabled="{Binding UseProxy}" Text="{Binding Proxy, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_SavePathTag}" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid Height="60">
-                <CheckBox Style="{StaticResource CB_Setting}" Content="截止日期" IsChecked="{Binding UseDate}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="例：1919/07/21 11:45:14" IsEnabled="{Binding UseDate}" Text="{Binding Date}"/>
+                <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Proxy}" IsChecked="{Binding UseProxy}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_ProxyTag}" IsEnabled="{Binding UseProxy}" Text="{Binding Proxy, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+            <Grid Height="60">
+                <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Date}" IsChecked="{Binding UseDate}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}" IsEnabled="{Binding UseDate}" Text="{Binding Date}"/>
             </Grid>
             <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="更新支援列表"/>
-                <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="确定" Margin="20,0"/>
-                <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="退出"/>
+                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="280"/>
+                <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_StarButton}" Margin="20,0"/>
+                <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_ExitButton}"/>
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,5" Orientation="Horizontal">
             <TextBlock Foreground="White" Margin="15,0">
                 <Run Text="Produced By: "/>
-                <Hyperlink Command="{x:Static basens:GlobalData.OpenBrowserCommand}" CommandParameter="https://github.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
+                <Hyperlink Command="{x:Static basens:GlobalCommand.OpenBrowserCommand}" CommandParameter="https://github.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
             </TextBlock>
             <TextBlock Foreground="White">
                 <Run Text="Twitter: "/>
-                <Hyperlink Command="{x:Static basens:GlobalData.OpenBrowserCommand}" CommandParameter="https://twitter.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
+                <Hyperlink Command="{x:Static basens:GlobalCommand.OpenBrowserCommand}" CommandParameter="https://twitter.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
             </TextBlock>
         </StackPanel>
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="15,1" Focusable="False"
-                Command="{x:Static basens:GlobalData.BackCommand}" CommandParameter="{x:Static basens:BackType.Pop}"
-                Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
+                Command="{x:Static basens:GlobalCommand.BackCommand}" CommandParameter="{x:Static basens:BackType.Pop}"
+                Visibility="{Binding IsStarted, Converter={StaticResource btvc}}" ToolTip="{DynamicResource Text_BackToMain}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -138,8 +148,10 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="55, 1" Focusable="False"
-                Command="{x:Static basens:GlobalData.ShowDLCommand}" Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27"
+                Height="27" Panel.ZIndex="2" Margin="55, 1" Focusable="False"
+                Command="{x:Static basens:GlobalCommand.ShowDLCommand}" ToolTip="{DynamicResource Text_ShowDownloader}"
+                Visibility="{Binding IsStarted, Converter={StaticResource btvc}}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">

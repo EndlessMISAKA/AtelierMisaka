@@ -36,14 +36,15 @@
                     <TextBlock FontSize="40" Text="{Binding Title_Document}"/>
                     <LineBreak/>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="25" Text="发布于:"/>
+                        <TextBlock FontSize="25" Text="{DynamicResource Text_PostDate}"/>
                         <TextBlock FontSize="25" Text="{Binding Date_Document}"/>
-                        <TextBlock FontSize="25" Text="      更新于:"/>
+                        <TextBlock FontSize="25" Text="   "/>
+                        <TextBlock FontSize="25" Text="{DynamicResource Text_UpdatedDate}"/>
                         <TextBlock FontSize="25" Text="{Binding UpDate_Document}"/>
                     </StackPanel>
                     <LineBreak/>
                     <StackPanel Orientation="Horizontal" Visibility="{Binding Site_Document}">
-                        <TextBlock FontSize="25" Text="过期时间:"/>
+                        <TextBlock FontSize="25" Text="{DynamicResource Text_DeadLine}"/>
                         <TextBlock FontSize="25" Text="{Binding DeadDate_Document}"/>
                     </StackPanel>
                     <LineBreak/>
@@ -51,8 +52,8 @@
                 <Paragraph x:Name="MainBody" FontSize="20"/>
             </FlowDocument>
         </FlowDocumentScrollViewer>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="35,25" Width="27" Height="27"
-                Command="{x:Static local:GlobalData.BackCommand}" CommandParameter="{x:Static local:BackType.Pop}">
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="35,25" Width="27" Height="27" ToolTip="{DynamicResource Text_ClosePost}"
+                Command="{x:Static local:GlobalCommand.BackCommand}" CommandParameter="{x:Static local:BackType.Pop}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -64,7 +65,7 @@
             </Button.Template>
         </Button>
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="75,25" Width="27" Height="27"
-                Command="{x:Static local:GlobalData.OpenLinkCommand}" ToolTip="在浏览器中打开">
+                Command="{x:Static local:GlobalCommand.OpenLinkCommand}" ToolTip="{DynamicResource Text_OpenBrowser}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -76,7 +77,7 @@
             </Button.Template>
         </Button>
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="115,25" Width="27" Height="27"
-                Command="{x:Static local:GlobalData.LikePostCommand}" ToolTip="点赞" Focusable="False">
+                Command="{x:Static local:GlobalCommand.LikePostCommand}" ToolTip="{DynamicResource Text_LikePost}" Focusable="False">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="Black"/>

@@ -74,9 +74,17 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public bool UpdateCul
+        {
+            set
+            {
+                RaisePropertyChanged("BtnText");
+            }
+        }
+
         public string BtnText
         {
-            get => _isDownloading ? "全部暂停" : "全部开始";
+            get => _isDownloading ? GlobalLanguage.Text_AllPause : GlobalLanguage.Text_AllStart;
         }
 
         public string SavePath
@@ -354,7 +362,7 @@ namespace AtelierMisaka.ViewModels
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
-                                    sp = GlobalData.ReplacePath(sp);
+                                    sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
                                 }
                                 if ((bool)args[0])
@@ -393,7 +401,7 @@ namespace AtelierMisaka.ViewModels
                             Directory.CreateDirectory(sp);
                             if (!Directory.Exists(sp))
                             {
-                                sp = GlobalData.ReplacePath(sp);
+                                sp = GlobalMethord.ReplacePath(sp);
                                 Directory.CreateDirectory(sp);
                             }
                             var nsp = $"{sp}\\{fi.PTitles[index]}";
@@ -402,7 +410,7 @@ namespace AtelierMisaka.ViewModels
                                 Directory.CreateDirectory(nsp);
                                 if (!Directory.Exists(nsp))
                                 {
-                                    sp = GlobalData.ReplacePath(nsp);
+                                    sp = GlobalMethord.ReplacePath(nsp);
                                     Directory.CreateDirectory(nsp);
                                 }
                             }
@@ -425,7 +433,7 @@ namespace AtelierMisaka.ViewModels
                             Directory.CreateDirectory(sp);
                             if (!Directory.Exists(sp))
                             {
-                                sp = GlobalData.ReplacePath(sp);
+                                sp = GlobalMethord.ReplacePath(sp);
                                 Directory.CreateDirectory(sp);
                             }
                             di = new DownloadItem
@@ -500,7 +508,7 @@ namespace AtelierMisaka.ViewModels
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
-                GlobalData.ExplorerFile($"{di.SavePath}\\{di.FileName}");
+                GlobalMethord.ExplorerFile($"{di.SavePath}\\{di.FileName}");
             });
         }
 
@@ -508,7 +516,7 @@ namespace AtelierMisaka.ViewModels
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
-                GlobalData.ShowDocumentCommand.Execute(di.SourceDocu);
+                GlobalCommand.ShowDocumentCommand.Execute(di.SourceDocu);
                 System.Windows.Application.Current.MainWindow.Activate();
             });
         }

@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace AtelierMisaka.Views
 {
     /// <summary>
-    /// Downloader.xaml 的交互逻辑
+    /// Downloader.xaml 的交互逻辑//Alchemy Cauldron
     /// </summary>
     public partial class Downloader : Window
     {
@@ -55,7 +55,7 @@ namespace AtelierMisaka.Views
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
-                                    sp = GlobalData.ReplacePath(sp);
+                                    sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
                                 }
                                 GlobalData.DLLogs.SetPId(bi.ID);
@@ -134,7 +134,7 @@ namespace AtelierMisaka.Views
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
-                                    sp = GlobalData.ReplacePath(sp);
+                                    sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
                                 }
                                 GlobalData.DLLogs.SetPId(fi.ID);
@@ -156,7 +156,7 @@ namespace AtelierMisaka.Views
                                 }
                                 for (int i = 0; i < fi.ContentUrls.Count; i++)
                                 {
-                                    if (GlobalData.OverPayment(int.Parse(fi.Fees[i])))
+                                    if (GlobalMethord.OverPayment(int.Parse(fi.Fees[i])))
                                     {
                                         continue;
                                     }
@@ -168,7 +168,7 @@ namespace AtelierMisaka.Views
                                             Directory.CreateDirectory(nsp);
                                             if (!Directory.Exists(nsp))
                                             {
-                                                sp = GlobalData.ReplacePath(nsp);
+                                                sp = GlobalMethord.ReplacePath(nsp);
                                                 Directory.CreateDirectory(nsp);
                                             }
                                         }
@@ -208,7 +208,7 @@ namespace AtelierMisaka.Views
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
-                                    sp = GlobalData.ReplacePath(sp);
+                                    sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
                                 }
                                 GlobalData.DLLogs.SetPId(bi.ID);
@@ -254,7 +254,7 @@ namespace AtelierMisaka.Views
         {
             if (VM_DD.DownLoadItemList.Count > 0)
             {
-                VM_DD.MLeft = (ActualWidth - 400) / 2;
+                VM_DD.MLeft = (ActualWidth - 500) / 2;
                 VM_DD.MTop = (ActualHeight - 300) / 2;
                 VM_DD.ShowCheck = true;
             }
