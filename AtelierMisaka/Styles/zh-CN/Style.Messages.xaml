@@ -39,7 +39,7 @@
     <sys:String x:Key="Msg_SecondConfirm">确认更改配方吗?</sys:String>
     <sys:String x:Key="Msg_Exit">离开炼精工房吗?</sys:String>
 
-    <sys:String x:Key="Msg_Close" xml:space="preserve">关闭炼精炉吗？炼精不会被暂停&#13;可以在配方页面重新打开</sys:String>
+    <sys:String x:Key="Msg_Close" xml:space="preserve">关闭炼精炉吗？精炼不会被暂停&#13;可以在配方页面重新打开</sys:String>
 
     <sys:String x:Key="Msg_LoadCover">加载中...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">网络错误，请重试</sys:String>
