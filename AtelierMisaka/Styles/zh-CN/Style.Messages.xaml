@@ -1,0 +1,49 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
+    <!--#region ErrorMessage -->
+    
+    <sys:String x:Key="Msg_WebError">网络错误，请重试</sys:String>
+    <sys:String x:Key="Msg_WebErrorProxy" xml:space="preserve">无法设置代理&#13;请联系开发者</sys:String>
+
+    <sys:String x:Key="Msg_CookieError">请确认Cookies是否过期</sys:String>
+    <sys:String x:Key="Msg_CookieErrorMail" xml:space="preserve">无法从网页上获取邮箱&#13;请暂停使用Patreon并联系开发者</sys:String>
+    <sys:String x:Key="Msg_CookieErrorAuto" xml:space="preserve">登录的帐号与给定的邮箱不匹配&#13;已自动填入新邮箱</sys:String>
+
+    <sys:String x:Key="Msg_IOError" xml:space="preserve">无法转换Json数据&#13;请联系开发者</sys:String>
+
+    <sys:String x:Key="Msg_PathError">输入的链接有误</sys:String>
+
+    <sys:String x:Key="Msg_SecurityError" xml:space="preserve">认证机制出错&#13;请联系开发者</sys:String>
+
+    <sys:String x:Key="Msg_UnKnownError">未知错误，请联系开发者</sys:String>
+    <sys:String x:Key="Msg_UnKnownErrorUnSupported">未支持的功能</sys:String>
+
+    <sys:String x:Key="Msg_DLErrorWeb">网络错误</sys:String>
+    <sys:String x:Key="Msg_DLErrorPath">文件路径太长</sys:String>
+    <sys:String x:Key="Msg_DLErrorSecurity">没有权限</sys:String>
+
+    <!--#endregion-->
+    
+    <!--#region PromptMessage -->
+
+    <sys:String x:Key="Msg_IsDownloading">炼精时不能更换配方</sys:String>
+    <sys:String x:Key="Msg_ChangeSavePath" xml:space="preserve">保存路径的修改&#13;将在下次生效</sys:String>
+    <sys:String x:Key="Msg_CheckSavePath">保存路径不能为空</sys:String>
+    <sys:String x:Key="Msg_CreateSavePathError">创建保存路径失败</sys:String>
+    <sys:String x:Key="Msg_CheckCookies">Cookies不能为空</sys:String>
+    <sys:String x:Key="Msg_NoPosts">没有可阅读的文章</sys:String>
+
+    <sys:String x:Key="Msg_StartConfirm">确定使用这个配方吗?</sys:String>
+    <sys:String x:Key="Msg_SecondConfirm">确认更改配方吗?</sys:String>
+    <sys:String x:Key="Msg_Exit">离开炼精工房吗?</sys:String>
+
+    <sys:String x:Key="Msg_Close" xml:space="preserve">关闭炼精炉吗？炼精不会被暂停&#13;可以在配方页面重新打开</sys:String>
+
+    <sys:String x:Key="Msg_LoadCover">加载中...{0}%</sys:String>
+    <sys:String x:Key="Msg_CoverError">网络错误，请重试</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

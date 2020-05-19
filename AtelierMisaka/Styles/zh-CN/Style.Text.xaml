@@ -1,0 +1,98 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region Style.Controls.xaml -->
+    
+    <sys:String x:Key="Text_PauseDownload">暂停下载</sys:String>
+    <sys:String x:Key="Text_StartDownload">开始下载</sys:String>
+    <sys:String x:Key="Text_PauseAndStart">暂停并继续</sys:String>
+    <sys:String x:Key="Text_GoFirst">优先下载</sys:String>
+    <sys:String x:Key="Text_ReDownload">重新下载</sys:String>
+    <sys:String x:Key="Text_CancelDownload">取消下载</sys:String>
+    <sys:String x:Key="Text_LookPost">查看文章</sys:String>
+    <sys:String x:Key="Text_OpenFile">打开文件</sys:String>
+    <sys:String x:Key="Text_OpenFolder">打开文件夹</sys:String>
+
+    <!--#endregion-->
+    
+    <!--#region MainWindow -->
+
+    <sys:String x:Key="Text_MainTitle">御坂的炼精工房</sys:String>
+    <sys:String x:Key="Text_ShowAll">全部显示</sys:String>
+    <sys:String x:Key="Text_ShowHasNotFile">没有文件</sys:String>
+    <sys:String x:Key="Text_ShowHasLink">包含链接</sys:String>
+    <sys:String x:Key="Text_GoSetting">回到设定</sys:String>
+    <sys:String x:Key="Text_PublishDate">发布日期:</sys:String>
+    <sys:String x:Key="Text_HasLinkWarning">检测到网站链接</sys:String>
+    <sys:String x:Key="Text_CheckButton">确定</sys:String>
+    <sys:String x:Key="Text_CancelButton">取消</sys:String>
+    
+    <sys:String x:Key="Text_FileCount">文件数: {0} 个</sys:String>
+    <sys:String x:Key="Text_FICount">文件数: {0} 个;  图片数: {1} 张</sys:String>
+    <sys:String x:Key="Text_NoCover">无封面</sys:String>
+    <sys:String x:Key="Text_NeedLoad">点击加载封面图</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Setting -->
+
+    <sys:String x:Key="Text_CreatorUrl">作者链接</sys:String>
+    <sys:String x:Key="Text_Cost">付费区间</sys:String>
+    <sys:String x:Key="Text_SavePath">保存路径</sys:String>
+    <sys:String x:Key="Text_SavePathTag">例: E:\Setu</sys:String>
+    <sys:String x:Key="Text_Proxy">代理设置</sys:String>
+    <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
+    <sys:String x:Key="Text_Date">截止日期</sys:String>
+    <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14</sys:String>
+    <sys:String x:Key="Text_UpdateList">更新支援列表</sys:String>
+    <sys:String x:Key="Text_StarButton">确定</sys:String>
+    <sys:String x:Key="Text_ExitButton">退出</sys:String>
+    <sys:String x:Key="Text_BackToMain">回到文章列表</sys:String>
+    <sys:String x:Key="Text_ShowDownloader">打开下载页面</sys:String>
+    
+    <sys:String x:Key="Text_CookiesTagFanbox">例：FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
+    <sys:String x:Key="Text_CookiesTagFantia">例：_session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>
+    <sys:String x:Key="Text_CookiesTagPatreon">请输入你的邮箱地址</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>
+
+    <sys:String x:Key="Text_DefaultName">自定义</sys:String>
+
+    <sys:String x:Key="Text_Language">语言</sys:String>
+    <sys:String x:Key="Text_ZH">中文</sys:String>
+    <sys:String x:Key="Text_JP">日文</sys:String>
+    <sys:String x:Key="Text_EN">英文</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Document -->
+
+    <sys:String x:Key="Text_PostDate">发布于:</sys:String>
+    <sys:String x:Key="Text_UpdatedDate">更新于:</sys:String>
+    <sys:String x:Key="Text_DeadLine">过期时间:</sys:String>
+    <sys:String x:Key="Text_ClosePost">关闭</sys:String>
+    <sys:String x:Key="Text_OpenBrowser">在浏览器中打开</sys:String>
+    <sys:String x:Key="Text_LikePost">点赞</sys:String>
+    <sys:String x:Key="Text_FilePrefix">文件:</sys:String>
+    <sys:String x:Key="Text_ImagePrefix">图片:</sys:String>
+    <sys:String x:Key="Text_LinkPrefix">引用链接:</sys:String>
+    <sys:String x:Key="Text_FileList">文件列表:</sys:String>
+    <sys:String x:Key="Text_ImageList">图片列表:</sys:String>
+    <sys:String x:Key="Text_FileSize">未知大小</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Downloader -->
+
+    <sys:String x:Key="Text_SubTitle">炼精炉</sys:String>
+    <sys:String x:Key="Text_DownloadList">下载列表</sys:String>
+    <sys:String x:Key="Text_CompletedList">已完成列表</sys:String>
+    <sys:String x:Key="Text_ThreadCount">线程数:</sys:String>
+    <sys:String x:Key="Text_PlayButton">全部开始</sys:String>
+    <sys:String x:Key="Text_PauseButton">全部暂停</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

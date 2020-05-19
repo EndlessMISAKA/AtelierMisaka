@@ -1,0 +1,98 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region Style.Controls.xaml -->
+    
+    <sys:String x:Key="Text_PauseDownload">一時停止</sys:String>
+    <sys:String x:Key="Text_StartDownload">開始</sys:String>
+    <sys:String x:Key="Text_PauseAndStart">停止して再開する</sys:String>
+    <sys:String x:Key="Text_GoFirst">優先する</sys:String>
+    <sys:String x:Key="Text_ReDownload">やり直し</sys:String>
+    <sys:String x:Key="Text_CancelDownload">キャンセル</sys:String>
+    <sys:String x:Key="Text_LookPost">文章を見る</sys:String>
+    <sys:String x:Key="Text_OpenFile">ファイルを開く</sys:String>
+    <sys:String x:Key="Text_OpenFolder">フォルダーを開く</sys:String>
+
+    <!--#endregion-->
+    
+    <!--#region MainWindow -->
+
+    <sys:String x:Key="Text_MainTitle">ミサカのアトリエ</sys:String>
+    <sys:String x:Key="Text_ShowAll">全部</sys:String>
+    <sys:String x:Key="Text_ShowHasNotFile">ファイルなし</sys:String>
+    <sys:String x:Key="Text_ShowHasLink">リンクあり</sys:String>
+    <sys:String x:Key="Text_GoSetting">レシピ画面に戻る</sys:String>
+    <sys:String x:Key="Text_PublishDate">発表時間:</sys:String>
+    <sys:String x:Key="Text_HasLinkWarning">リンクを検出</sys:String>
+    <sys:String x:Key="Text_CheckButton">はい</sys:String>
+    <sys:String x:Key="Text_CancelButton">いいえ</sys:String>
+
+    <sys:String x:Key="Text_FileCount">ファイルの数: {0} 個</sys:String>
+    <sys:String x:Key="Text_FICount">ファイルの数: {0} 個;  画像の数: {1} 枚</sys:String>
+    <sys:String x:Key="Text_NoCover">カバーがありません</sys:String>
+    <sys:String x:Key="Text_NeedLoad">クリックすればカバーをロードします</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Setting -->
+
+    <sys:String x:Key="Text_CreatorUrl">リンク</sys:String>
+    <sys:String x:Key="Text_Cost">コスト</sys:String>
+    <sys:String x:Key="Text_SavePath">保存エリア</sys:String>
+    <sys:String x:Key="Text_SavePathTag">例: E:\勉強資料</sys:String>
+    <sys:String x:Key="Text_Proxy">プロキシサーバ</sys:String>
+    <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
+    <sys:String x:Key="Text_Date">タイムリミット</sys:String>
+    <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14(半角注意)</sys:String>
+    <sys:String x:Key="Text_UpdateList">支援リストを更新</sys:String>
+    <sys:String x:Key="Text_StarButton">調合開始</sys:String>
+    <sys:String x:Key="Text_ExitButton">調合をやめる</sys:String>
+    <sys:String x:Key="Text_BackToMain">調合の成果を見る</sys:String>
+    <sys:String x:Key="Text_ShowDownloader">釜の調子を覗く</sys:String>
+
+    <sys:String x:Key="Text_CookiesTagFanbox">例: FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
+    <sys:String x:Key="Text_CookiesTagFantia">例: _session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>
+    <sys:String x:Key="Text_CookiesTagPatreon">メールアドレスを入力してね</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>
+
+    <sys:String x:Key="Text_DefaultName">名無し</sys:String>
+
+    <sys:String x:Key="Text_Language">言語</sys:String>
+    <sys:String x:Key="Text_ZH">中国語</sys:String>
+    <sys:String x:Key="Text_JP">日本語</sys:String>
+    <sys:String x:Key="Text_EN">英語</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Document -->
+
+    <sys:String x:Key="Text_PostDate">発表時間:</sys:String>
+    <sys:String x:Key="Text_UpdatedDate">更新時間:</sys:String>
+    <sys:String x:Key="Text_DeadLine">デッドライン:</sys:String>
+    <sys:String x:Key="Text_ClosePost">閉じる</sys:String>
+    <sys:String x:Key="Text_OpenBrowser">ブラウザで見る</sys:String>
+    <sys:String x:Key="Text_LikePost">あ！これ好き</sys:String>
+    <sys:String x:Key="Text_FilePrefix">ファイル:</sys:String>
+    <sys:String x:Key="Text_ImagePrefix">画像:</sys:String>
+    <sys:String x:Key="Text_LinkPrefix">外部サイト:</sys:String>
+    <sys:String x:Key="Text_FileList">ファイルリスト:</sys:String>
+    <sys:String x:Key="Text_ImageList">画像リスト:</sys:String>
+    <sys:String x:Key="Text_FileSize">未知</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Downloader -->
+
+    <sys:String x:Key="Text_SubTitle">釜です</sys:String>
+    <sys:String x:Key="Text_DownloadList">調合リスト</sys:String>
+    <sys:String x:Key="Text_CompletedList">完成リスト</sys:String>
+    <sys:String x:Key="Text_ThreadCount">同時調合:</sys:String>
+    <sys:String x:Key="Text_PlayButton">全部スタート</sys:String>
+    <sys:String x:Key="Text_PauseButton">全部ストップ</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

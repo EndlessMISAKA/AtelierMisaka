@@ -1,0 +1,49 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
+    <!--#region ErrorMessage -->
+
+    <sys:String x:Key="Msg_WebError" xml:space="preserve">ネットワークエラー&#13;もう一度試してください</sys:String>
+    <sys:String x:Key="Msg_WebErrorProxy" xml:space="preserve">プロキシサーバを指定できません&#13;開発者にご連絡をお願いします</sys:String>
+
+    <sys:String x:Key="Msg_CookieError">Cookiesの更新をお勧めします</sys:String>
+    <sys:String x:Key="Msg_CookieErrorMail" xml:space="preserve">サイトからメアドを取得できません&#13;Patreon機能の使用を停止して&#13;至急、開発者にご連絡をお願いします</sys:String>
+    <sys:String x:Key="Msg_CookieErrorAuto" xml:space="preserve">ログインしたアカウントは入力したメアドと違います&#13;実際のメアドに更新しました</sys:String>
+
+    <sys:String x:Key="Msg_IOError" xml:space="preserve">Jsonデータを解析できません&#13;開発者にご連絡をお願いします</sys:String>
+
+    <sys:String x:Key="Msg_PathError">入力したリンクが間違っています</sys:String>
+
+    <sys:String x:Key="Msg_SecurityError" xml:space="preserve">認証エラー&#13;開発者にご連絡をお願いします</sys:String>
+
+    <sys:String x:Key="Msg_UnKnownError" xml:space="preserve">未知のエラー&#13;開発者にご連絡をお願いします</sys:String>
+    <sys:String x:Key="Msg_UnKnownErrorUnSupported">まだ実装してない機能です</sys:String>
+
+    <sys:String x:Key="Msg_DLErrorWeb">ネットワークエラー</sys:String>
+    <sys:String x:Key="Msg_DLErrorPath">ファイルパス長すぎ</sys:String>
+    <sys:String x:Key="Msg_DLErrorSecurity">権限がありません</sys:String>
+
+    <!--#endregion-->
+    
+    <!--#region PromptMessage -->
+
+    <sys:String x:Key="Msg_IsDownloading">調合中は変更できません</sys:String>
+    <sys:String x:Key="Msg_ChangeSavePath" xml:space="preserve">保存エリアの変更は&#13;次回で反映されます</sys:String>
+    <sys:String x:Key="Msg_CheckSavePath">保存エリアは必要なものです</sys:String>
+    <sys:String x:Key="Msg_CreateSavePathError">保存エリアを作れません</sys:String>
+    <sys:String x:Key="Msg_CheckCookies">Cookiesは必要なものです</sys:String>
+    <sys:String x:Key="Msg_NoPosts">見られる文章はございません</sys:String>
+
+    <sys:String x:Key="Msg_StartConfirm">このレシピでいいですか？</sys:String>
+    <sys:String x:Key="Msg_SecondConfirm">レシピを変更しますか？</sys:String>
+    <sys:String x:Key="Msg_Exit">アトリエを閉めますか？</sys:String>
+
+    <sys:String x:Key="Msg_Close" xml:space="preserve">調合は止めませんが、&#13;釜の状況を無視しますか？&#13;レシピ画面で再確認ができます</sys:String>
+    
+    <sys:String x:Key="Msg_LoadCover">ロード中...{0}%</sys:String>
+    <sys:String x:Key="Msg_CoverError">ネットワークエラー&#13;もう一度試してください</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>
