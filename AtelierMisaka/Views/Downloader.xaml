@@ -29,17 +29,13 @@
                 <Button Style="{StaticResource BTN_Setting}" Margin="60,0" Content="{Binding BtnText}" FontSize="30"
                         Command="{Binding QuestCommand}"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Text_ThreadCount}"/>
+                    <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Text_ThreadCount}" Margin="10"/>
                     <ComboBox Style="{StaticResource ComB}" SelectedValue="{Binding ThreadCount}">
                         <sys:Int32>1</sys:Int32>
                         <sys:Int32>2</sys:Int32>
                         <sys:Int32>3</sys:Int32>
                         <sys:Int32>4</sys:Int32>
                         <sys:Int32>5</sys:Int32>
-                        <sys:Int32>6</sys:Int32>
-                        <sys:Int32>7</sys:Int32>
-                        <sys:Int32>8</sys:Int32>
-                        <sys:Int32>9</sys:Int32>
                     </ComboBox>
                 </StackPanel>
             </StackPanel>
@@ -169,7 +165,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Msg_Close}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Msg_Close}" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
                     <Button Click="Btn_Close_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_CheckButton}"/>
                     <Button Click="Btn_Cancel_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_CancelButton}"/>
