@@ -45,6 +45,7 @@ namespace AtelierMisaka.Models
             if ((index = base[cld.Site].IndexOf(cld)) != -1)
             {
                 _current = base[cld.Site][index];
+                _current.LastDate = cld.LastDate;
                 return true;
             }
             if (_sqlite.InsertDate(cld) > 0)
