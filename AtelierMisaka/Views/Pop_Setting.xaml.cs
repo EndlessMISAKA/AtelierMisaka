@@ -205,7 +205,11 @@ namespace AtelierMisaka.Views
                 return false;
             }
 
-            GlobalData.DownLP?.Close();
+            if (null != GlobalData.DownLP)
+            {
+                GlobalData.VM_DL.DownLoadItemList.Clear();
+                GlobalData.DownLP.Close();
+            }
             ResultMessage _ret = null;
             _utils = GlobalData.CaptureUtil;
             if (_utils is PatreonUtils)
