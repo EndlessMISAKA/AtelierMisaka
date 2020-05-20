@@ -289,27 +289,30 @@ namespace AtelierMisaka
                             {
                                 pi.Comments.Add(jpp.data[i].attributes.content_teaser_text);
                             }
-                            if (null != jpp.data[i].attributes.image)
+                            if (jpp.data[i].attributes.current_user_can_view)
                             {
-                                pi.CoverPicThumb = jpp.data[i].attributes.image.thumb_url;
-                            }
-                            if (null != jpp.data[i].attributes.embed)
-                            {
-                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {jpp.data[i].attributes.embed.url} >");
-                            }
-
-                            if(null != jpp.data[i].relationships.media)
-                            {
-                                for (int j = 0; j < jpp.data[i].relationships.media.data.Length; j++)
+                                if (null != jpp.data[i].attributes.image)
                                 {
-                                    var inclu = incll.Find(x => x.id == jpp.data[i].relationships.media.data[j].id);
-                                    if (inclu.attributes.file_name.StartsWith("https://"))
+                                    pi.CoverPicThumb = jpp.data[i].attributes.image.thumb_url;
+                                }
+                                if (null != jpp.data[i].attributes.embed)
+                                {
+                                    pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {jpp.data[i].attributes.embed.url} >");
+                                }
+
+                                if (null != jpp.data[i].relationships.media)
+                                {
+                                    for (int j = 0; j < jpp.data[i].relationships.media.data.Length; j++)
                                     {
-                                        continue;
+                                        var inclu = incll.Find(x => x.id == jpp.data[i].relationships.media.data[j].id);
+                                        if (inclu.attributes.file_name.StartsWith("https://"))
+                                        {
+                                            continue;
+                                        }
+                                        pi.ContentUrls.Add(inclu.attributes.image_urls.original);
+                                        pi.FileNames.Add(inclu.attributes.file_name);
+                                        pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {inclu.attributes.file_name}>");
                                     }
-                                    pi.ContentUrls.Add(inclu.attributes.image_urls.original);
-                                    pi.FileNames.Add(inclu.attributes.file_name);
-                                    pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {inclu.attributes.file_name}>");
                                 }
                             }
                             pis.Add(pi);
