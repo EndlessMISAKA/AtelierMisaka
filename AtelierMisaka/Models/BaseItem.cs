@@ -103,7 +103,7 @@ namespace AtelierMisaka.Models
         {
             get
             {
-                if (string.IsNullOrEmpty(_coverPic))
+                if (string.IsNullOrEmpty(_coverPicThumb))
                 {
                     return GlobalLanguage.Text_NoCov;
                 }

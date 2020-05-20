@@ -39,7 +39,7 @@ namespace AtelierMisaka
         public static ParamCommand<BaseItem> GetCoverCommand = new ParamCommand<BaseItem>((bi) =>
         {
             GlobalData.VM_MA.SelectedDocument = bi;
-            if (string.IsNullOrEmpty(bi.CoverPic))
+            if (string.IsNullOrEmpty(bi.CoverPicThumb))
             {
                 return;
             }

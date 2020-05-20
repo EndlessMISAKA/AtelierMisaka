@@ -81,7 +81,7 @@
                                                     <DropShadowEffect/>
                                                 </Grid.Effect>
                                                 <Border Grid.RowSpan="4" BorderBrush="Red" BorderThickness="2" Visibility="{Binding IsZero, Converter={StaticResource btvc}}"/>
-                                                <Button Tag="{Binding CoverPic}" IsEnabled="{Binding NeedLoadCover}" Margin="10,10,10,0"
+                                                <Button IsEnabled="{Binding NeedLoadCover}" Margin="10,10,10,0"
                                                         Command="{x:Static local:GlobalCommand.GetCoverCommand}" CommandParameter="{Binding}">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
