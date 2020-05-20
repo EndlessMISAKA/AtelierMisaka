@@ -22,7 +22,7 @@ namespace AtelierMisaka
             
             Control.IsTabStopProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(false));
 
-            GlobalLanguage.SetCulture(CultureInfo.CurrentCulture.Name);
+            GlobalLanguage.InitializeCulture();
 
             base.OnStartup(e);
         }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,9 +115,23 @@ namespace AtelierMisaka
             Msg_CoverErr = Application.Current.TryFindResource("Msg_CoverError").ToString();
         }
 
+        public static void InitializeCulture()
+        {
+            if (File.Exists("Lang.ini"))
+            {
+                if (int.TryParse(File.ReadAllText("Lang.ini"), out int temp))
+                {
+                    SetCulture(temp);
+                    return;
+                }
+            }
+            SetCulture(CultureInfo.CurrentCulture.Name);
+        }
+
         public static void SetCulture(int index)
         {
             ChangeCulture(_cultureSupports[index]);
+            SaveConfig(index);
         }
 
         public static void SetCulture(string cultureName)
@@ -131,6 +147,12 @@ namespace AtelierMisaka
                 GlobalData.CurrentCulStr = index;
             }
             ChangeCulture(cultureName);
+            SaveConfig(index);
+        }
+
+        private static void SaveConfig(int index)
+        {
+            File.WriteAllText("Lang.ini", index.ToString());
         }
 
         private static void ChangeCulture(string cultureName)
