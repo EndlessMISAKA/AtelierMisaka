@@ -122,6 +122,7 @@ namespace AtelierMisaka
                 if (int.TryParse(File.ReadAllText("Lang.ini"), out int temp))
                 {
                     SetCulture(temp);
+                    GlobalData.CurrentCulStr = temp;
                     return;
                 }
             }
