@@ -37,7 +37,7 @@ I want to develop "LikePost" and "Comment" Function.
 ### Runtime
 
 * Windows 10
-* [.NET Framework 4.7.1](https://www.microsoft.com/ja-jp/download/details.aspx?id=56116)
+* [.NET Framework 4.7.1](https://www.microsoft.com/en-us/download/details.aspx?id=56116)
 * [Microsoft Visual C++ Redistributable Package](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 
 The Programer ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) only test on Windows 10.
@@ -83,7 +83,7 @@ The Programer ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) only test on
 ### 运行环境
 
 * Windows 10 以后
-* [.NET Framework 4.7.1](https://www.microsoft.com/zh-CN/download/details.aspx?id=56116)
+* [.NET Framework 4.7.1](https://www.microsoft.com/zh-cn/download/details.aspx?id=56116)
 * [Microsoft Visual C++ Redistributable Package](https://support.microsoft.com/zh-cn/help/2977003/the-latest-supported-visual-c-downloads)
 
 我 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) 只在Windows 10 上运行确认过。
