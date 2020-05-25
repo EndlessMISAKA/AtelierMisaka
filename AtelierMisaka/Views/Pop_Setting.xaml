@@ -102,7 +102,7 @@
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_SavePathTag}" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_SavePathTag}" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="TextBox_MouseDoubleClick"/>
             </Grid>
             <Grid Height="60">
                 <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Proxy}" IsChecked="{Binding UseProxy}"/>

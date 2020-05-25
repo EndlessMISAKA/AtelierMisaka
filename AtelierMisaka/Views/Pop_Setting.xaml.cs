@@ -548,5 +548,35 @@ namespace AtelierMisaka.Views
         {
             _isOverDropBtn = false;
         }
+
+        private void TextBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Interop.HwndSource source = PresentationSource.FromVisual(this) as System.Windows.Interop.HwndSource;
+            System.Windows.Forms.IWin32Window win = new OldWindow(source.Handle);
+            FolderSelector fs = new FolderSelector()
+            {
+                DirectoryPath = string.IsNullOrEmpty(GlobalData.VM_MA.SavePath) ? Environment.CurrentDirectory : GlobalData.VM_MA.SavePath
+            };
+            if (fs.ShowDialog(win) == System.Windows.Forms.DialogResult.OK)
+            {
+                GlobalData.VM_MA.SavePath = fs.DirectoryPath;
+            }
+        }
+
+        private class OldWindow : System.Windows.Forms.IWin32Window
+        {
+            IntPtr _handle;
+            public OldWindow(IntPtr handle)
+            {
+                _handle = handle;
+            }
+
+            #region IWin32Window Members
+            IntPtr System.Windows.Forms.IWin32Window.Handle
+            {
+                get { return _handle; }
+            }
+            #endregion
+        }
     }
 }
