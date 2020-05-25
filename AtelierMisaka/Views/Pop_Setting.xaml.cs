@@ -428,6 +428,10 @@ namespace AtelierMisaka.Views
         {
             try
             {
+                if (!Directory.Exists("Settings"))
+                {
+                    Directory.CreateDirectory("Settings");
+                }
                 string fn = $"Settings\\Artists_{GlobalData.VM_MA.Site.ToString()}.json";
                 File.WriteAllText(fn, GlobalMethord.ConverToJson(GlobalData.VM_MA.ArtistList));
                 fn = $"Settings\\Setting_{GlobalData.VM_MA.Site.ToString()}.ini";
