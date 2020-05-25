@@ -51,7 +51,7 @@ namespace AtelierMisaka.Views
                                 {
                                     continue;
                                 }
-                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{bi.Title}";
+                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_${bi.Fee}_{bi.Title}";
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
@@ -130,7 +130,7 @@ namespace AtelierMisaka.Views
                         {
                             foreach (FantiaItem fi in _baseItems)
                             {
-                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi.CreateDate.ToString("yyyyMMdd_HHmm")}_{fi.Title}";
+                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{fi.Title}";
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
@@ -204,7 +204,7 @@ namespace AtelierMisaka.Views
                         {
                             foreach (var bi in _baseItems)
                             {
-                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_{bi.Title}";
+                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{bi.Title}";
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
