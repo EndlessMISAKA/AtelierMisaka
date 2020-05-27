@@ -241,6 +241,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Readme_en.pdf" />
+    <None Include="Readme_jp.pdf" />
+    <None Include="Readme_zh.pdf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
