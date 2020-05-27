@@ -56,9 +56,9 @@ namespace AtelierMisaka.Views
                             }
                             Hyperlink hl = new Hyperlink(new Run(link))
                             {
-                                Command = GlobalCommand.OpenBrowserCommand,
                                 CommandParameter = link
                             };
+                            hl.Click += Hl_Click;
                             if (index != 0)
                             {
                                 MainBody.Inlines.Add(new Run(dis.Substring(0, index)));
@@ -101,9 +101,9 @@ namespace AtelierMisaka.Views
                 {
                     Hyperlink hl = new Hyperlink(new Run(bi.FileNames[i]))
                     {
-                        Command = GlobalData.VM_DL.AddCommand,
                         CommandParameter = new object[] { true, bi, i }
                     };
+                    hl.Click += AddDownload;
                     MainBody.Inlines.Add(hl);
                     MainBody.Inlines.Add(new LineBreak());
                 }
@@ -120,13 +120,25 @@ namespace AtelierMisaka.Views
                 {
                     Hyperlink hl = new Hyperlink(new Run(bi.MediaNames[i]))
                     {
-                        Command = GlobalData.VM_DL.AddCommand,
                         CommandParameter = new object[] { false, bi, i }
                     };
+                    hl.Click += AddDownload;
                     MainBody.Inlines.Add(hl);
                     MainBody.Inlines.Add(new LineBreak());
                 }
             }
+        }
+
+        private void AddDownload(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            GlobalData.VM_DL.AddCommand.Execute(link.CommandParameter);
+        }
+
+        private void Hl_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            System.Diagnostics.Process.Start((string)link.CommandParameter);
         }
     }
 }
