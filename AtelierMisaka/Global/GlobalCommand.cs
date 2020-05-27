@@ -72,6 +72,11 @@ namespace AtelierMisaka
             System.Diagnostics.Process.Start(GlobalData.VM_MA.SelectedDocument.Link);
         });
 
+        public static ParamCommand<string> OpenBrowserCommand = new ParamCommand<string>((link) =>
+        {
+            System.Diagnostics.Process.Start(link);
+        });
+
         public static CommonCommand LikePostCommand = new CommonCommand(async () =>
         {
             if (GlobalData.VM_MA.IsLiked_Document)
