@@ -402,8 +402,8 @@ namespace AtelierMisaka.Views
             }
             GlobalData.VM_MA.Messages = mss;
             
-            GlobalData.VM_MA.MLeft = (ActualWidth - 400) / 2;
-            GlobalData.VM_MA.MTop = (ActualHeight - 270) / 2;
+            GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
+            GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
             while (GlobalData.VM_MA.ShowCheck)
             {
                 await Task.Delay(500);
