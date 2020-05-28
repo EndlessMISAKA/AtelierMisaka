@@ -103,6 +103,7 @@
     <Compile Include="Global\GlobalEnum.cs" />
     <Compile Include="Global\GlobalLanguage.cs" />
     <Compile Include="Global\GlobalMethord.cs" />
+    <Compile Include="Global\GlobalRegex.cs" />
     <Compile Include="Models\CLastDate.cs" />
     <Compile Include="Models\CLastDateDic.cs" />
     <Compile Include="Models\DownloadLog.cs" />
@@ -241,9 +242,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Readme_en.pdf" />
-    <None Include="Readme_jp.pdf" />
-    <None Include="Readme_zh.pdf" />
+    <None Include="Readme_en.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Readme_jp.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Readme_zh.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -281,7 +288,9 @@
     </Content>
     <Resource Include="Resources\Btn_Paused.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Settings\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

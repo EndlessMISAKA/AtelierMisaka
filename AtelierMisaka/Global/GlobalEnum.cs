@@ -51,4 +51,23 @@
         ja_JP,
         en_US
     }
+
+    public enum RegexType
+    {
+        RemoveLastDot,
+        ProxyString,
+
+        PatreonCid,
+        PatreonEmail,
+        PatreonHtmlImg,
+
+        FanboxUrl1,
+        FanboxUrl2,
+        FanboxCSRF,
+
+        FantiaIdName,
+        FantiaPlan,
+        FantiaPostId,
+        FantiaUrl
+    }
 }

@@ -13,10 +13,10 @@ namespace AtelierMisaka
 {
     public class FantiaUtils : BaseUtils
     {
-        readonly Regex _artIdName = new Regex(@"/fanclubs/(\d+)""><strong>(.+?)</strong>");
-        readonly Regex _artPlan = new Regex(@"(\d+)円/月\)</strong");
-        readonly Regex _artPost = new Regex(@"block"" href=""/posts/(\d+)");
-        readonly Regex _artUrl = new Regex(@"^https://fantia.jp/fanclubs/(\d+)$");
+        readonly Regex _artIdName = GlobalRegex.GetRegex(RegexType.FantiaIdName);
+        readonly Regex _artPlan = GlobalRegex.GetRegex(RegexType.FantiaPlan);
+        readonly Regex _artPost = GlobalRegex.GetRegex(RegexType.FantiaPostId);
+        readonly Regex _artUrl = GlobalRegex.GetRegex(RegexType.FantiaUrl);
         readonly string _nextP = "fa fa-angle-right";
 
         public async override Task<ResultMessage> GetArtistInfo(string url)

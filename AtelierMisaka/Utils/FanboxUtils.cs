@@ -15,9 +15,9 @@ namespace AtelierMisaka
     {
         string _referer = string.Empty;
         string _x_csrf_token = string.Empty;
-        Regex _artUrl = new Regex(@"^https://www\.fanbox\.cc/@(\w+)$");
-        Regex _artUrl2 = new Regex(@"^https://(\w+)\.fanbox\.cc/?$");
-        Regex _csrfToken = new Regex("csrfToken\":\"(\\w+)\"");
+        Regex _artUrl = GlobalRegex.GetRegex(RegexType.FanboxUrl1);
+        Regex _artUrl2 = GlobalRegex.GetRegex(RegexType.FanboxUrl1);
+        Regex _csrfToken = GlobalRegex.GetRegex(RegexType.FanboxCSRF);
 
         public async override Task<ResultMessage> GetArtistInfo(string url)
         {

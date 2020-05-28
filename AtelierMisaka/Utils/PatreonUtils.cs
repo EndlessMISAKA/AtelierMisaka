@@ -15,9 +15,9 @@ namespace AtelierMisaka
     {
         private ChromiumWebBrowser _cwb;
         private bool _needLogin = false;
-        private readonly Regex _cidRegex = new Regex(@"self"": ""https://www.patreon.com/api/campaigns/(\d+)");
-        private readonly Regex _emailRegex = new Regex(@"email"": ""(.+?)""");
-        private readonly Regex _htmlImg = new Regex(@"<p><img.+?></p>");
+        private readonly Regex _cidRegex = GlobalRegex.GetRegex(RegexType.PatreonCid);
+        private readonly Regex _emailRegex = GlobalRegex.GetRegex(RegexType.PatreonEmail);
+        private readonly Regex _htmlImg = GlobalRegex.GetRegex(RegexType.PatreonHtmlImg);
         private readonly string _postUrl = "https://www.patreon.com/api/posts?include=attachments.null%2Cmedia.null&filter[campaign_id]={0}&sort=-published_at&fields[post]=Ccomment_count%2Ccontent%2Ccurrent_user_can_view%2Ccurrent_user_has_liked%2Cembed%2Cimage%2Cpublished_at%2Cpost_type%2Cthumbnail_url%2Cteaser_text%2Ctitle%2Curl&json-api-use-default-includes=false";
         private readonly string _nextUrl = "https://www.patreon.com/api/posts?include=attachments.null%2Cmedia.null&filter[campaign_id]={0}&page[cursor]={1}&sort=-published_at&fields[post]=Ccomment_count%2Ccontent%2Ccurrent_user_can_view%2Ccurrent_user_has_liked%2Cembed%2Cimage%2Cpublished_at%2Cpost_type%2Cthumbnail_url%2Cteaser_text%2Ctitle%2Curl&json-api-use-default-includes=false";
         private readonly string _artistUrl = "https://www.patreon.com/api/campaigns/{0}?include=null";

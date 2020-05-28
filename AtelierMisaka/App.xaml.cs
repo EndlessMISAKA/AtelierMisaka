@@ -22,6 +22,8 @@ namespace AtelierMisaka
             
             Control.IsTabStopProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(false));
 
+            GlobalRegex.Initialize();
+
             GlobalLanguage.InitializeCulture();
 
             base.OnStartup(e);

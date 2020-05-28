@@ -90,7 +90,7 @@ namespace AtelierMisaka
 
         public static string RemoveLastDot(string path)
         {
-            Match ma = new Regex(@"\.+$").Match(path);
+            Match ma = GlobalRegex.GetRegex(RegexType.RemoveLastDot).Match(path);
             if (ma.Success)
             {
                 path = path.Substring(0, path.Length - ma.Groups[0].Value.Length);
