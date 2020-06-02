@@ -13,7 +13,7 @@ namespace AtelierMisaka
 {
     public class GlobalMethord
     {
-        private static string _invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+        private static readonly string _invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
         
         public static void Init()
         {
