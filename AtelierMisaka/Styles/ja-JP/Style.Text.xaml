@@ -50,6 +50,8 @@
     <sys:String x:Key="Text_ExitButton">調合をやめる</sys:String>
     <sys:String x:Key="Text_BackToMain">調合の成果を見る</sys:String>
     <sys:String x:Key="Text_ShowDownloader">釜の調子を覗く</sys:String>
+    <sys:String x:Key="Text_CurrVer">バージョン:</sys:String>
+    <sys:String x:Key="Text_LaVer">最新バージョン:</sys:String>
 
     <sys:String x:Key="Text_CookiesTagFanbox">例: FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
     <sys:String x:Key="Text_CookiesTagFantia">例: _session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>

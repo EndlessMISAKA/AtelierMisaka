@@ -128,6 +128,20 @@
                 <Hyperlink Command="{x:Static basens:GlobalCommand.OpenBrowserCommand}" CommandParameter="https://twitter.com/EndlessMISAKA">@EndlessMISAKA</Hyperlink>
             </TextBlock>
         </StackPanel>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,5" Orientation="Horizontal">
+            <TextBlock Foreground="White" Margin="10,0">
+                <Run Text="{DynamicResource Text_CurrVer}"/>
+                <Run Text=" "/>
+                <Run Text="{Binding CurrVersion, Mode=OneTime}"/>
+            </TextBlock>
+            <TextBlock Foreground="White" Margin="10,0">
+                <Run Text="{DynamicResource Text_LaVer}"/>
+                <Run Text=" "/>
+                <Hyperlink Command="{x:Static basens:GlobalCommand.CheckVersionCommand}">
+                    <Run Text="{Binding LatestVersion}"/>
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="27" Panel.ZIndex="2" Margin="15,1" Focusable="False"
                 Command="{x:Static basens:GlobalCommand.BackCommand}" CommandParameter="{x:Static basens:BackType.Pop}"
                 Visibility="{Binding IsStarted, Converter={StaticResource btvc}}" ToolTip="{DynamicResource Text_BackToMain}">

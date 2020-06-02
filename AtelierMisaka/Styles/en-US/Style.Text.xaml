@@ -50,6 +50,8 @@
     <sys:String x:Key="Text_ExitButton">Exit</sys:String>
     <sys:String x:Key="Text_BackToMain">Goto PostList</sys:String>
     <sys:String x:Key="Text_ShowDownloader">View Alchemy Cauldron</sys:String>
+    <sys:String x:Key="Text_CurrVer">Current Version:</sys:String>
+    <sys:String x:Key="Text_LaVer">Latest Version:</sys:String>
 
     <sys:String x:Key="Text_CookiesTagFanbox">e.g. FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
     <sys:String x:Key="Text_CookiesTagFantia">e.g. _session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>

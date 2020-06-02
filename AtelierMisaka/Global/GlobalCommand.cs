@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka
@@ -76,6 +78,49 @@ namespace AtelierMisaka
         {
             System.Diagnostics.Process.Start(link);
         });
+
+        public static CommonCommand CheckVersionCommand = new CommonCommand(() =>
+        {
+            if (GlobalData.VM_MA.LatestVersion.EndsWith("ck"))
+            {
+                GlobalData.VM_MA.LatestVersion = "Checking";
+                Task.Run(() =>
+                {
+                    HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(GlobalData.VM_MA.VersionLink);
+                    webRequest.AllowAutoRedirect = false;
+
+                    try
+                    {
+                        var webResponse = webRequest.GetResponse();
+                        string realurl = webResponse.Headers["Location"];
+                        if (!string.IsNullOrEmpty(realurl))
+                        {
+                            Match ma = new Regex(@"\d+\.\d+\.\d+$").Match(realurl);
+                            if (ma.Success)
+                            {
+                                GlobalData.VM_MA.LatestVersion = ma.Groups[0].Value;
+                                GlobalData.VM_MA.VersionLink = realurl;
+                                return;
+                            }
+                        }
+                        GlobalData.VM_MA.LatestVersion = "Error";
+                    }
+                    catch
+                    {
+                        GlobalData.VM_MA.LatestVersion = "Error";
+                    }
+                    finally
+                    {
+                        webRequest.Abort();
+                    }
+                });
+            }
+            else
+            {
+                System.Diagnostics.Process.Start(GlobalData.VM_MA.VersionLink);
+            }
+        },
+        () =>{ return !GlobalData.VM_MA.LatestVersion.Equals("Checking"); });
 
         public static CommonCommand LikePostCommand = new CommonCommand(async () =>
         {

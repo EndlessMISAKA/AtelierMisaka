@@ -171,8 +171,27 @@ namespace AtelierMisaka.ViewModels
         private object _patreonBrowser = null;
         private bool _isInitialized = false;
 
+        private string _latestVer = "Check";
+
         public DateTime LastDate = DateTime.Parse("2010/01/01");
 
+        public string CurrVersion { get; } = System.Windows.Application.ResourceAssembly.GetName().Version.ToString();
+
+        public string VersionLink = "https://github.com/EndlessMISAKA/AtelierMisaka/releases/latest";
+
+        public string LatestVersion
+        {
+            get => _latestVer;
+            set
+            {
+                if (_latestVer != value)
+                {
+                    _latestVer = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+        
         public object PatreonCefBrowser
         {
             get => _patreonBrowser;

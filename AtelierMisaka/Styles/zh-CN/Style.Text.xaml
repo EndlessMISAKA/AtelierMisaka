@@ -50,6 +50,8 @@
     <sys:String x:Key="Text_ExitButton">退出</sys:String>
     <sys:String x:Key="Text_BackToMain">查看炼制成果</sys:String>
     <sys:String x:Key="Text_ShowDownloader">查看炼精炉</sys:String>
+    <sys:String x:Key="Text_CurrVer">当前版本:</sys:String>
+    <sys:String x:Key="Text_LaVer">最新版本:</sys:String>
     
     <sys:String x:Key="Text_CookiesTagFanbox">例：FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
     <sys:String x:Key="Text_CookiesTagFantia">例：_session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>
