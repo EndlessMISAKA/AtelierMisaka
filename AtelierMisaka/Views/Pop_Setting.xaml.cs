@@ -30,6 +30,7 @@ namespace AtelierMisaka.Views
         private bool _tempUD = false;
 
         private bool _second = false;
+        private bool _selectF = true;
 
         private IList<BaseItem> _tempBis = null;
 
@@ -275,7 +276,8 @@ namespace AtelierMisaka.Views
                     }
                 }
             }
-            if (!GlobalData.VM_MA.HasSelected)
+            _selectF = GlobalData.VM_MA.HasSelected;
+            if (!_selectF)
             {
                 ArtistInfo ai = null;
                 _ret = await _utils.GetArtistInfo(GlobalData.VM_MA.Artist.PostUrl);
@@ -298,7 +300,6 @@ namespace AtelierMisaka.Views
                         GlobalData.VM_MA.ArtistList.Add(GlobalData.VM_MA.Artist);
                     }
                 }
-                SetLastDate(ai.Id);
             }
             Task.Run(() => SaveSetting());
             await Task.Run(() => GlobalData.DLLogs.LoadData(GlobalData.VM_MA.Artist.Id, GlobalData.VM_MA.Site));
@@ -495,7 +496,14 @@ namespace AtelierMisaka.Views
             if (e.AddedItems.Count > 0)
             {
                 ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
-                SetLastDate(ai.Id);
+                if (_selectF)
+                {
+                    SetLastDate(ai.Id);
+                }
+                else
+                {
+                    _selectF = true;
+                }
             }
         }
 

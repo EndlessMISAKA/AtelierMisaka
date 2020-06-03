@@ -189,7 +189,7 @@ namespace AtelierMisaka
             try
             {
                 List<BaseItem> bis = new List<BaseItem>();
-                Match ma = _artPost.Match(GetWebCode($"https://fantia.jp/fanclubs/{uid}"));
+                Match ma = _artPost.Match(GetWebCode($"https://fantia.jp/fanclubs/{uid}/posts?utf8=%E2%9C%93&q%5Bs%5D=newer"));
                 if (ma.Success)
                 {
                     GetUrls(ma.Groups[1].Value, bis);
