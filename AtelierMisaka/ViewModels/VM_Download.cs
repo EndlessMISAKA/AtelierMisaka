@@ -9,6 +9,9 @@ namespace AtelierMisaka.ViewModels
 {
     public class VM_Download : NotifyModel
     {
+        private string _exportFile = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location) + "\\Export_Errordownload.txt";
+        private bool _canExport = true;
+
         private bool _isDownloading = false;
         private bool _isChangeThread = false;
         private bool _isChangeProxy = false;
@@ -300,6 +303,37 @@ namespace AtelierMisaka.ViewModels
             });
         }
 
+        public CommonCommand ExportCommand
+        {
+            get => new CommonCommand(() =>
+            {
+                try
+                {
+                    if (File.Exists(_exportFile))
+                    {
+                        File.Delete(_exportFile);
+                    }
+                    for (int i = 0; i < _downLoadList.Count; i++)
+                    {
+                        if (_downLoadList[i].DLStatus == DownloadStatus.Error)
+                        {
+                            GlobalMethord.ExportErrorDownload(_downLoadList[i]);
+                        }
+                    }
+                    if (File.Exists(_exportFile))
+                    {
+                        System.Diagnostics.Process.Start(_exportFile);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GlobalMethord.ErrorLog(ex.Message);
+                    _canExport = false;
+                }
+            },
+            () => { return _canExport && !_isDownloading; });
+        }
+
         public ParamCommand<DownloadItem> DownloadCommand
         {
             get => new ParamCommand<DownloadItem>((di) =>
@@ -358,7 +392,7 @@ namespace AtelierMisaka.ViewModels
                         {
                             BaseItem bi = (BaseItem)args[1];
                             {
-                                string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_${bi.Fee}_{bi.Title}";
+                                string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMM\\dd_HHmm")}_${bi.Fee}_{bi.Title}";
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
@@ -397,7 +431,7 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fantia:
                         {
                             FantiaItem fi = (FantiaItem)args[1];
-                            string sp = $"{_savePath}\\{_tempAN}\\{fi.CreateDate.ToString("yyyyMMdd_HHmm")}_{fi.Title}";
+                            string sp = $"{_savePath}\\{_tempAN}\\{fi.CreateDate.ToString("yyyyMM\\dd_HHmm")}_{fi.Title}";
                             Directory.CreateDirectory(sp);
                             if (!Directory.Exists(sp))
                             {
@@ -429,7 +463,7 @@ namespace AtelierMisaka.ViewModels
                     default:
                         {
                             BaseItem bi = (BaseItem)args[1];
-                            string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMMdd_HHmm")}_{bi.Title}";
+                            string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMM\\dd_HHmm")}_{bi.Title}";
                             Directory.CreateDirectory(sp);
                             if (!Directory.Exists(sp))
                             {

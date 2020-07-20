@@ -26,8 +26,8 @@
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <RadioButton x:Name="zzxz" Style="{StaticResource RB_Setting}" Content="{DynamicResource Text_DownloadList}" FontSize="40" Height="60" IsChecked="True"/>
                 <RadioButton x:Name="yxz" Style="{StaticResource RB_Setting}" Content="{DynamicResource Text_CompletedList}" FontSize="40" Height="60"/>
-                <Button Style="{StaticResource BTN_Setting}" Margin="60,0" Content="{Binding BtnText}" FontSize="30"
-                        Command="{Binding QuestCommand}"/>
+                <Button Style="{StaticResource BTN_Setting}" Content="{Binding BtnText}" FontSize="30" Command="{Binding QuestCommand}"/>
+                <Button Style="{StaticResource BTN_Setting}" Margin="10,0" Content="{DynamicResource Text_ExportButton}" FontSize="30" Command="{Binding ExportCommand}"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource TBL_Setting}" Text="{DynamicResource Text_ThreadCount}" Margin="10"/>
                     <ComboBox Style="{StaticResource ComB}" SelectedValue="{Binding ThreadCount}">
