@@ -281,6 +281,7 @@ namespace AtelierMisaka
                                 IsLiked = jpp.data[i].attributes.current_user_has_liked,
                                 PLink = jpp.data[i].attributes.url
                             };
+                            GlobalData.VM_MA.PostTitle = pi.Title;
                             if (!string.IsNullOrEmpty(jpp.data[i].attributes.content))
                             {
                                 pi.Comments.Add(await GetWebContent(_htmlImg.Replace(jpp.data[i].attributes.content, "")));
@@ -305,7 +306,25 @@ namespace AtelierMisaka
                                     for (int j = 0; j < jpp.data[i].relationships.media.data.Length; j++)
                                     {
                                         var inclu = incll.Find(x => x.id == jpp.data[i].relationships.media.data[j].id);
-                                        if (inclu.attributes.file_name.StartsWith("https://"))
+                                        if (string.IsNullOrEmpty(inclu.attributes.file_name))
+                                        {
+                                            inclu.attributes.file_name = "default.";
+                                            if (!string.IsNullOrEmpty(inclu.attributes.mimetype))
+                                            {
+                                                var tep = inclu.attributes.mimetype.Split('/');
+                                                if (tep.Length == 2)
+                                                {
+                                                    inclu.attributes.file_name += tep[1];
+                                                }
+                                                else
+                                                {
+                                                    inclu.attributes.file_name += inclu.attributes.mimetype;
+                                                }
+                                            }
+                                            else
+                                                inclu.attributes.file_name += "png";
+                                        }
+                                        else if (inclu.attributes.file_name.StartsWith("https://"))
                                         {
                                             continue;
                                         }
@@ -316,6 +335,7 @@ namespace AtelierMisaka
                                 }
                             }
                             pis.Add(pi);
+                            GlobalData.VM_MA.PostCount++;
                         }
                         if (null != jpp.meta.pagination.cursors)
                         {
