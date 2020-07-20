@@ -182,6 +182,16 @@
             <Path x:Name="p1" Style="{StaticResource Pa_Load}" Data="M15,100 A85,85 0 1 0 100,15" Stroke="Yellow"/>
             <Path x:Name="p2" Style="{StaticResource Pa_Load}" Data="M155,100 A55,55 0 1 0 100,155" Stroke="DeepSkyBlue"/>
             <Path x:Name="p3" Style="{StaticResource Pa_Load}" Data="M75,100 A25,25 0 1 0 100,75" Stroke="Red"/>
+            <StackPanel Margin="0,50" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                <TextBlock FontSize="15" Foreground="White" HorizontalAlignment="Center">
+                    <Run Text="{DynamicResource Text_PostTitle}"/>
+                    <Run Text="{Binding PostTitle}"/>
+                </TextBlock>
+                <TextBlock FontSize="15" Foreground="White" HorizontalAlignment="Center">
+                    <Run Text="{DynamicResource Text_PostCount}"/>
+                    <Run Text="{Binding PostCount}"/>
+                </TextBlock>
+            </StackPanel>
         </Grid>
         <Grid Visibility="{Binding ShowLogin, Converter={StaticResource btvc}}">
             <ContentControl Content="{Binding PatreonCefBrowser}" Margin="3,0,3,3"/>

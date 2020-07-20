@@ -171,6 +171,9 @@ namespace AtelierMisaka.ViewModels
         private object _patreonBrowser = null;
         private bool _isInitialized = false;
 
+        private int _postCount = 0;
+        private string _postTitle = string.Empty;
+
         private string _latestVer = "Check";
 
         public DateTime LastDate = DateTime.Parse("2010/01/01");
@@ -191,7 +194,33 @@ namespace AtelierMisaka.ViewModels
                 }
             }
         }
-        
+
+        public string PostTitle
+        {
+            get => _postTitle;
+            set
+            {
+                if (_postTitle != value)
+                {
+                    _postTitle = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public int PostCount
+        {
+            get => _postCount;
+            set
+            {
+                if (_postCount != value)
+                {
+                    _postCount = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public object PatreonCefBrowser
         {
             get => _patreonBrowser;
@@ -593,7 +622,11 @@ namespace AtelierMisaka.ViewModels
                                 {
                                     _myProxyFanbox = new WebProxy(_proxyFanbox);
                                 }
-                                catch { }
+                                catch { _myProxyFanbox = null; }
+                            }
+                            else
+                            {
+                                _myProxyFanbox = null;
                             }
                         }
                         break;
@@ -607,7 +640,11 @@ namespace AtelierMisaka.ViewModels
                                 {
                                     _myProxyFantia = new WebProxy(_proxyFantia);
                                 }
-                                catch { }
+                                catch { _myProxyFantia = null; }
+                            }
+                            else
+                            {
+                                _myProxyFantia = null;
                             }
                         }
                         break;
@@ -621,7 +658,11 @@ namespace AtelierMisaka.ViewModels
                                 {
                                     _myProxyPatreon = new WebProxy(_proxyPatreon);
                                 }
-                                catch { }
+                                catch { _myProxyPatreon = null; }
+                            }
+                            else
+                            {
+                                _myProxyPatreon = null;
                             }
                         }
                         break;

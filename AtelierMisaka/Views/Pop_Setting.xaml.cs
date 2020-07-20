@@ -252,6 +252,8 @@ namespace AtelierMisaka.Views
                 GlobalData.VM_DL.DownLoadItemList.Clear();
                 GlobalData.DownLP.Close();
             }
+            GlobalData.VM_MA.PostCount = 0;
+            GlobalData.VM_MA.PostTitle = string.Empty;
             ResultMessage _ret = null;
             _utils = GlobalData.CaptureUtil;
             if (_utils is PatreonUtils)
@@ -303,6 +305,7 @@ namespace AtelierMisaka.Views
             }
             Task.Run(() => SaveSetting());
             await Task.Run(() => GlobalData.DLLogs.LoadData(GlobalData.VM_MA.Artist.Id, GlobalData.VM_MA.Site));
+
             _ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
             if (_ret.Error != ErrorType.NoError)
             {
