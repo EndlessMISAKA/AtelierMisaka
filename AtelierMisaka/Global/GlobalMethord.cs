@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -38,7 +39,34 @@ namespace AtelierMisaka
 
         public static void ErrorLog(string msg)
         {
-            File.AppendAllText("error.log", DateTime.Now.ToString() + Environment.NewLine + msg);
+            try
+            {
+                File.AppendAllText("error.log", "------------------" + Environment.NewLine + DateTime.Now.ToString() + Environment.NewLine + msg + Environment.NewLine);
+            }
+            catch { }
+        }
+
+        public static void ErrorDownload(string msg, DownloadItem di)
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder("------------" + Environment.NewLine);
+                sb.Append(DateTime.Now.ToString() + Environment.NewLine);
+                sb.Append($"{di.SourceDocu.Title}:{di.SourceDocu.Link}{Environment.NewLine}");
+                sb.Append($"{di.FileName}{Environment.NewLine}");
+                sb.Append(msg + Environment.NewLine);
+                File.AppendAllText("error_download.log", sb.ToString());
+            }
+            catch { }
+        }
+
+        public static void ExportErrorDownload(DownloadItem di)
+        {
+            StringBuilder sb = new StringBuilder("------------" + Environment.NewLine);
+            sb.Append(DateTime.Now.ToString() + Environment.NewLine);
+            sb.Append($"{di.SourceDocu.Title}:{di.SourceDocu.Link}{Environment.NewLine}");
+            sb.Append($"{di.FileName}{Environment.NewLine}");
+            File.AppendAllText("Export_Errordownload.txt", sb.ToString());
         }
 
         public static bool OverPayment(int feeRequired)
