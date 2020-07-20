@@ -273,7 +273,11 @@ namespace AtelierMisaka.Models
             var fnt = $"{_fullPath}.msk";
             if (File.Exists(fnt))
             {
-                _totalRC = (new FileInfo(fnt)).Length;
+                FileInfo fi = new FileInfo(fnt);
+                var fs = fi.Open(FileMode.Open);
+                _totalRC = fs.Length;
+                fs.Close();
+                //_totalRC = (new FileInfo(fnt)).Length;
             }
         }
 
@@ -397,6 +401,7 @@ namespace AtelierMisaka.Models
                     }
                     catch (Exception ex)
                     {
+                        GlobalMethord.ErrorDownload(ex.Message, this);
                         if (ex is PathTooLongException)
                         {
                             return ErrorType.Path;
@@ -479,7 +484,7 @@ namespace AtelierMisaka.Models
         public async Task<bool> Cancel()
         {
             _isStop = false;
-            if (_ds == DownloadStatus.Downloading)
+            if (_ds == DownloadStatus.Downloading || _ds == DownloadStatus.Error || _ds == DownloadStatus.Paused)
             {
                 DLStatus = DownloadStatus.Cancel;
                 _isStop = true;
