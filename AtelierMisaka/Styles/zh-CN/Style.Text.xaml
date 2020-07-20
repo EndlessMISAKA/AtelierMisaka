@@ -62,6 +62,9 @@
 
     <sys:String x:Key="Text_DefaultName">自定义</sys:String>
 
+    <sys:String x:Key="Text_PostTitle">文章标题:</sys:String>
+    <sys:String x:Key="Text_PostCount">已筛选文章数:</sys:String>
+
     <sys:String x:Key="Text_Language">语言</sys:String>
     <sys:String x:Key="Text_ZH">中文</sys:String>
     <sys:String x:Key="Text_JP">日文</sys:String>
@@ -94,6 +97,7 @@
     <sys:String x:Key="Text_ThreadCount">同时精炼数:</sys:String>
     <sys:String x:Key="Text_PlayButton">全部开始</sys:String>
     <sys:String x:Key="Text_PauseButton">全部暂停</sys:String>
+    <sys:String x:Key="Text_ExportButton">导出错误</sys:String>
 
     <!--#endregion-->
 

@@ -62,6 +62,9 @@
 
     <sys:String x:Key="Text_DefaultName">Custom</sys:String>
 
+    <sys:String x:Key="Text_PostTitle">Post Title:</sys:String>
+    <sys:String x:Key="Text_PostCount">Post Count:</sys:String>
+
     <sys:String x:Key="Text_Language">Language</sys:String>
     <sys:String x:Key="Text_ZH">Chinese</sys:String>
     <sys:String x:Key="Text_JP">Japanese</sys:String>
@@ -94,6 +97,7 @@
     <sys:String x:Key="Text_ThreadCount">ThreadCount:</sys:String>
     <sys:String x:Key="Text_PlayButton">All Start</sys:String>
     <sys:String x:Key="Text_PauseButton">All Pause</sys:String>
+    <sys:String x:Key="Text_ExportButton">Export Error</sys:String>
 
     <!--#endregion-->
 

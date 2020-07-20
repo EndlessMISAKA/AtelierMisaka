@@ -225,6 +225,7 @@ namespace AtelierMisaka
                     }
                     fi.FID = jfp.post.id.ToString();
                     fi.Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title));
+                    GlobalData.VM_MA.PostTitle = fi.Title;
                     if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
                         fi.Comments.Add(jfp.post.comment);
@@ -293,6 +294,7 @@ namespace AtelierMisaka
                         }
                     }
                     bis.Add(fi);
+                    GlobalData.VM_MA.PostCount++;
                     if (null != jfp.post.links && null != jfp.post.links.previous)
                     {
                         if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
@@ -328,6 +330,7 @@ namespace AtelierMisaka
                         FID = jfp.post.id.ToString(),
                         Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title)),
                     };
+                    GlobalData.VM_MA.PostTitle = fi.Title;
                     if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
                     {
                         fi.CreateDate = dt;
@@ -407,6 +410,7 @@ namespace AtelierMisaka
                         }
                     }
                     bis.Add(fi);
+                    GlobalData.VM_MA.PostCount++;
                     if (null != jfp.post.links && null != jfp.post.links.previous)
                     {
                         if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))

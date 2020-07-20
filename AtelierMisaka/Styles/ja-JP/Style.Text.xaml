@@ -62,6 +62,9 @@
 
     <sys:String x:Key="Text_DefaultName">名無し</sys:String>
 
+    <sys:String x:Key="Text_PostTitle">タイトル:</sys:String>
+    <sys:String x:Key="Text_PostCount">完成数:</sys:String>
+
     <sys:String x:Key="Text_Language">言語</sys:String>
     <sys:String x:Key="Text_ZH">中国語</sys:String>
     <sys:String x:Key="Text_JP">日本語</sys:String>
@@ -94,6 +97,7 @@
     <sys:String x:Key="Text_ThreadCount">同時調合:</sys:String>
     <sys:String x:Key="Text_PlayButton">全部スタート</sys:String>
     <sys:String x:Key="Text_PauseButton">全部ストップ</sys:String>
+    <sys:String x:Key="Text_ExportButton">エラー採集</sys:String>
 
     <!--#endregion-->
 

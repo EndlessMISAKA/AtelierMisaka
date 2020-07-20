@@ -215,6 +215,7 @@ namespace AtelierMisaka
                         CoverPicThumb = po.coverImageUrl,
                         IsLiked = po.isLiked
                     };
+                    GlobalData.VM_MA.PostTitle = pi.Title;
                     if (DateTime.TryParse(po.publishedDatetime, out DateTime dt))
                     {
                         pi.CreateDate = dt;
@@ -328,6 +329,7 @@ namespace AtelierMisaka
                         }
                     }
                     bis.Add(pi);
+                    GlobalData.VM_MA.PostCount++;
                 }
                 return fd.body.nextUrl ?? null;
             }
