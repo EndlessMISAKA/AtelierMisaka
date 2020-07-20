@@ -110,6 +110,7 @@ namespace AtelierMisaka.Models
     {
         public string download_url { get; set; }
         public string file_name { get; set; }
+        public string mimetype { get; set; }
         public string name { get; set; }
         public string url { get; set; }
         public Image_Urls image_urls { get; set; }
