@@ -392,7 +392,7 @@ namespace AtelierMisaka.ViewModels
                         {
                             BaseItem bi = (BaseItem)args[1];
                             {
-                                string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMM\\dd_HHmm")}_${bi.Fee}_{bi.Title}";
+                                string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_${bi.Fee}_{bi.Title}";
                                 Directory.CreateDirectory(sp);
                                 if (!Directory.Exists(sp))
                                 {
