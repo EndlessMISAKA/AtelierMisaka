@@ -496,7 +496,7 @@ namespace AtelierMisaka.ViewModels
                     {
                         if (null != di)
                         {
-                            _dlClients.Remove(di);
+                            _dlClients.RemoveAll(x => x.Equals(di));
                         }
                         for (int i = 0; i < _downLoadList.Count; i++)
                         {
