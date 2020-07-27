@@ -127,7 +127,7 @@ namespace AtelierMisaka
                     int i = 0;
                     while (ma.Success)
                     {
-                        ais[i++].PayHigh = ma.Groups[1].Value;
+                        ais[i++].PayHigh = ma.Groups[1].Value.Replace(",", "");
                         ma = ma.NextMatch();
                     }
                 }
