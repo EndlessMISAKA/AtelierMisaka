@@ -22,7 +22,7 @@ namespace AtelierMisaka
         private readonly string _nextUrl = "https://www.patreon.com/api/posts?include=attachments.null%2Cmedia.null&filter[campaign_id]={0}&page[cursor]={1}&sort=-published_at&fields[post]=Ccomment_count%2Ccontent%2Ccurrent_user_can_view%2Ccurrent_user_has_liked%2Cembed%2Cimage%2Cpublished_at%2Cpost_type%2Cthumbnail_url%2Cteaser_text%2Ctitle%2Curl&json-api-use-default-includes=false";
         private readonly string _artistUrl = "https://www.patreon.com/api/campaigns/{0}?include=null";
         private readonly string _pledgeUrl = "https://www.patreon.com/api/pledges?include=campaign&fields[campaign]=name%2Curl&fields[pledge]=amount_cents%2Cpledge_cap_cents&json-api-use-default-includes=false";
-        private readonly string _webCharSet = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>";
+        private readonly string _webCharSet = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/></head><body>{0}</body></html>";
 
         private Dictionary<string, string> _unicodeDic = new Dictionary<string, string>();
 
@@ -381,7 +381,7 @@ namespace AtelierMisaka
 
         private async Task<string> GetWebContent(string content)
         {
-            _cwb.LoadHtml(_webCharSet + content);
+            _cwb.LoadHtml(string.Format(_webCharSet, content));
             do
             {
                 await Task.Delay(150);
