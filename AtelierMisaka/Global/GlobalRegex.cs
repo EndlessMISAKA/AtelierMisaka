@@ -64,7 +64,7 @@ namespace AtelierMisaka
                 _regex_FanboxCSRF = "csrfToken\":\"(\\w+)\"";
 
                 _regex_FantiaIdName = @"/fanclubs/(\d+)""><strong>(.+?)</strong>";
-                _regex_FantiaPlan = @"\((.+?)円/月\)</strong";
+                _regex_FantiaPlan = @"\(((\d+\,)?\d+)円/月\)</strong";
                 _regex_FantiaPostId = @"block"" href=""/posts/(\d+)";
                 _regex_FantiaUrl = @"^https://fantia.jp/fanclubs/(\d+)$";
 
