@@ -123,7 +123,7 @@ namespace AtelierMisaka
             {
                 path = path.Substring(0, path.Length - ma.Groups[0].Value.Length);
             }
-            return path;
+            return path.Trim();
         }
 
 

@@ -367,8 +367,10 @@ namespace AtelierMisaka.Models
                                     _fullPath = Path.Combine(_savePath, _fileName);
                                 }
                                 _fullPath += ".msk";
-                                using (FileStream fs = new FileStream(_fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                FileStream fs = null;
+                                try
                                 {
+                                    fs = new FileStream(_fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                                     fs.Seek(0, SeekOrigin.End);
                                     while (i > 0)
                                     {
@@ -382,6 +384,15 @@ namespace AtelierMisaka.Models
                                         i = sm.Read(arra, 0, arra.Length);
                                     }
                                     fs.Flush();
+                                    fs.Close();
+                                }
+                                catch
+                                {
+                                    if (null != fs)
+                                    {
+                                        fs.Close();
+                                    }
+                                    throw;
                                 }
                                 File.Move(_fullPath, _fullPath.Substring(0, _fullPath.Length - 4));
                                 GlobalData.DLLogs.Add(new DownloadLog()
@@ -412,6 +423,14 @@ namespace AtelierMisaka.Models
                         }
                         else
                         {
+                            if (ex.TargetSite.DeclaringType == typeof(Array))
+                            {
+                                Array.Clear(_dlData, 0, _dlData.Length);
+                                _dlData = null;
+                                _contentLength = 0;
+                                _totalRC = 0;
+                                _receviedCount = 0;
+                            }
                             return ErrorType.Web;
                         }
                     }
