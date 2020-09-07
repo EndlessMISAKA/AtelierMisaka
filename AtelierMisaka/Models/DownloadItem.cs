@@ -381,6 +381,7 @@ namespace AtelierMisaka.Models
                                     Interlocked.Add(ref _totalRC, i);
                                     if (_isStop)
                                     {
+                                        fs.Close();
                                         _isStop = false;
                                         return ErrorType.UnKnown;
                                     }
@@ -554,11 +555,11 @@ namespace AtelierMisaka.Models
                 }
                 else
                 {
-                    //var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
-                    //if (File.Exists(fnt))
-                    //{
-                    //    File.Delete(fnt);
-                    //}
+                    var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
+                    if (File.Exists(fnt))
+                    {
+                        File.Delete(fnt);
+                    }
                     _contentLength = 0;
                     _totalRC = 0;
                     _receviedCount = 0;
