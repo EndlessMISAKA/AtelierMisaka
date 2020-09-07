@@ -25,7 +25,7 @@ namespace AtelierMisaka.Models
         private long _receviedCount = 0;
         private long _totalRC = 0;
         private int _zeroCount = 0;
-        private byte[] _dlData = new byte[0];
+        private byte[] _dlData = null;
         
         private Timer _showSpeed = null;
 
@@ -300,7 +300,10 @@ namespace AtelierMisaka.Models
                         {
                             _request.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
                         }
-                        _request.AddRange("bytes", _totalRC);
+                        if (null != _dlData)
+                        {
+                            _request.AddRange("bytes", _totalRC);
+                        }
                         HttpWebResponse response = _request.GetResponse() as HttpWebResponse;
                         if (_contentLength == 0)
                         {
@@ -315,15 +318,66 @@ namespace AtelierMisaka.Models
                             }
                         }
                         _fullPath = Path.Combine(_savePath, _fileName);
-                        using (Stream sm = response.GetResponseStream())
+                        //using (Stream sm = response.GetResponseStream())
+                        //{
+                        Stream sm = response.GetResponseStream();
+                        byte[] arra = new byte[1024];
+                        int i = sm.Read(arra, 0, arra.Length);
+                        if (_contentLength != -1)
                         {
-                            byte[] arra = new byte[1024];
-                            int i = sm.Read(arra, 0, arra.Length);
-                            if (_contentLength != -1)
+                            while (i > 0)
                             {
+                                Array.Copy(arra, 0, _dlData, _totalRC, i);
+                                Interlocked.Add(ref _totalRC, i);
+                                if (_isStop)
+                                {
+                                    _isStop = false;
+                                    return ErrorType.UnKnown;
+                                }
+                                i = sm.Read(arra, 0, arra.Length);
+                            }
+
+                            DLStatus = DownloadStatus.WriteFile;
+                            if (File.Exists(_fullPath))
+                            {
+                                string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                                var ext = _fileName.Split('.').Last();
+                                int iln = ext.Length + 1;
+                                FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
+                                _fullPath = Path.Combine(_savePath, _fileName);
+                            }
+                            File.WriteAllBytes(_fullPath, _dlData);
+                            GlobalData.DLLogs.Add(new DownloadLog()
+                            {
+                                CId = AId,
+                                PId = SourceDocu.ID,
+                                Url = _link.Split('?').First(),
+                                SavePath = _savePath,
+                                FileName = _fileName,
+                                Site = GlobalData.VM_DL.TempSite
+                            });
+                            Array.Clear(_dlData, 0, _dlData.Length);
+                            _dlData = null;
+                            GC.Collect(9);
+                        }
+                        else
+                        {
+                            if (_totalRC == 0 && File.Exists(_fullPath))
+                            {
+                                string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                                var ext = _fileName.Split('.').Last();
+                                int iln = ext.Length + 1;
+                                FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
+                                _fullPath = Path.Combine(_savePath, _fileName);
+                            }
+                            _fullPath += ".msk";
+                            FileStream fs = null;
+                            try
+                            {
+                                fs = new FileStream(_fullPath, FileMode.Create, FileAccess.ReadWrite);
                                 while (i > 0)
                                 {
-                                    Array.Copy(arra, 0, _dlData, _totalRC, i);
+                                    fs.Write(arra, 0, i);
                                     Interlocked.Add(ref _totalRC, i);
                                     if (_isStop)
                                     {
@@ -332,81 +386,32 @@ namespace AtelierMisaka.Models
                                     }
                                     i = sm.Read(arra, 0, arra.Length);
                                 }
-
-                                DLStatus = DownloadStatus.WriteFile;
-                                if (File.Exists(_fullPath))
-                                {
-                                    string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
-                                    var ext = _fileName.Split('.').Last();
-                                    int iln = ext.Length + 1;
-                                    FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
-                                    _fullPath = Path.Combine(_savePath, _fileName);
-                                }
-                                File.WriteAllBytes(_fullPath, _dlData);
-                                GlobalData.DLLogs.Add(new DownloadLog()
-                                {
-                                    CId = AId,
-                                    PId = SourceDocu.ID,
-                                    Url = _link.Split('?').First(),
-                                    SavePath = _savePath,
-                                    FileName = _fileName,
-                                    Site = GlobalData.VM_DL.TempSite
-                                });
-                                Array.Clear(_dlData, 0, _dlData.Length);
-                                _dlData = null;
-                                GC.Collect(9);
+                                fs.Flush();
+                                fs.Close();
                             }
-                            else
+                            catch
                             {
-                                if (_totalRC == 0 && File.Exists(_fullPath))
+                                if (null != fs)
                                 {
-                                    string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
-                                    var ext = _fileName.Split('.').Last();
-                                    int iln = ext.Length + 1;
-                                    FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
-                                    _fullPath = Path.Combine(_savePath, _fileName);
-                                }
-                                _fullPath += ".msk";
-                                FileStream fs = null;
-                                try
-                                {
-                                    fs = new FileStream(_fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                                    fs.Seek(0, SeekOrigin.End);
-                                    while (i > 0)
-                                    {
-                                        fs.Write(arra, 0, i);
-                                        Interlocked.Add(ref _totalRC, i);
-                                        if (_isStop)
-                                        {
-                                            _isStop = false;
-                                            return ErrorType.UnKnown;
-                                        }
-                                        i = sm.Read(arra, 0, arra.Length);
-                                    }
-                                    fs.Flush();
                                     fs.Close();
                                 }
-                                catch
-                                {
-                                    if (null != fs)
-                                    {
-                                        fs.Close();
-                                    }
-                                    throw;
-                                }
-                                File.Move(_fullPath, _fullPath.Substring(0, _fullPath.Length - 4));
-                                GlobalData.DLLogs.Add(new DownloadLog()
-                                {
-                                    CId = AId,
-                                    PId = SourceDocu.ID,
-                                    Url = _link.Split('?').First(),
-                                    SavePath = _savePath,
-                                    FileName = _fileName,
-                                    Site = GlobalData.VM_DL.TempSite
-                                });
-                                GC.Collect(9);
+                                sm.Dispose();
+                                throw;
                             }
+                            File.Move(_fullPath, _fullPath.Substring(0, _fullPath.Length - 4));
+                            GlobalData.DLLogs.Add(new DownloadLog()
+                            {
+                                CId = AId,
+                                PId = SourceDocu.ID,
+                                Url = _link.Split('?').First(),
+                                SavePath = _savePath,
+                                FileName = _fileName,
+                                Site = GlobalData.VM_DL.TempSite
+                            });
+                            GC.Collect(9);
                         }
+                        sm.Dispose();
+                        //}
                         DLStatus = DownloadStatus.Completed;
                         return ErrorType.NoError;
                     }
@@ -420,6 +425,14 @@ namespace AtelierMisaka.Models
                         else if (ex is UnauthorizedAccessException || ex is System.Security.SecurityException)
                         {
                             return ErrorType.Security;
+                        }
+                        else if (ex.Message.Contains("403"))
+                        {
+                            return ErrorType.UnKnown;
+                        }
+                        else if (ex.Message.Contains("404"))
+                        {
+                            return ErrorType.IO;
                         }
                         else
                         {
@@ -462,6 +475,24 @@ namespace AtelierMisaka.Models
                                 GlobalData.VM_DL.BeginNextCommand.Execute(dd);
                             }, this);
                         }
+                    }
+                    else if (_dlRet == ErrorType.IO)
+                    {
+                        ErrorMsg = "HTTP404";
+                        DLStatus = DownloadStatus.Error;
+                        GlobalData.SyContext.Send((dd) =>
+                        {
+                            GlobalData.VM_DL.BeginNextCommand.Execute(dd);
+                        }, this);
+                    }
+                    else if (_dlRet == ErrorType.UnKnown)
+                    {
+                        ErrorMsg = "HTTP403";
+                        DLStatus = DownloadStatus.Error;
+                        GlobalData.SyContext.Send((dd) =>
+                        {
+                            GlobalData.VM_DL.BeginNextCommand.Execute(dd);
+                        }, this);
                     }
                     else
                     {
@@ -523,11 +554,11 @@ namespace AtelierMisaka.Models
                 }
                 else
                 {
-                    var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
-                    if (File.Exists(fnt))
-                    {
-                        File.Delete(fnt);
-                    }
+                    //var fnt = $"{Path.Combine(_savePath, _fileName)}.msk";
+                    //if (File.Exists(fnt))
+                    //{
+                    //    File.Delete(fnt);
+                    //}
                     _contentLength = 0;
                     _totalRC = 0;
                     _receviedCount = 0;

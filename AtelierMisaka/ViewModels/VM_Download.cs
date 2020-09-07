@@ -456,7 +456,7 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi,
                                 AId = _tempAI
                             };
-                            di.CheckTempFile();
+                            //di.CheckTempFile();
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
                         break;
