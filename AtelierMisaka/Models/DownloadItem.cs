@@ -364,7 +364,7 @@ namespace AtelierMisaka.Models
                         {
                             if (_totalRC == 0 && File.Exists(_fullPath))
                             {
-                                string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                                string tn = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                                 var ext = _fileName.Split('.').Last();
                                 int iln = ext.Length + 1;
                                 FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
