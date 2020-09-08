@@ -328,7 +328,7 @@ namespace AtelierMisaka
                                         {
                                             continue;
                                         }
-                                        pi.ContentUrls.Add(inclu.attributes.image_urls.original);
+                                        pi.ContentUrls.Add(inclu.attributes.download_url);
                                         pi.FileNames.Add(inclu.attributes.file_name);
                                         pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {inclu.attributes.file_name}>");
                                     }
