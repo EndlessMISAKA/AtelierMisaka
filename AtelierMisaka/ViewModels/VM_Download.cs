@@ -431,7 +431,7 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fantia:
                         {
                             FantiaItem fi = (FantiaItem)args[1];
-                            string sp = $"{_savePath}\\{_tempAN}\\{fi.CreateDate.ToString("yyyyMM\\dd_HHmm")}_{fi.Title}";
+                            string sp = $"{_savePath}\\{_tempAN}\\{fi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{fi.Title}";
                             Directory.CreateDirectory(sp);
                             if (!Directory.Exists(sp))
                             {
@@ -463,7 +463,7 @@ namespace AtelierMisaka.ViewModels
                     default:
                         {
                             BaseItem bi = (BaseItem)args[1];
-                            string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMM\\dd_HHmm")}_{bi.Title}";
+                            string sp = $"{_savePath}\\{_tempAN}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{bi.Title}";
                             Directory.CreateDirectory(sp);
                             if (!Directory.Exists(sp))
                             {
