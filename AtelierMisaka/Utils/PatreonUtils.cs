@@ -328,6 +328,10 @@ namespace AtelierMisaka
                                         {
                                             continue;
                                         }
+                                        else if (inclu.attributes.file_name.Equals("jpg") || inclu.attributes.file_name.Equals("png"))
+                                        {
+                                            inclu.attributes.file_name = $"{inclu.id}.{inclu.attributes.file_name}";
+                                        }
                                         pi.ContentUrls.Add(inclu.attributes.download_url);
                                         pi.FileNames.Add(inclu.attributes.file_name);
                                         pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {inclu.attributes.file_name}>");
