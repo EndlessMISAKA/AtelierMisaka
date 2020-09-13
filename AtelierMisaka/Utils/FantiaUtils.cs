@@ -18,6 +18,7 @@ namespace AtelierMisaka
         readonly Regex _artPost = GlobalRegex.GetRegex(RegexType.FantiaPostId);
         readonly Regex _artUrl = GlobalRegex.GetRegex(RegexType.FantiaUrl);
         readonly string _nextP = "fa fa-angle-right";
+        private HashSet<string> _pidList = null;
 
         public async override Task<ResultMessage> GetArtistInfo(string url)
         {
@@ -169,6 +170,7 @@ namespace AtelierMisaka
             {
                 try
                 {
+                    _pidList = new HashSet<string>();
                     var bis = GetPostIDsFromWebCode(uid);
                     return ResultHelper.NoError(bis);
                 }
@@ -179,20 +181,45 @@ namespace AtelierMisaka
                     {
                         return ex.Message.Contains("40") ? ResultHelper.CookieError() : ResultHelper.WebError();
                     }
+                    else if (ex is InvalidDataException)
+                    {
+                        return ResultHelper.UnKnownError("Post Error: " + ex.Message);
+                    }
                     return ResultHelper.UnKnownError();
                 }
             });
         }
 
-        private IList<BaseItem> GetPostIDsFromWebCode(string uid)
+        private IList<BaseItem> GetPostIDsFromWebCode(string uid, int index = 1)
         {
             try
             {
                 List<BaseItem> bis = new List<BaseItem>();
-                Match ma = _artPost.Match(GetWebCode($"https://fantia.jp/fanclubs/{uid}/posts?utf8=%E2%9C%93&q%5Bs%5D=newer"));
-                if (ma.Success)
+                string sphtml = GetWebCode($"https://fantia.jp/fanclubs/{uid}/posts?page={index}&utf8=%E2%9C%93&q%5Bs%5D=newer");
+                Match ma = _artPost.Match(sphtml);
+                bool flag = true;
+                while (ma.Success)
                 {
-                    GetUrls(ma.Groups[1].Value, bis);
+                    string pid = ma.Groups[1].Value;
+                    if (_pidList.Add(pid))
+                    {
+                        var res = GetUrls(pid, bis);
+                        if (res == false)
+                        {
+                            flag = false;
+                            break;
+                        }
+                        else if (res == null)
+                        {
+                            throw new InvalidDataException(pid);
+                        }
+                    }
+                    ma = ma.NextMatch();
+                }
+                if (flag && sphtml.IndexOf(_nextP) != -1)
+                {
+                    index++;
+                    bis.AddRange(GetPostIDsFromWebCode(uid, index));
                 }
                 return bis;
             }
@@ -202,7 +229,7 @@ namespace AtelierMisaka
             }
         }
 
-        private void GetUrls(string pid, List<BaseItem> bis)
+        private bool? GetUrls(string pid, List<BaseItem> bis)
         {
             try
             {
@@ -221,7 +248,7 @@ namespace AtelierMisaka
 
                     if (GlobalMethord.OverTime(fi.UpdateDate))
                     {
-                        return;
+                        return false;
                     }
                     fi.FID = jfp.post.id.ToString();
                     fi.Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title));
@@ -295,22 +322,24 @@ namespace AtelierMisaka
                     }
                     bis.Add(fi);
                     GlobalData.VM_MA.PostCount++;
-                    if (null != jfp.post.links && null != jfp.post.links.previous)
-                    {
-                        if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
-                        {
-                            if (!DateTime.TryParse(jfp.post.links.previous.posted_at, out dtp))
-                            {
-                                GetUrls_Loop(jfp.post.links.previous.id, bis);
-                                return;
-                            }
-                        }
-                        if (!GlobalMethord.OverTime(dtp))
-                        {
-                            GetUrls_Loop(jfp.post.links.previous.id, bis);
-                        }
-                    }
+                    return true;
+                    //if (null != jfp.post.links && null != jfp.post.links.previous)
+                    //{
+                    //    if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
+                    //    {
+                    //        if (!DateTime.TryParse(jfp.post.links.previous.posted_at, out dtp))
+                    //        {
+                    //            GetUrls_Loop(jfp.post.links.previous.id, bis);
+                    //            return;
+                    //        }
+                    //    }
+                    //    if (!GlobalMethord.OverTime(dtp))
+                    //    {
+                    //        GetUrls_Loop(jfp.post.links.previous.id, bis);
+                    //    }
+                    //}
                 }
+                return null;
             }
             catch
             {
