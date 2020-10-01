@@ -154,7 +154,7 @@ namespace AtelierMisaka.Models
     public class Attributes3
     {
         public int amount_cents { get; set; }
-        public int pledge_cap_cents { get; set; }
+        //public int pledge_cap_cents { get; set; }
     }
 
     public class Relationships1
