@@ -35,6 +35,7 @@ namespace AtelierMisaka.ViewModels
         private Dictionary<FantiaItem, HashSet<DownloadItem>> _retryList = null;
 
         private static readonly object lock_Dl = new object();
+        private static readonly object lock_Fantia = new object();
 
         public int ThreadCount
         {
@@ -591,6 +592,29 @@ namespace AtelierMisaka.ViewModels
             });
         }
 
+        public ParamCommand<DownloadItem> AddRetryCommand
+        {
+            get => new ParamCommand<DownloadItem>((di) =>
+            {
+                if (_isFantia)
+                {
+                    lock (lock_Fantia)
+                    {
+                        FantiaItem fi = (FantiaItem)di.SourceDocu;
+                        if (_retryList.ContainsKey(fi))
+                        {
+                            _retryList[fi].Add(di);
+                        }
+                        else
+                        {
+                            _retryList.Add(fi, new HashSet<DownloadItem>() { di });
+                        }
+                    }
+                }
+
+            });
+        }
+
         public CommonCommand FantiaRetryCommand
         {
             get => new CommonCommand(() =>
@@ -706,10 +730,20 @@ namespace AtelierMisaka.ViewModels
                         if (_dlClients.Count == 0)
                         {
                             IsDownloading = false;
-                            if (_downLoadList.Count == 0 && !_isFantia)
+                            if (_downLoadList.Count == 0)
                             {
-                                GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                                if (!_isFantia)
+                                {
+                                    GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                                    GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                                }
+                                else
+                                {
+                                    if (_retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
+                                    {
+                                        FantiaRetryCommand.Execute(null);
+                                    }
+                                }
                             }
                         }
                     }

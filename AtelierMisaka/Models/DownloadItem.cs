@@ -492,6 +492,7 @@ namespace AtelierMisaka.Models
                         DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
+                            GlobalData.VM_DL.AddRetryCommand.Execute(dd);
                             GlobalData.VM_DL.BeginNextCommand.Execute(dd);
                         }, this);
                     }
