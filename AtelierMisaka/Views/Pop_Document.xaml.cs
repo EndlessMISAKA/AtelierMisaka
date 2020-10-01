@@ -104,7 +104,15 @@ namespace AtelierMisaka.Views
                         CommandParameter = new object[] { true, bi, i }
                     };
                     hl.Click += AddDownload;
+                    Hyperlink hl1 = new Hyperlink(new Run(GlobalLanguage.Text_UseBrowser))
+                    {
+                        CommandParameter = bi.ContentUrls[i]
+                    };
+                    hl1.Click += Hl_Click;
                     MainBody.Inlines.Add(hl);
+                    MainBody.Inlines.Add(" (");
+                    MainBody.Inlines.Add(hl1);
+                    MainBody.Inlines.Add(")");
                     MainBody.Inlines.Add(new LineBreak());
                 }
             }
@@ -124,6 +132,15 @@ namespace AtelierMisaka.Views
                     };
                     hl.Click += AddDownload;
                     MainBody.Inlines.Add(hl);
+                    Hyperlink hl1 = new Hyperlink(new Run(GlobalLanguage.Text_UseBrowser))
+                    {
+                        CommandParameter = bi.MediaUrls[i]
+                    };
+                    hl1.Click += Hl_Click;
+                    MainBody.Inlines.Add(hl);
+                    MainBody.Inlines.Add(" (");
+                    MainBody.Inlines.Add(hl1);
+                    MainBody.Inlines.Add(")");
                     MainBody.Inlines.Add(new LineBreak());
                 }
             }

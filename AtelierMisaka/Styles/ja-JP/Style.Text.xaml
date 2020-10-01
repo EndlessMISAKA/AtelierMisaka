@@ -86,6 +86,7 @@
     <sys:String x:Key="Text_FileList">ファイルリスト:</sys:String>
     <sys:String x:Key="Text_ImageList">画像リスト:</sys:String>
     <sys:String x:Key="Text_FileSize">未知</sys:String>
+    <sys:String x:Key="Text_Browser">ブラウザを使う</sys:String>
 
     <!--#endregion-->
 

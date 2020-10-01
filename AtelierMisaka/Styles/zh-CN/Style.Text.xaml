@@ -86,6 +86,7 @@
     <sys:String x:Key="Text_FileList">文件列表:</sys:String>
     <sys:String x:Key="Text_ImageList">图片列表:</sys:String>
     <sys:String x:Key="Text_FileSize">未知大小</sys:String>
+    <sys:String x:Key="Text_Browser">使用浏览器下载</sys:String>
 
     <!--#endregion-->
 

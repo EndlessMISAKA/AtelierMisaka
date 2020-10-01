@@ -28,6 +28,7 @@ namespace AtelierMisaka
         public static string Text_FileImgCou { get; private set; }
         public static string Text_NoCov { get; private set; }
         public static string Text_NeedLC { get; private set; }
+        public static string Text_UseBrowser { get; private set; }
 
         #endregion
 
@@ -84,6 +85,7 @@ namespace AtelierMisaka
             Text_FileImgCou = Application.Current.TryFindResource("Text_FICount").ToString();
             Text_NoCov = Application.Current.TryFindResource("Text_NoCover").ToString();
             Text_NeedLC = Application.Current.TryFindResource("Text_NeedLoad").ToString();
+            Text_UseBrowser = Application.Current.TryFindResource("Text_Browser").ToString();
 
             Msg_ExitApp = Application.Current.TryFindResource("Msg_Exit").ToString();
             Msg_StartConf = Application.Current.TryFindResource("Msg_StartConfirm").ToString();

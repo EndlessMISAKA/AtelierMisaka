@@ -86,6 +86,7 @@
     <sys:String x:Key="Text_FileList">FileList:</sys:String>
     <sys:String x:Key="Text_ImageList">ImageList:</sys:String>
     <sys:String x:Key="Text_FileSize">UnknownSize</sys:String>
+    <sys:String x:Key="Text_Browser">Use Browser</sys:String>
 
     <!--#endregion-->
 
