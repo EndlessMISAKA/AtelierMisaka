@@ -322,7 +322,106 @@ namespace AtelierMisaka
                     }
                     bis.Add(fi);
                     GlobalData.VM_MA.PostCount++;
+                    GlobalData.VM_DL.AddFantiaCommand.Execute(fi);
+                    System.Threading.Thread.Sleep(1200);
                     return true;
+                }
+                return null;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public FantiaItem GetUrls(string pid)
+        {
+            try
+            {
+                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                if (null != jfp.post)
+                {
+                    FantiaItem fi = new FantiaItem();
+                    if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
+                    {
+                        fi.CreateDate = dt;
+                    }
+                    if (DateTime.TryParse(jfp.post.converted_at, out dt))
+                    {
+                        fi.UpdateDate = dt;
+                    }
+                    
+                    fi.FID = jfp.post.id.ToString();
+                    fi.Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title));
+                    GlobalData.VM_MA.PostTitle = fi.Title;
+                    if (!string.IsNullOrEmpty(jfp.post.comment))
+                    {
+                        fi.Comments.Add(jfp.post.comment);
+                        fi.Comments.Add(string.Empty);
+                    }
+                    if (null != jfp.post.thumb)
+                    {
+                        fi.CoverPic = jfp.post.thumb.original;
+                        fi.CoverPicThumb = jfp.post.thumb.ogp;
+                    }
+                    if (DateTime.TryParse(jfp.post.deadline, out dt))
+                    {
+                        fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                    }
+                    else
+                    {
+                        fi.DeadDate = "---";
+                    }
+
+                    foreach (var ct in jfp.post.post_contents)
+                    {
+                        var fee = 0;
+                        if (null != ct.plan)
+                        {
+                            fee = ct.plan.price;
+                        }
+                        var stitle = $"${fee}___{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        fi.Comments.Add("------------------------------------------------------------------------------------------");
+                        fi.Comments.Add(stitle);
+                        fi.Comments.Add(string.Empty);
+                        if (ct.visible_status == "visible")
+                        {
+                            if (!string.IsNullOrEmpty(ct.comment))
+                            {
+                                fi.Comments.Add(ct.comment);
+                                fi.Comments.Add(string.Empty);
+                            }
+                            if (ct.category == "photo_gallery")
+                            {
+                                var imgs = ct.post_content_photos;
+                                foreach (var img in imgs)
+                                {
+                                    var imgUrl = img.url.original;
+                                    if (!string.IsNullOrEmpty(img.comment))
+                                    {
+                                        fi.Comments.Add(img.comment);
+                                    }
+                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                    var fn = $"{img.id}{ext}";
+                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                    fi.FileNames.Add(fn);
+                                    fi.ContentUrls.Add(imgUrl);
+                                    fi.Fees.Add($"{fee}");
+                                    fi.PTitles.Add(stitle);
+                                }
+                            }
+                            else if (ct.category == "file")
+                            {
+                                fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
+                                fi.FileNames.Add(ct.filename);
+                                fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
+                                fi.Fees.Add($"{fee}");
+                                fi.PTitles.Add(stitle);
+                            }
+                        }
+                    }
+                    return fi;
                     //if (null != jfp.post.links && null != jfp.post.links.previous)
                     //{
                     //    if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
@@ -343,7 +442,7 @@ namespace AtelierMisaka
             }
             catch
             {
-                throw;
+                return null;
             }
         }
 

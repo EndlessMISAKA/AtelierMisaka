@@ -3,6 +3,7 @@ using AtelierMisaka.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka.ViewModels
@@ -15,6 +16,7 @@ namespace AtelierMisaka.ViewModels
         private bool _isDownloading = false;
         private bool _isChangeThread = false;
         private bool _isChangeProxy = false;
+        private bool _isFantia = false;
         private bool _showCheck = false;
         private bool _isQuest = false;
         private string _savePath = string.Empty;
@@ -29,6 +31,8 @@ namespace AtelierMisaka.ViewModels
 
         private IList<DownloadItem> _downLoadList = null;
         private IList<DownloadItem> _completedList = null;
+
+        private Dictionary<FantiaItem, HashSet<DownloadItem>> _retryList = null;
 
         private static readonly object lock_Dl = new object();
 
@@ -191,6 +195,22 @@ namespace AtelierMisaka.ViewModels
                 {
                     _isChangeProxy = value;
                     RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool IsFantia
+        {
+            get => _isFantia;
+            set
+            {
+                if (_isFantia != value)
+                {
+                    _isFantia = value;
+                    if (_isFantia)
+                    {
+                        _retryList = new Dictionary<FantiaItem, HashSet<DownloadItem>>();
+                    }
                 }
             }
         }
@@ -456,7 +476,6 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi,
                                 AId = _tempAI
                             };
-                            //di.CheckTempFile();
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
                         break;
@@ -482,6 +501,174 @@ namespace AtelierMisaka.ViewModels
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
                         break;
+                }
+            });
+        }
+
+        public ParamCommand<FantiaItem> AddFantiaCommand
+        {
+            get => new ParamCommand<FantiaItem>((fi) =>
+            {
+                DownloadItem di = null;
+                //foreach (FantiaItem fi in fis)
+                {
+                    string sp = $"{_savePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{fi.Title}";
+                    Directory.CreateDirectory(sp);
+                    if (!Directory.Exists(sp))
+                    {
+                        sp = GlobalMethord.ReplacePath(sp);
+                        Directory.CreateDirectory(sp);
+                    }
+                    GlobalData.DLLogs.SetPId(fi.ID);
+                    if (!string.IsNullOrEmpty(fi.CoverPic))
+                    {
+                        if (!GlobalData.DLLogs.HasLog(fi.CoverPic))
+                        {
+                            di = new DownloadItem
+                            {
+                                FileName = $"Cover.{fi.CoverPic.Split('.').Last()}",
+                                Link = fi.CoverPic,
+                                SavePath = sp,
+                                SourceDocu = fi,
+                                AId = _tempAI
+                            };
+                            GlobalData.SyContext.Send((dd) =>
+                            {
+                                GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
+                            }, di);
+                        }
+                    }
+                    for (int i = 0; i < fi.ContentUrls.Count; i++)
+                    {
+                        if (GlobalMethord.OverPayment(int.Parse(fi.Fees[i])))
+                        {
+                            continue;
+                        }
+                        if (!GlobalData.DLLogs.HasLog(fi.ContentUrls[i]))
+                        {
+                            var nsp = $"{sp}\\{fi.PTitles[i]}";
+                            if (!Directory.Exists(nsp))
+                            {
+                                Directory.CreateDirectory(nsp);
+                                if (!Directory.Exists(nsp))
+                                {
+                                    sp = GlobalMethord.ReplacePath(nsp);
+                                    Directory.CreateDirectory(nsp);
+                                }
+                            }
+                            di = new DownloadItem
+                            {
+                                FileName = fi.FileNames[i],
+                                Link = fi.ContentUrls[i],
+                                SavePath = nsp,
+                                SourceDocu = fi,
+                                AId = _tempAI
+                            };
+                            GlobalData.SyContext.Send((dd) =>
+                            {
+                                GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
+                            }, di);
+                        }
+                    }
+                    if (!_isDownloading && QuestCommand.CanExecute(null))
+                    {
+                        QuestCommand.Execute(null);
+                    }
+                    if (fi.Comments.Count > 0)
+                    {
+                        var fp = Path.Combine(sp, "Comment.txt");
+                        if (File.Exists(fp))
+                        {
+                            var cms = File.ReadAllLines(fp);
+                            if (cms.Except(fi.Comments).Count() == 0)
+                            {
+                                return;
+                            }
+                        }
+                        File.WriteAllLines(Path.Combine(sp, "Comment.txt"), fi.Comments);
+                    }
+                }
+            });
+        }
+
+        public CommonCommand FantiaRetryCommand
+        {
+            get => new CommonCommand(() =>
+            {
+                if (!_isFantia)
+                {
+                    return;
+                }
+                DownloadItem di = null;
+                foreach (var fi_old in _retryList)
+                {
+                    foreach (var diold in fi_old.Value)
+                    {
+                        _downLoadList.Remove(diold);
+                    }
+                    var fi_new = GlobalData.FantiaRetryUtil.GetUrls(fi_old.Key.ID);
+                    for (int i = 0; i < fi_new.ContentUrls.Count; i++)
+                    {
+                        string sp = $"{_savePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi_new.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{fi_new.Title}";
+                        Directory.CreateDirectory(sp);
+                        if (!Directory.Exists(sp))
+                        {
+                            sp = GlobalMethord.ReplacePath(sp);
+                            Directory.CreateDirectory(sp);
+                        }
+                        GlobalData.DLLogs.SetPId(fi_new.ID);
+                        if (!string.IsNullOrEmpty(fi_new.CoverPic))
+                        {
+                            if (!GlobalData.DLLogs.HasLog(fi_new.CoverPic))
+                            {
+                                di = new DownloadItem
+                                {
+                                    FileName = $"Cover.{fi_new.CoverPic.Split('.').Last()}",
+                                    Link = fi_new.CoverPic,
+                                    SavePath = sp,
+                                    SourceDocu = fi_new,
+                                    AId = _tempAI
+                                };
+                                GlobalData.SyContext.Send((dd) =>
+                                {
+                                    GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
+                                }, di);
+                            }
+                        }
+                        if (GlobalMethord.OverPayment(int.Parse(fi_new.Fees[i])))
+                        {
+                            continue;
+                        }
+                        if (!GlobalData.DLLogs.HasLog(fi_new.ContentUrls[i]))
+                        {
+                            var nsp = $"{sp}\\{fi_new.PTitles[i]}";
+                            if (!Directory.Exists(nsp))
+                            {
+                                Directory.CreateDirectory(nsp);
+                                if (!Directory.Exists(nsp))
+                                {
+                                    sp = GlobalMethord.ReplacePath(nsp);
+                                    Directory.CreateDirectory(nsp);
+                                }
+                            }
+                            di = new DownloadItem
+                            {
+                                FileName = fi_new.FileNames[i],
+                                Link = fi_new.ContentUrls[i],
+                                SavePath = nsp,
+                                SourceDocu = fi_new,
+                                AId = _tempAI
+                            };
+                            GlobalData.SyContext.Send((dd) =>
+                            {
+                                GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
+                            }, di);
+                        }
+                    }
+                    if (!_isDownloading && QuestCommand.CanExecute(null))
+                    {
+                        QuestCommand.Execute(null);
+                    }
                 }
             });
         }
@@ -519,7 +706,7 @@ namespace AtelierMisaka.ViewModels
                         if (_dlClients.Count == 0)
                         {
                             IsDownloading = false;
-                            if (_downLoadList.Count == 0)
+                            if (_downLoadList.Count == 0 && !_isFantia)
                             {
                                 GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                                 GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);

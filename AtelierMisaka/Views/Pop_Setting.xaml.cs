@@ -306,25 +306,52 @@ namespace AtelierMisaka.Views
             Task.Run(() => SaveSetting());
             await Task.Run(() => GlobalData.DLLogs.LoadData(GlobalData.VM_MA.Artist.Id, GlobalData.VM_MA.Site));
 
-            _ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
-            if (_ret.Error != ErrorType.NoError)
+            if (GlobalData.VM_MA.Site == SiteType.Fantia)
             {
-                await GetCheck(_ret.Msgs);
-                ShowLoading(false);
-                return false;
+                GlobalData.DownLP = new Downloader(null, true);
+                GlobalData.DownLP.Show();
+                GlobalData.DownLP.LoadData();
+                _ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
+                if (_ret.Error != ErrorType.NoError)
+                {
+                    await GetCheck(_ret.Msgs);
+                    ShowLoading(false);
+                    return false;
+                }
+                _tempBis = (List<BaseItem>)_ret.Result;
+                if (_tempBis.Count == 0)
+                {
+                    await GetCheck(GlobalLanguage.Msg_NoPosts);
+                    ShowLoading(false);
+                    return false;
+                }
+                GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
+                GlobalCommand.BackCommand.Execute(BackType.Pop);
+                GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
             }
-            _tempBis = (List<BaseItem>)_ret.Result;
-            if (_tempBis.Count == 0)
+            else
             {
-                await GetCheck(GlobalLanguage.Msg_NoPosts);
-                ShowLoading(false);
-                return false;
+                _ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
+                if (_ret.Error != ErrorType.NoError)
+                {
+                    await GetCheck(_ret.Msgs);
+                    ShowLoading(false);
+                    return false;
+                }
+                _tempBis = (List<BaseItem>)_ret.Result;
+                if (_tempBis.Count == 0)
+                {
+                    await GetCheck(GlobalLanguage.Msg_NoPosts);
+                    ShowLoading(false);
+                    return false;
+                }
+                GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
+                GlobalData.DownLP = new Downloader(_tempBis);
+                GlobalData.DownLP.Show();
+                GlobalData.DownLP.LoadData();
+                GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
-            GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-            GlobalData.DownLP = new Downloader(_tempBis);
-            GlobalData.DownLP.Show();
-            GlobalData.DownLP.LoadData();
-            GlobalCommand.BackCommand.Execute(BackType.Pop);
             return true;
         }
 

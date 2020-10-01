@@ -18,15 +18,19 @@ namespace AtelierMisaka.Views
         bool _mouseD = false;
         Point _mouM = new Point(0, 0);
 
-        public Downloader(IList<BaseItem> bis)
+        public Downloader(IList<BaseItem> bis, bool flag = false)
         {
             InitializeComponent();
-            _baseItems = bis.Reverse().ToList();
+            if (!flag)
+            {
+                _baseItems = bis.Reverse().ToList();
+            }
             GlobalData.VM_DL = VM_DD;
             VM_DD.TempAI = GlobalData.VM_MA.Artist.Id;
             VM_DD.TempAN = GlobalData.VM_MA.Artist.AName;
             VM_DD.TempSite = GlobalData.VM_MA.Site;
             VM_DD.SavePath = GlobalData.VM_MA.SavePath;
+            VM_DD.IsFantia = flag;
             GlobalData.LastDateDic.Add(new CLastDate(VM_DD.TempAI, VM_DD.TempSite, GlobalData.VM_MA.LastDate));
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));
             CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, MaximizeWindow, CanResizeWindow));
@@ -72,7 +76,6 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
-                                        //di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -89,7 +92,6 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
-                                        //di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -106,7 +108,6 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
-                                        //di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -128,6 +129,7 @@ namespace AtelierMisaka.Views
                         break;
                     case SiteType.Fantia:
                         {
+                            /*
                             foreach (FantiaItem fi in _baseItems)
                             {
                                 string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{fi.Title}";
@@ -150,7 +152,6 @@ namespace AtelierMisaka.Views
                                             SourceDocu = fi,
                                             AId = VM_DD.TempAI
                                         };
-                                        //di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -180,7 +181,6 @@ namespace AtelierMisaka.Views
                                             SourceDocu = fi,
                                             AId = VM_DD.TempAI
                                         };
-                                        //di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -198,6 +198,7 @@ namespace AtelierMisaka.Views
                                     File.WriteAllLines(Path.Combine(sp, "Comment.txt"), fi.Comments);
                                 }
                             }
+                            /**/
                         }
                         break;
                     default:

@@ -41,5 +41,10 @@ namespace AtelierMisaka
                 }
             }
         }
+
+        public static FantiaUtils FantiaRetryUtil
+        {
+            get => _utilFantia.Value;
+        }
     }
 }
