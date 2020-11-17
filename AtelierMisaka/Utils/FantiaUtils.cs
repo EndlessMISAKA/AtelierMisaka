@@ -323,7 +323,11 @@ namespace AtelierMisaka
                     bis.Add(fi);
                     GlobalData.VM_MA.PostCount++;
                     GlobalData.VM_DL.AddFantiaCommand.Execute(fi);
-                    System.Threading.Thread.Sleep(1200);
+                    do
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                    } while (GlobalData.VM_DL.IsDownloading);
+
                     return true;
                 }
                 return null;
