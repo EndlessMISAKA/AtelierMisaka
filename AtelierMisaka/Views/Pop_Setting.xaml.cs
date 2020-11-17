@@ -54,6 +54,9 @@ namespace AtelierMisaka.Views
                     return;
                 }
             }
+
+            GlobalData.StartTime = DateTime.Now;
+
             if (!GlobalData.VM_MA.IsStarted)
             {
                 ShowLoading(true);
@@ -327,7 +330,7 @@ namespace AtelierMisaka.Views
                 }
                 GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
-                GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                GlobalData.VM_MA.Date = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
                 GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
             }
             else

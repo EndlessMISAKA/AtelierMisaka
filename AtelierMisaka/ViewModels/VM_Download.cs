@@ -734,7 +734,7 @@ namespace AtelierMisaka.ViewModels
                             {
                                 if (!_isFantia)
                                 {
-                                    GlobalData.VM_MA.Date = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                                    GlobalData.VM_MA.Date = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
                                     GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
                                 }
                                 else
