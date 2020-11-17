@@ -1,5 +1,6 @@
 ﻿using AtelierMisaka.Models;
 using System;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -88,6 +89,27 @@ namespace AtelierMisaka.Views
                         MainBody.Inlines.Add(new LineBreak());
                     }
                 }
+            }
+
+            if (!string.IsNullOrEmpty(bi.CoverPic))
+            {
+                MainBody.Inlines.Add(new Run("------------------------------------------------------------------------------------------"));
+                MainBody.Inlines.Add(new LineBreak());
+                Hyperlink hl = new Hyperlink(new Run(bi.CoverPicName))
+                {
+                    CommandParameter = new object[] { true, bi, -1 }
+                };
+                hl.Click += AddDownload;
+                Hyperlink hl1 = new Hyperlink(new Run(GlobalLanguage.Text_UseBrowser))
+                {
+                    CommandParameter = bi.CoverPic
+                };
+                hl1.Click += Hl_Click;
+                MainBody.Inlines.Add(hl);
+                MainBody.Inlines.Add(" (");
+                MainBody.Inlines.Add(hl1);
+                MainBody.Inlines.Add(")");
+                MainBody.Inlines.Add(new LineBreak());
             }
 
             if (bi.ContentUrls.Count > 0)

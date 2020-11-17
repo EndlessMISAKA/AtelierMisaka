@@ -420,32 +420,46 @@ namespace AtelierMisaka.ViewModels
                                     sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
                                 }
-                                if ((bool)args[0])
+                                if (index == -1)
                                 {
                                     di = new DownloadItem
                                     {
-                                        FileName = bi.FileNames[index],
-                                        Link = bi.ContentUrls[index],
+                                        FileName = bi.CoverPicName,
+                                        Link = bi.CoverPic,
                                         SavePath = sp,
                                         CTime = bi.CreateDate,
                                         SourceDocu = bi,
                                         AId = _tempAI
                                     };
-                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
                                 }
                                 else
                                 {
-                                    di = new DownloadItem
+                                    if ((bool)args[0])
                                     {
-                                        FileName = bi.MediaNames[index],
-                                        Link = bi.MediaUrls[index],
-                                        SavePath = sp,
-                                        CTime = bi.CreateDate,
-                                        SourceDocu = bi,
-                                        AId = _tempAI
-                                    };
-                                    GlobalData.VM_DL.DownLoadItemList.Add(di);
+                                        di = new DownloadItem
+                                        {
+                                            FileName = bi.FileNames[index],
+                                            Link = bi.ContentUrls[index],
+                                            SavePath = sp,
+                                            CTime = bi.CreateDate,
+                                            SourceDocu = bi,
+                                            AId = _tempAI
+                                        };
+                                    }
+                                    else
+                                    {
+                                        di = new DownloadItem
+                                        {
+                                            FileName = bi.MediaNames[index],
+                                            Link = bi.MediaUrls[index],
+                                            SavePath = sp,
+                                            CTime = bi.CreateDate,
+                                            SourceDocu = bi,
+                                            AId = _tempAI
+                                        };
+                                    }
                                 }
+                                GlobalData.VM_DL.DownLoadItemList.Add(di);
                             }
                         }
                         break;
@@ -469,14 +483,29 @@ namespace AtelierMisaka.ViewModels
                                     Directory.CreateDirectory(nsp);
                                 }
                             }
-                            di = new DownloadItem
+                            if (index == -1)
                             {
-                                FileName = fi.FileNames[index],
-                                Link = fi.ContentUrls[index],
-                                SavePath = nsp,
-                                SourceDocu = fi,
-                                AId = _tempAI
-                            };
+                                di = new DownloadItem
+                                {
+                                    FileName = fi.CoverPicName,
+                                    Link = fi.CoverPic,
+                                    SavePath = sp,
+                                    SourceDocu = fi,
+                                    AId = _tempAI
+                                };
+                                GlobalData.VM_DL.DownLoadItemList.Add(di);
+                            }
+                            else
+                            {
+                                di = new DownloadItem
+                                {
+                                    FileName = fi.FileNames[index],
+                                    Link = fi.ContentUrls[index],
+                                    SavePath = nsp,
+                                    SourceDocu = fi,
+                                    AId = _tempAI
+                                };
+                            }
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
                         break;
@@ -490,15 +519,30 @@ namespace AtelierMisaka.ViewModels
                                 sp = GlobalMethord.ReplacePath(sp);
                                 Directory.CreateDirectory(sp);
                             }
-                            di = new DownloadItem
+                            if (index == -1)
                             {
-                                FileName = bi.FileNames[index],
-                                Link = bi.ContentUrls[index],
-                                SavePath = sp,
-                                CTime = bi.CreateDate,
-                                SourceDocu = bi,
-                                AId = _tempAI
-                            };
+                                di = new DownloadItem
+                                {
+                                    FileName = bi.CoverPicName,
+                                    Link = bi.CoverPic,
+                                    SavePath = sp,
+                                    CTime = bi.CreateDate,
+                                    SourceDocu = bi,
+                                    AId = _tempAI
+                                };
+                            }
+                            else
+                            {
+                                di = new DownloadItem
+                                {
+                                    FileName = bi.FileNames[index],
+                                    Link = bi.ContentUrls[index],
+                                    SavePath = sp,
+                                    CTime = bi.CreateDate,
+                                    SourceDocu = bi,
+                                    AId = _tempAI
+                                };
+                            }
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
                         break;
@@ -527,7 +571,7 @@ namespace AtelierMisaka.ViewModels
                         {
                             di = new DownloadItem
                             {
-                                FileName = $"Cover.{fi.CoverPic.Split('.').Last()}",
+                                FileName = fi.CoverPicName,
                                 Link = fi.CoverPic,
                                 SavePath = sp,
                                 SourceDocu = fi,
@@ -647,7 +691,7 @@ namespace AtelierMisaka.ViewModels
                             {
                                 di = new DownloadItem
                                 {
-                                    FileName = $"Cover.{fi_new.CoverPic.Split('.').Last()}",
+                                    FileName = fi_new.CoverPicName,
                                     Link = fi_new.CoverPic,
                                     SavePath = sp,
                                     SourceDocu = fi_new,

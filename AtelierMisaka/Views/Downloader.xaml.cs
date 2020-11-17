@@ -69,7 +69,7 @@ namespace AtelierMisaka.Views
                                     {
                                         di = new DownloadItem
                                         {
-                                            FileName = $"Cover.{bi.CoverPic.Split('.').Last()}",
+                                            FileName = bi.CoverPicName,
                                             Link = bi.CoverPic,
                                             SavePath = sp,
                                             CTime = bi.CreateDate,

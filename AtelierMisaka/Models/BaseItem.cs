@@ -1,6 +1,7 @@
 ﻿using AtelierMisaka.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AtelierMisaka.Models
 {
@@ -9,6 +10,7 @@ namespace AtelierMisaka.Models
         protected string _id = string.Empty;
         protected string _title = string.Empty;
         protected string _coverPic = string.Empty;
+        protected string _coverPicName = string.Empty;
         protected string _coverPicThumb = string.Empty;
         protected string _fee = string.Empty;
         protected string _link = string.Empty;
@@ -131,9 +133,18 @@ namespace AtelierMisaka.Models
                 if (_coverPic != value)
                 {
                     _coverPic = value;
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        _coverPicName = $"Cover.{value.Split('.').Last()}";
+                    }
                     RaisePropertyChanged();
                 }
             }
+        }
+
+        public string CoverPicName
+        {
+            get => _coverPicName;
         }
 
         public string CoverPicThumb
