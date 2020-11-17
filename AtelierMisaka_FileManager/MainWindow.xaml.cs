@@ -134,7 +134,7 @@ namespace AtelierMisaka_FileManager
 
         private async void Btn_Start_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(VM_MA.SavePath) || Directory.Exists(VM_MA.SavePath))
+            if (string.IsNullOrEmpty(VM_MA.SavePath) || !Directory.Exists(VM_MA.SavePath))
             {
                 await GetCheck(GlobalLanguage.Msg_ErrorPath);
                 return;
