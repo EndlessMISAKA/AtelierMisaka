@@ -340,11 +340,17 @@ namespace AtelierMisaka.Models
                             DLStatus = DownloadStatus.WriteFile;
                             if (File.Exists(_fullPath))
                             {
-                                string tn = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                                int index = 1;
                                 var ext = _fileName.Split('.').Last();
                                 int iln = ext.Length + 1;
-                                FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
+                                string _fname = _fileName.Substring(0, _fileName.Length - iln);
+                                FileName = $"{_fname}_{index}.{ext}";
                                 _fullPath = Path.Combine(_savePath, _fileName);
+                                while (File.Exists(_fullPath))
+                                {
+                                    FileName = $"{_fname}_{++index}.{ext}";
+                                    _fullPath = Path.Combine(_savePath, _fileName);
+                                }
                             }
                             File.WriteAllBytes(_fullPath, _dlData);
                             GlobalData.DLLogs.Add(new DownloadLog()
@@ -364,11 +370,17 @@ namespace AtelierMisaka.Models
                         {
                             if (_totalRC == 0 && File.Exists(_fullPath))
                             {
-                                string tn = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                                int index = 1;
                                 var ext = _fileName.Split('.').Last();
                                 int iln = ext.Length + 1;
-                                FileName = $"{_fileName.Substring(0, _fileName.Length - iln)}_{tn}.{ext}";
+                                string _fname = _fileName.Substring(0, _fileName.Length - iln);
+                                FileName = $"{_fname}_{index}.{ext}";
                                 _fullPath = Path.Combine(_savePath, _fileName);
+                                while (File.Exists(_fullPath))
+                                {
+                                    FileName = $"{_fname}_{++index}.{ext}";
+                                    _fullPath = Path.Combine(_savePath, _fileName);
+                                }
                             }
                             _fullPath += ".msk";
                             FileStream fs = null;
