@@ -16,6 +16,8 @@ namespace AtelierMisaka
 
         public static int CurrentCulStr = 1;
 
+        public static DateTime StartTime = DateTime.Now;
+
         public static CLastDateDic LastDateDic = null;
         public static DownloadLogList DLLogs = null;
 
