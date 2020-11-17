@@ -1,0 +1,6 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ja-JP/Style.Text.xaml"/>
+        <ResourceDictionary Source="ja-JP/Style.Messages.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

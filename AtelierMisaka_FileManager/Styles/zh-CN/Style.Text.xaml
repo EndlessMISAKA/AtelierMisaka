@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region MainWindow -->
+
+    <sys:String x:Key="Text_MainTitle">御坂的炼精助手</sys:String>
+    <sys:String x:Key="Text_CheckButton">确定</sys:String>
+    <sys:String x:Key="Text_CancelButton">取消</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Setting -->
+
+    <sys:String x:Key="Text_SavePath">目标路径</sys:String>
+    <sys:String x:Key="Text_SavePathTag">例: E:\Download\Patreon\Pepper0_</sys:String>
+    <sys:String x:Key="Text_MoveMode">分类模式</sys:String>
+    <sys:String x:Key="Text_ModeAllInOne">所有资源放到同一个文件夹下</sys:String>
+    <sys:String x:Key="Text_ModeAllFolder">所有文章放到同一个文件夹下</sys:String>
+    <sys:String x:Key="Text_OtherStr">额外选项</sys:String>
+    <sys:String x:Key="Text_TitleStr">保留标题</sys:String>
+    <sys:String x:Key="Text_DocumentStr">保留文章内容</sys:String>
+    <sys:String x:Key="Text_StartButton">确定</sys:String>
+    <sys:String x:Key="Text_ExitButton">退出</sys:String>
+    <sys:String x:Key="Text_Attention">注意！本软件不提供把分类复原的功能！</sys:String>
+
+    <sys:String x:Key="Text_Language">语言</sys:String>
+    <sys:String x:Key="Text_ZH">中文</sys:String>
+    <sys:String x:Key="Text_JP">日文</sys:String>
+    <sys:String x:Key="Text_EN">英文</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

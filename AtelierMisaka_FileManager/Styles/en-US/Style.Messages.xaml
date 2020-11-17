@@ -1,0 +1,49 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region ErrorMessage -->
+
+    <sys:String x:Key="Msg_WebError" xml:space="preserve">Internet Error&#13;Please try again later</sys:String>
+    <sys:String x:Key="Msg_WebErrorProxy" xml:space="preserve">Can not set up Proxy&#13;Please contact programer</sys:String>
+
+    <sys:String x:Key="Msg_CookieError">Check Cookies is right</sys:String>
+    <sys:String x:Key="Msg_CookieErrorMail" xml:space="preserve">Can not get MailAddress from site&#13;Please stop using Patreon Func&#13;And contact programer</sys:String>
+    <sys:String x:Key="Msg_CookieErrorAuto" xml:space="preserve">The account is different from the input&#13;And the input is overwrited now</sys:String>
+
+    <sys:String x:Key="Msg_IOError" xml:space="preserve">Can not resolve Json data&#13;Please contact programer</sys:String>
+
+    <sys:String x:Key="Msg_PathError">The input Url is wrong</sys:String>
+
+    <sys:String x:Key="Msg_SecurityError" xml:space="preserve">Security Error&#13;Please contact programer</sys:String>
+
+    <sys:String x:Key="Msg_UnKnownError" xml:space="preserve">UnKnown Error&#13;Please contact programer</sys:String>
+    <sys:String x:Key="Msg_UnKnownErrorUnSupported">UnSupport Func</sys:String>
+
+    <sys:String x:Key="Msg_DLErrorWeb">Internet Error</sys:String>
+    <sys:String x:Key="Msg_DLErrorPath">File path too long</sys:String>
+    <sys:String x:Key="Msg_DLErrorSecurity">Has not Permission</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region PromptMessage -->
+
+    <sys:String x:Key="Msg_IsDownloading">Can not change when Downloading</sys:String>
+    <sys:String x:Key="Msg_ChangeSavePath" xml:space="preserve">The change of Save Path&#13;Will takes effect in the next time</sys:String>
+    <sys:String x:Key="Msg_CheckSavePath">Save Path can not be empty</sys:String>
+    <sys:String x:Key="Msg_CreateSavePathError">Can not create Save Path</sys:String>
+    <sys:String x:Key="Msg_CheckCookies">Cookies can not be empty</sys:String>
+    <sys:String x:Key="Msg_NoPosts">Does not have posts to read</sys:String>
+
+    <sys:String x:Key="Msg_StartConfirm">Start synthesis?</sys:String>
+    <sys:String x:Key="Msg_SecondConfirm">Change resipe?</sys:String>
+    <sys:String x:Key="Msg_Exit">Leave Atelier?</sys:String>
+
+    <sys:String x:Key="Msg_Close" xml:space="preserve">Synthesis will not stop&#13;You can review it in Resipe Page</sys:String>
+
+    <sys:String x:Key="Msg_LoadCover">Loading...{0}%</sys:String>
+    <sys:String x:Key="Msg_CoverError">Internet Error&#13;Please try again later</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

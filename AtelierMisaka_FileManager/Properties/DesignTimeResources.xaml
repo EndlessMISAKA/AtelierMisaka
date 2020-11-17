@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/AtelierMisaka_FileManager;Component/Styles/zh-CN/Style.Text.xaml"/>
+        <ResourceDictionary Source="/AtelierMisaka_FileManager;Component/Styles/zh-CN/Style.Messages.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

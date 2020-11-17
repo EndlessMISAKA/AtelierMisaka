@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region MainWindow -->
+
+    <sys:String x:Key="Text_MainTitle">AssistantMisaka</sys:String>
+    <sys:String x:Key="Text_CheckButton">OK</sys:String>
+    <sys:String x:Key="Text_CancelButton">Cancel</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Setting -->
+    
+    <sys:String x:Key="Text_SavePath">Target</sys:String>
+    <sys:String x:Key="Text_SavePathTag">e.g. E:\Download\Patreon\Pepper0_</sys:String>
+    <sys:String x:Key="Text_MoveMode">Mode</sys:String>
+    <sys:String x:Key="Text_ModeAllInOne">All resources move to one folder</sys:String>
+    <sys:String x:Key="Text_ModeAllFolder">All posts move to one folder</sys:String>
+    <sys:String x:Key="Text_OtherStr">Options</sys:String>
+    <sys:String x:Key="Text_TitleStr">Write title into filename</sys:String>
+    <sys:String x:Key="Text_DocumentStr">Copy the post document too</sys:String>
+    <sys:String x:Key="Text_StartButton">OK</sys:String>
+    <sys:String x:Key="Text_ExitButton">Exit</sys:String>
+    <sys:String x:Key="Text_Attention">Attention please! This operation can't be undone!</sys:String>
+
+    <sys:String x:Key="Text_Language">Language</sys:String>
+    <sys:String x:Key="Text_ZH">Chinese</sys:String>
+    <sys:String x:Key="Text_JP">Japanese</sys:String>
+    <sys:String x:Key="Text_EN">English</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

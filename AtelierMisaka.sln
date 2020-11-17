@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtelierMisaka", "AtelierMisaka\AtelierMisaka.csproj", "{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtelierMisaka_FileManager", "AtelierMisaka_FileManager\AtelierMisaka_FileManager.csproj", "{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|x86.ActiveCfg = Release|x86
 		{9C311B1D-EE2E-4CD1-A841-0C1DF1BA0573}.Release|x86.Build.0 = Release|x86
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Debug|x86.Build.0 = Debug|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|x86.ActiveCfg = Release|Any CPU
+		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

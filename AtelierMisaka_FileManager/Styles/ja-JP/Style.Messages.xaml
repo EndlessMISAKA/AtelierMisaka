@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region ErrorMessage -->
+
+    <sys:String x:Key="Msg_IOError" xml:space="preserve">整理が失敗しました&#13;開発者にご連絡をお願いします</sys:String>
+    <sys:String x:Key="Msg_PathError">指定したフォルダーは使えません</sys:String>
+
+    <!--#endregion-->
+    
+    <!--#region PromptMessage -->
+    
+    <sys:String x:Key="Msg_Exit">アトリエを閉めますか？</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

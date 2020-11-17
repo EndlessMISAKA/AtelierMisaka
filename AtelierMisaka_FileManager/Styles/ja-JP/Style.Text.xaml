@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--#region MainWindow -->
+
+    <sys:String x:Key="Text_MainTitle">ミサカのアシスタント</sys:String>
+    <sys:String x:Key="Text_CheckButton">はい</sys:String>
+    <sys:String x:Key="Text_CancelButton">いいえ</sys:String>
+
+    <!--#endregion-->
+
+    <!--#region Pop_Setting -->
+
+    <sys:String x:Key="Text_SavePath">ターゲット</sys:String>
+    <sys:String x:Key="Text_SavePathTag">例: E:\勉強資料\Patreon\Pepper0_</sys:String>
+    <sys:String x:Key="Text_MoveMode">整理方法</sys:String>
+    <sys:String x:Key="Text_ModeAllInOne">全ての画像やZipを同じフォルダーに置く</sys:String>
+    <sys:String x:Key="Text_ModeAllFolder">全てのポストを同じフォルダーに置く</sys:String>
+    <sys:String x:Key="Text_OtherStr">その他</sys:String>
+    <sys:String x:Key="Text_TitleStr">タイトルを付ける</sys:String>
+    <sys:String x:Key="Text_DocumentStr">ポストの内容もコピーする</sys:String>
+    <sys:String x:Key="Text_StartButton">整理開始</sys:String>
+    <sys:String x:Key="Text_ExitButton">整理をやめる</sys:String>
+    <sys:String x:Key="Text_Attention">注意！整理前の状態に戻せる機能はありません！</sys:String>
+
+    <sys:String x:Key="Text_Language">言語</sys:String>
+    <sys:String x:Key="Text_ZH">中国語</sys:String>
+    <sys:String x:Key="Text_JP">日本語</sys:String>
+    <sys:String x:Key="Text_EN">英語</sys:String>
+
+    <!--#endregion-->
+
+</ResourceDictionary>
