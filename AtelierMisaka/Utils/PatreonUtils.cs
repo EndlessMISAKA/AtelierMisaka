@@ -35,12 +35,12 @@ namespace AtelierMisaka
                     _cwb = (ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser;
                     if (!GlobalData.VM_MA.IsInitialized)
                     {
+                        while (!_cwb.IsBrowserInitialized)
+                        {
+                            await Task.Delay(500);
+                        }
                         if (GlobalData.VM_MA.UseProxy)
                         {
-                            while (!_cwb.IsBrowserInitialized)
-                            {
-                                await Task.Delay(100);
-                            }
                             if (!await CefHelper.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
                             {
                                 return ResultHelper.WebError(GlobalLanguage.Msg_ErrorWebProxy);
@@ -53,12 +53,12 @@ namespace AtelierMisaka
                 CefHelper.Initialize();
                 _cwb = new ChromiumWebBrowser();
                 GlobalData.VM_MA.PatreonCefBrowser = _cwb;
+                while (!_cwb.IsBrowserInitialized)
+                {
+                    await Task.Delay(500);
+                }
                 if (GlobalData.VM_MA.UseProxy)
                 {
-                    while (!_cwb.IsBrowserInitialized)
-                    {
-                        await Task.Delay(100);
-                    }
                     if (!await CefHelper.SetProxy(_cwb, GlobalData.VM_MA.Proxy))
                     {
                         return ResultHelper.WebError(GlobalLanguage.Msg_ErrorWebProxy);
