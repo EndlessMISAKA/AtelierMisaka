@@ -14,7 +14,6 @@ namespace AtelierMisaka
     public class PatreonUtils : BaseUtils
     {
         private ChromiumWebBrowser _cwb;
-        private bool _needLogin = false;
         private readonly Regex _cidRegex = GlobalRegex.GetRegex(RegexType.PatreonCid);
         private readonly Regex _emailRegex = GlobalRegex.GetRegex(RegexType.PatreonEmail);
         private readonly Regex _htmlImg = GlobalRegex.GetRegex(RegexType.PatreonHtmlImg);
@@ -46,9 +45,10 @@ namespace AtelierMisaka
                                 return ResultHelper.WebError(GlobalLanguage.Msg_ErrorWebProxy);
                             }
                         }
-                        return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/"));
+                        _cwb.FrameLoadEnd += CWebBrowser_LoginCheck;
+                        return await LoginCheck(await GetWebCode("https://www.patreon.com/home"));
                     }
-                    return ResultHelper.NoError(_needLogin);
+                    return ResultHelper.NoError(false);
                 }
                 CefHelper.Initialize();
                 _cwb = new ChromiumWebBrowser();
@@ -64,7 +64,8 @@ namespace AtelierMisaka
                         return ResultHelper.WebError(GlobalLanguage.Msg_ErrorWebProxy);
                     }
                 }
-                return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/"));
+                _cwb.FrameLoadEnd += CWebBrowser_LoginCheck;
+                return await LoginCheck(await GetWebCode("https://www.patreon.com/home"));
             }
             catch (Exception ex)
             {
@@ -75,46 +76,36 @@ namespace AtelierMisaka
 
         private async Task<ResultMessage> LoginCheck(string htmlc)
         {
-            if (!_needLogin)
+            if (GlobalData.VM_MA.ShowLogin)
             {
-                if (htmlc.Contains("currentUser\": null"))
-                {
-                    _needLogin = true;
-                    return await LoginCheck(await GetWebCode("https://www.patreon.com/login"));
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(htmlc))
-                    {
-                        return ResultHelper.WebError();
-                    }
-                    Match ma = _emailRegex.Match(htmlc);
-                    if (ma.Success)
-                    {
-                        var s = ma.Groups[1].Value;
-                        if (!string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
-                        {
-                            if (s != GlobalData.VM_MA.Cookies)
-                            {
-                                return await LoginCheck(await GetWebCode("https://www.patreon.com/logout?ru=%2Fhome"));
-                            }
-                        }
-                        else
-                        {
-                            GlobalData.VM_MA.Cookies = s;
-                        }
-                        GlobalData.VM_MA.IsInitialized = true;
-                        return ResultHelper.NoError(_needLogin);
-                    }
-                    return ResultHelper.CookieError(GlobalLanguage.Msg_ErrorCookiesMail);
-                }
+                return ResultHelper.NoError(true);
             }
             else
             {
-                GlobalData.VM_MA.ShowLogin = true;
-                _cwb.FrameLoadEnd += CWebBrowser_LoginCheck;
-                _cwb.FrameLoadStart += Cwb_FrameLoadStart;
-                return ResultHelper.NoError(_needLogin);
+                if (string.IsNullOrEmpty(htmlc))
+                {
+                    return ResultHelper.WebError();
+                }
+                Match ma = _emailRegex.Match(htmlc);
+                if (ma.Success)
+                {
+                    var s = ma.Groups[1].Value;
+                    if (!string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
+                    {
+                        if (s != GlobalData.VM_MA.Cookies)
+                        {
+                            _cwb.FrameLoadEnd += CWebBrowser_LoginCheck;
+                            return await LoginCheck(await GetWebCode("https://www.patreon.com/logout?ru=%2Fhome"));
+                        }
+                    }
+                    else
+                    {
+                        GlobalData.VM_MA.Cookies = s;
+                    }
+                    GlobalData.VM_MA.IsInitialized = true;
+                    return ResultHelper.NoError(false);
+                }
+                return ResultHelper.CookieError(GlobalLanguage.Msg_ErrorCookiesMail);
             }
         }
 
@@ -130,10 +121,15 @@ namespace AtelierMisaka
 
         public async void CWebBrowser_LoginCheck(object sender, FrameLoadEndEventArgs e)
         {
-            if (e.Frame.IsMain)
+            if (e.Url.Contains("https://www.patreon.com/login"))
+            {
+                _cwb.FrameLoadStart += Cwb_FrameLoadStart;
+                GlobalData.VM_MA.ShowLogin = true;
+            }
+            else if (e.Frame.IsMain)
             {
                 string htmlc = await e.Browser.MainFrame.GetTextAsync();
-                if (htmlc.Contains("currentUser\": {"))
+                if (htmlc.Contains("currentUser"))
                 {
                     Match ma = _emailRegex.Match(htmlc);
                     if (ma.Success)
@@ -151,7 +147,6 @@ namespace AtelierMisaka
                         GlobalData.VM_MA.Messages = GlobalLanguage.Msg_ErrorCookiesMail;
                     }
                     _cwb.FrameLoadEnd -= CWebBrowser_LoginCheck;
-                    _needLogin = false;
                     GlobalData.VM_MA.ShowLogin = false;
                 }
             }
