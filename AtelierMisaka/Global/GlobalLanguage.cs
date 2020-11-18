@@ -97,8 +97,8 @@ namespace AtelierMisaka
             Msg_CheckCk = Application.Current.TryFindResource("Msg_CheckCookies").ToString();
             Msg_NoPosts = Application.Current.TryFindResource("Msg_NoPosts").ToString();
             Msg_ErrorCookies = Application.Current.TryFindResource("Msg_CookieError").ToString();
-            Msg_ErrorCookiesAuto = Application.Current.TryFindResource("Msg_CookieErrorMail").ToString();
-            Msg_ErrorCookiesMail = Application.Current.TryFindResource("Msg_CookieErrorAuto").ToString();
+            Msg_ErrorCookiesAuto = Application.Current.TryFindResource("Msg_CookieErrorAuto").ToString();
+            Msg_ErrorCookiesMail = Application.Current.TryFindResource("Msg_CookieErrorMail").ToString();
             Msg_ErrorIO = Application.Current.TryFindResource("Msg_IOError").ToString();
             Msg_ErrorPath = Application.Current.TryFindResource("Msg_PathError").ToString();
             Msg_ErrorSecurity = Application.Current.TryFindResource("Msg_SecurityError").ToString();
