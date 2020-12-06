@@ -1,5 +1,6 @@
 ﻿using AtelierMisaka.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -279,13 +280,13 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}_{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
                         if (ct.visible_status == "visible")
                         {
-                            if (!string.IsNullOrEmpty(ct.comment))
+                            if (ct.category != "blog" && !string.IsNullOrEmpty(ct.comment))
                             {
                                 fi.Comments.Add(ct.comment);
                                 fi.Comments.Add(string.Empty);
@@ -318,6 +319,44 @@ namespace AtelierMisaka
                                 fi.Fees.Add($"{fee}");
                                 fi.PTitles.Add(stitle);
                             }
+                            else if(ct.category == "blog")
+                            {
+                                try
+                                {
+                                    JObject dd = JsonConvert.DeserializeObject(ct.comment) as JObject;
+                                    JArray ja = JArray.Parse(dd["ops"].ToString());
+
+                                    foreach (var js in ja)
+                                    {
+                                        var ss = js.SelectToken("insert");
+                                        dynamic stem = ss;
+                                        if (ss.Type == JTokenType.String)
+                                        {
+                                            fi.Comments.Add(stem.Value.Replace("\\n", Environment.NewLine));
+                                        }
+                                        else if(ss.Type == JTokenType.Object)
+                                        {
+                                            string imgUrl = stem.fantiaImage.url;
+                                            var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                            var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                            var fn = $"{stem.fantiaImage.id}{ext}";
+                                            fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                            fi.FileNames.Add(fn);
+                                            fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
+                                            fi.Fees.Add($"{fee}");
+                                            fi.PTitles.Add(stitle);
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("Blog type unknown: " + ss.Type.ToString());
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                    throw;
+                                }
+                            }
                         }
                     }
                     bis.Add(fi);
@@ -326,7 +365,7 @@ namespace AtelierMisaka
                     do
                     {
                         System.Threading.Thread.Sleep(1000);
-                    } while (GlobalData.VM_DL.IsDownloading);
+                    } while (GlobalData.VM_DL.WaitDownloading);
 
                     return true;
                 }
@@ -384,13 +423,13 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}_{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
                         if (ct.visible_status == "visible")
                         {
-                            if (!string.IsNullOrEmpty(ct.comment))
+                            if (ct.category != "blog" && !string.IsNullOrEmpty(ct.comment))
                             {
                                 fi.Comments.Add(ct.comment);
                                 fi.Comments.Add(string.Empty);
@@ -423,30 +462,53 @@ namespace AtelierMisaka
                                 fi.Fees.Add($"{fee}");
                                 fi.PTitles.Add(stitle);
                             }
+                            else if (ct.category == "blog")
+                            {
+                                try
+                                {
+                                    JObject dd = JsonConvert.DeserializeObject(ct.comment) as JObject;
+                                    JArray ja = JArray.Parse(dd["ops"].ToString());
+
+                                    foreach (var js in ja)
+                                    {
+                                        var ss = js.SelectToken("insert");
+                                        dynamic stem = ss;
+                                        if (ss.Type == JTokenType.String)
+                                        {
+                                            fi.Comments.Add(stem.Value.Replace("\\n", Environment.NewLine));
+                                        }
+                                        else if (ss.Type == JTokenType.Object)
+                                        {
+                                            string imgUrl = stem.fantiaImage.url;
+                                            var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                            var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                            var fn = $"{stem.fantiaImage.id}{ext}";
+                                            fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                            fi.FileNames.Add(fn);
+                                            fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
+                                            fi.Fees.Add($"{fee}");
+                                            fi.PTitles.Add(stitle);
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("Blog type unknown: " + ss.Type.ToString());
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                    throw;
+                                }
+                            }
                         }
                     }
                     return fi;
-                    //if (null != jfp.post.links && null != jfp.post.links.previous)
-                    //{
-                    //    if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
-                    //    {
-                    //        if (!DateTime.TryParse(jfp.post.links.previous.posted_at, out dtp))
-                    //        {
-                    //            GetUrls_Loop(jfp.post.links.previous.id, bis);
-                    //            return;
-                    //        }
-                    //    }
-                    //    if (!GlobalMethord.OverTime(dtp))
-                    //    {
-                    //        GetUrls_Loop(jfp.post.links.previous.id, bis);
-                    //    }
-                    //}
                 }
                 return null;
             }
             catch
             {
-                return null;
+                throw;
             }
         }
 
@@ -499,7 +561,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}___{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}_{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
