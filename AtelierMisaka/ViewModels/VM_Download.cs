@@ -174,6 +174,14 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public bool WaitDownloading
+        {
+            get
+            {
+                return _downLoadList.Count >= _threadCount;
+            }
+        }
+
         public bool IsChangeThread
         {
             get => _isChangeThread;
@@ -473,16 +481,6 @@ namespace AtelierMisaka.ViewModels
                                 sp = GlobalMethord.ReplacePath(sp);
                                 Directory.CreateDirectory(sp);
                             }
-                            var nsp = $"{sp}\\{fi.PTitles[index]}";
-                            if (!Directory.Exists(nsp))
-                            {
-                                Directory.CreateDirectory(nsp);
-                                if (!Directory.Exists(nsp))
-                                {
-                                    sp = GlobalMethord.ReplacePath(nsp);
-                                    Directory.CreateDirectory(nsp);
-                                }
-                            }
                             if (index == -1)
                             {
                                 di = new DownloadItem
@@ -493,10 +491,19 @@ namespace AtelierMisaka.ViewModels
                                     SourceDocu = fi,
                                     AId = _tempAI
                                 };
-                                GlobalData.VM_DL.DownLoadItemList.Add(di);
                             }
                             else
                             {
+                                var nsp = $"{sp}\\{fi.PTitles[index]}";
+                                if (!Directory.Exists(nsp))
+                                {
+                                    Directory.CreateDirectory(nsp);
+                                    if (!Directory.Exists(nsp))
+                                    {
+                                        sp = GlobalMethord.ReplacePath(nsp);
+                                        Directory.CreateDirectory(nsp);
+                                    }
+                                }
                                 di = new DownloadItem
                                 {
                                     FileName = fi.FileNames[index],
@@ -621,7 +628,7 @@ namespace AtelierMisaka.ViewModels
                     }
                     if (fi.Comments.Count > 0)
                     {
-                        var fp = Path.Combine(sp, "Comment.txt");
+                        var fp = Path.Combine(sp, "Comment.html");
                         if (File.Exists(fp))
                         {
                             var cms = File.ReadAllLines(fp);
@@ -630,7 +637,7 @@ namespace AtelierMisaka.ViewModels
                                 return;
                             }
                         }
-                        File.WriteAllLines(Path.Combine(sp, "Comment.txt"), fi.Comments);
+                        File.WriteAllLines(Path.Combine(sp, "Comment.html"), fi.Comments);
                     }
                 }
             });
