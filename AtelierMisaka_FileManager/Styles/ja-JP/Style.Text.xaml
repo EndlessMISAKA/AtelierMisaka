@@ -17,6 +17,7 @@
     <sys:String x:Key="Text_MoveMode">整理方法</sys:String>
     <sys:String x:Key="Text_ModeAllInOne">全ての画像やZipを同じフォルダーに置く</sys:String>
     <sys:String x:Key="Text_ModeAllFolder">全てのポストを同じフォルダーに置く</sys:String>
+    <sys:String x:Key="Text_ModeMonth">当月のポストを当月のフォルダーに置く</sys:String>
     <sys:String x:Key="Text_OtherStr">その他</sys:String>
     <sys:String x:Key="Text_TitleStr">タイトルを付ける</sys:String>
     <sys:String x:Key="Text_DocumentStr">ポストの内容もコピーする</sys:String>

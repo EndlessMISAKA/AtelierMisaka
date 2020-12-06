@@ -17,6 +17,7 @@
     <sys:String x:Key="Text_MoveMode">分类模式</sys:String>
     <sys:String x:Key="Text_ModeAllInOne">所有资源放到同一个文件夹下</sys:String>
     <sys:String x:Key="Text_ModeAllFolder">所有文章放到同一个文件夹下</sys:String>
+    <sys:String x:Key="Text_ModeMonth">当月的资源放到当月的文件夹中</sys:String>
     <sys:String x:Key="Text_OtherStr">额外选项</sys:String>
     <sys:String x:Key="Text_TitleStr">保留标题</sys:String>
     <sys:String x:Key="Text_DocumentStr">保留文章内容</sys:String>

@@ -31,18 +31,20 @@
                 <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_SavePathTag}" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="TextBox_MouseDoubleClick"/>
             </Grid>
-            <Grid Height="120">
+            <Grid Height="180">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Path Grid.ColumnSpan="2" Stroke="White" StrokeThickness="2" Data="M0,60L8,60L8,30L16,30 M8,60L8,90L16,90" StrokeEndLineCap="Round" StrokeStartLineCap="Round" Margin="145,0"/>
+                <Path Grid.ColumnSpan="2" Stroke="White" StrokeThickness="2" Data="M0,90L16,90 M8,90L8,30L16,30 M8,90L8,150L16,150" StrokeEndLineCap="Round" StrokeStartLineCap="Round" Margin="145,0"/>
                 <TextBlock Text="{DynamicResource Text_MoveMode}" Style="{StaticResource TBL_Setting}" Grid.ColumnSpan="2"/>
                 <StackPanel Grid.Column="1">
                     <RadioButton Content="{DynamicResource Text_ModeAllInOne}" Style="{StaticResource RB_Setting_Small}"
                              IsChecked="{Binding SelectedMode, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ModeType.AllInOne}}"/>
                     <RadioButton Content="{DynamicResource Text_ModeAllFolder}" Style="{StaticResource RB_Setting_Small}"
                              IsChecked="{Binding SelectedMode, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ModeType.AllFolder}}"/>
+                    <RadioButton Content="{DynamicResource Text_ModeMonth}" Style="{StaticResource RB_Setting_Small}"
+                             IsChecked="{Binding SelectedMode, Converter={StaticResource atbc}, ConverterParameter={x:Static local:ModeType.MoveToMonth}}"/>
                 </StackPanel>
             </Grid>
             <Grid Height="60">

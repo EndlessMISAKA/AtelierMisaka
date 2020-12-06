@@ -14,7 +14,7 @@ namespace AtelierMisaka_FileManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        Regex rex = new Regex(@"^\d{6}\\\d{2}_\d{4}");
+        Regex rex = new Regex(@"^(\d{6})\\(\d{2}_\d{4})");
         private Storyboard _sbLoad = null;
         private bool _mouseD = false;
         private Point _mouM = new Point(0, 0);
@@ -158,12 +158,46 @@ namespace AtelierMisaka_FileManager
                                 ti.MoveTo(Path.Combine(VM_MA.SavePath, $"{di.Name}{ti.Name}"));
                             }
                         }
+                        else if (VM_MA.SelectedMode == ModeType.MoveToMonth)
+                        {
+                            var fis = Directory.GetFiles(dr, "*.*", SearchOption.AllDirectories).ToList();
+                            if (!VM_MA.UseDocumentStr)
+                            {
+                                fis = fis.Where(x =>
+                                {
+                                    string ss = Path.GetFileName(x);
+                                    return !ss.Equals("Comment.txt") && !ss.Equals("Comment.html");
+                                }).ToList();
+                            }
+                            foreach (var fi in fis)
+                            {
+                                var tp = Path.GetDirectoryName(fi);
+                                var temp = tp.Remove(0, VM_MA.SavePath.Length + 1);
+                                ma = rex.Match(temp);
+                                if (ma.Success)
+                                {
+                                    if (VM_MA.UseTitleStr)
+                                    {
+                                        newFileName = Path.Combine(VM_MA.SavePath, ma.Groups[1].Value, $"{temp.Substring(7).Replace("\\", "_")}_{Path.GetFileName(fi)}");
+                                    }
+                                    else
+                                    {
+                                        newFileName = Path.Combine(VM_MA.SavePath, ma.Groups[1].Value, $"{ma.Groups[2].Value}_{Path.GetFileName(fi)}");
+                                    }
+                                    File.Move(fi, newFileName);
+                                }
+                            }
+                        }
                         else
                         {
                             var fis = Directory.GetFiles(dr, "*.*", SearchOption.AllDirectories).ToList();
                             if (!VM_MA.UseDocumentStr)
                             {
-                                fis = fis.Where(x => !Path.GetFileName(x).Equals("Comment.txt")).ToList();
+                                fis = fis.Where(x =>
+                                {
+                                    string ss = Path.GetFileName(x);
+                                    return !ss.Equals("Comment.txt") && !ss.Equals("Comment.html");
+                                }).ToList();
                             }
                             foreach (var fi in fis)
                             {
@@ -178,7 +212,7 @@ namespace AtelierMisaka_FileManager
                                     }
                                     else
                                     {
-                                        newFileName = Path.Combine(VM_MA.SavePath, $"{ma.Groups[0].Value.Replace("\\", "_")}_{Path.GetFileName(fi)}");
+                                        newFileName = Path.Combine(VM_MA.SavePath, $"{ma.Groups[1].Value}_{ma.Groups[2].Value}_{Path.GetFileName(fi)}");
                                     }
                                     File.Move(fi, newFileName);
                                 }

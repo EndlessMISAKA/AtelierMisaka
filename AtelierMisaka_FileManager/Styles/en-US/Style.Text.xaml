@@ -17,6 +17,7 @@
     <sys:String x:Key="Text_MoveMode">Mode</sys:String>
     <sys:String x:Key="Text_ModeAllInOne">All resources move to one folder</sys:String>
     <sys:String x:Key="Text_ModeAllFolder">All posts move to one folder</sys:String>
+    <sys:String x:Key="Text_ModeMonth">Move to each month folder</sys:String>
     <sys:String x:Key="Text_OtherStr">Options</sys:String>
     <sys:String x:Key="Text_TitleStr">Write title into filename</sys:String>
     <sys:String x:Key="Text_DocumentStr">Copy the post document too</sys:String>
