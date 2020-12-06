@@ -13,6 +13,7 @@ namespace AtelierMisaka
         public static SynchronizationContext SyContext = null;
         public static Downloader DownLP = null;
         public static bool? CheckResult = false;
+        public static SiteType CurrentSite = SiteType.Fanbox;
 
         public static int CurrentCulStr = 1;
 

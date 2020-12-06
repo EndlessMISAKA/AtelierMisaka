@@ -113,7 +113,7 @@ namespace AtelierMisaka.Views
                                 }
                                 if (bi.Comments.Count > 0)
                                 {
-                                    var fp = Path.Combine(sp, "Comment.txt");
+                                    var fp = Path.Combine(sp, "Comment.html");
                                     if (File.Exists(fp))
                                     {
                                         var cms = File.ReadAllLines(fp);
@@ -122,7 +122,7 @@ namespace AtelierMisaka.Views
                                             continue;
                                         }
                                     }
-                                    File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
+                                    File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
                                 }
                             }
                         }
@@ -186,7 +186,7 @@ namespace AtelierMisaka.Views
                                 }
                                 if (fi.Comments.Count > 0)
                                 {
-                                    var fp = Path.Combine(sp, "Comment.txt");
+                                    var fp = Path.Combine(sp, "Comment.html");
                                     if (File.Exists(fp))
                                     {
                                         var cms = File.ReadAllLines(fp);
@@ -195,7 +195,7 @@ namespace AtelierMisaka.Views
                                             continue;
                                         }
                                     }
-                                    File.WriteAllLines(Path.Combine(sp, "Comment.txt"), fi.Comments);
+                                    File.WriteAllLines(Path.Combine(sp, "Comment.html"), fi.Comments);
                                 }
                             }
                             /**/
@@ -226,13 +226,12 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
-                                        //di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
                                 if (bi.Comments.Count > 0)
                                 {
-                                    var fp = Path.Combine(sp, "Comment.txt");
+                                    var fp = Path.Combine(sp, "Comment.html");
                                     if (File.Exists(fp))
                                     {
                                         var cms = File.ReadAllLines(fp);
@@ -241,7 +240,7 @@ namespace AtelierMisaka.Views
                                             continue;
                                         }
                                     }
-                                    File.WriteAllLines(Path.Combine(sp, "Comment.txt"), bi.Comments);
+                                    File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
                                 }
                             }
                         }

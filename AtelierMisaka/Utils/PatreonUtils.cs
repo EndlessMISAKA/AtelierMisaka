@@ -281,7 +281,7 @@ namespace AtelierMisaka
                             GlobalData.VM_MA.PostTitle = pi.Title;
                             if (!string.IsNullOrEmpty(jpp.data[i].attributes.content))
                             {
-                                pi.Comments.Add(await GetWebContent(_htmlImg.Replace(jpp.data[i].attributes.content, "")));
+                                pi.Comments.Add(_htmlImg.Replace(jpp.data[i].attributes.content, ""));
                             }
                             else if (!string.IsNullOrEmpty(jpp.data[i].attributes.content_teaser_text))
                             {

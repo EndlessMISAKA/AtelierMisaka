@@ -78,9 +78,10 @@ namespace AtelierMisaka.Views
                     _tempUP = GlobalData.VM_MA.UseProxy;
                     _tempUD = GlobalData.VM_MA.UseDate;
 
-                    ShowLoading(false);
+                    GlobalData.CurrentSite = _tempSite;
                     GlobalData.VM_MA.IsStarted = true;
                 }
+                ShowLoading(false);
             }
             else
             {
@@ -110,6 +111,8 @@ namespace AtelierMisaka.Views
                         _tempProxy = GlobalData.VM_MA.Proxy;
                         _tempDate = GlobalData.VM_MA.Date;
                         _tempSP = GlobalData.VM_MA.SavePath;
+
+                        GlobalData.CurrentSite = _tempSite;
                     }
                     ShowLoading(false);
                     _second = false;
@@ -214,13 +217,14 @@ namespace AtelierMisaka.Views
                             _tempProxy = GlobalData.VM_MA.Proxy;
                             _tempDate = GlobalData.VM_MA.Date;
                             _tempSP = GlobalData.VM_MA.SavePath;
+
+                            GlobalData.CurrentSite = _tempSite;
                         }
                         ShowLoading(false);
                         _second = false;
                         return;
                     }
                 }
-
                 ShowLoading(false);
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
@@ -232,21 +236,18 @@ namespace AtelierMisaka.Views
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
             {
                 await GetCheck(GlobalLanguage.Msg_CheckCk);
-                ShowLoading(false);
                 return false;
             }
 
             if (string.IsNullOrEmpty(GlobalData.VM_MA.SavePath))
             {
                 await GetCheck(GlobalLanguage.Msg_CheckSP);
-                ShowLoading(false);
                 return false;
             }
             Directory.CreateDirectory(GlobalData.VM_MA.SavePath);
             if (!Directory.Exists(GlobalData.VM_MA.SavePath))
             {
                 await GetCheck(GlobalLanguage.Msg_CreateSP);
-                ShowLoading(false);
                 return false;
             }
 
@@ -265,7 +266,6 @@ namespace AtelierMisaka.Views
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
-                    ShowLoading(false);
                     return false;
                 }
                 else if ((bool)_ret.Result)
@@ -276,7 +276,6 @@ namespace AtelierMisaka.Views
                     }
                     if (!GlobalData.VM_MA.IsInitialized)
                     {
-                        ShowLoading(false);
                         return false;
                     }
                 }
@@ -289,7 +288,6 @@ namespace AtelierMisaka.Views
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
-                    ShowLoading(false);
                     return false;
                 }
                 ai = (ArtistInfo)_ret.Result;
@@ -318,14 +316,12 @@ namespace AtelierMisaka.Views
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
-                    ShowLoading(false);
                     return false;
                 }
                 _tempBis = (List<BaseItem>)_ret.Result;
                 if (_tempBis.Count == 0)
                 {
                     await GetCheck(GlobalLanguage.Msg_NoPosts);
-                    ShowLoading(false);
                     return false;
                 }
                 GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
@@ -339,14 +335,12 @@ namespace AtelierMisaka.Views
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
-                    ShowLoading(false);
                     return false;
                 }
                 _tempBis = (List<BaseItem>)_ret.Result;
                 if (_tempBis.Count == 0)
                 {
                     await GetCheck(GlobalLanguage.Msg_NoPosts);
-                    ShowLoading(false);
                     return false;
                 }
                 GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();

@@ -1,9 +1,14 @@
 ﻿using AtelierMisaka.Models;
+using HTMLConverter;
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Media;
+using System.Xml;
 
 namespace AtelierMisaka.Views
 {
@@ -39,54 +44,89 @@ namespace AtelierMisaka.Views
                 }
                 else
                 {
-                    var ts = doms[i].Split(new string[] { "\n" }, StringSplitOptions.None);
-                    foreach (var dis in ts)
+                    if (GlobalData.CurrentSite == SiteType.Patreon)
                     {
-                        var index = dis.IndexOf("http");
-                        if (index != -1)
+                        var ss = HtmlToXamlConverter.ConvertHtmlToXaml(doms[i].Replace("\\n", "<br/>"), true);
+                        var fd = XamlReader.Load(new XmlTextReader(new StringReader(ss))) as FlowDocument;
+                        Paragraph pd = fd.Blocks.FirstBlock as Paragraph;
+                        List<Inline> tli = new List<Inline>();
+                        while (null != pd)
                         {
-                            var i2 = dis.IndexOf(' ', index);
-                            flag = i2 != -1;
-                            if (flag)
+                            try
                             {
-                                link = dis.Substring(index, i2 - index);
+                                foreach (var st in pd.Inlines)
+                                {
+                                    if (st is Hyperlink)
+                                    {
+                                        (st as Hyperlink).Click += Hl_Patreon_Click;
+                                    }
+                                    tli.Add(st);
+                                }
+                                tli.Add(new LineBreak());
+                                pd = pd.NextBlock as Paragraph;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                        }
+                        for (int l = 0; l< tli.Count; l++)
+                        {
+                            MainBody.Inlines.Add(tli[l]);
+                        }
+                    }
+                    
+                    else
+                    {
+                        var ts = doms[i].Split(new string[] { "\n" }, StringSplitOptions.None);
+                        foreach (var dis in ts)
+                        {
+                            var index = dis.IndexOf("http");
+                            if (index != -1)
+                            {
+                                var i2 = dis.IndexOf(' ', index);
+                                flag = i2 != -1;
+                                if (flag)
+                                {
+                                    link = dis.Substring(index, i2 - index);
+                                }
+                                else
+                                {
+                                    link = dis.Substring(index);
+                                }
+                                Hyperlink hl = new Hyperlink(new Run(link))
+                                {
+                                    CommandParameter = link
+                                };
+                                hl.Click += Hl_Click;
+                                if (index != 0)
+                                {
+                                    MainBody.Inlines.Add(new Run(dis.Substring(0, index)));
+                                }
+                                MainBody.Inlines.Add(hl);
+                                if (flag && i2 != dis.Length - 1)
+                                {
+                                    MainBody.Inlines.Add(new Run(dis.Substring(i2)));
+                                }
                             }
                             else
                             {
-                                link = dis.Substring(index);
-                            }
-                            Hyperlink hl = new Hyperlink(new Run(link))
-                            {
-                                CommandParameter = link
-                            };
-                            hl.Click += Hl_Click;
-                            if (index != 0)
-                            {
-                                MainBody.Inlines.Add(new Run(dis.Substring(0, index)));
-                            }
-                            MainBody.Inlines.Add(hl);
-                            if (flag && i2 != dis.Length - 1)
-                            {
-                                MainBody.Inlines.Add(new Run(dis.Substring(i2)));
-                            }
-                        }
-                        else
-                        {
-                            var rr = new Run(dis);
-                            if (dis.Length > 0)
-                            {
-                                if (dis[0] == '$')
+                                var rr = new Run(dis);
+                                if (dis.Length > 0)
                                 {
-                                    rr.FontSize = 30;
+                                    if (dis[0] == '$')
+                                    {
+                                        rr.FontSize = 30;
+                                    }
+                                    else if (dis.StartsWith(_preLink))
+                                    {
+                                        rr.Foreground = Brushes.LightSkyBlue;
+                                    }
                                 }
-                                else if (dis.StartsWith(_preLink))
-                                {
-                                    rr.Foreground = Brushes.LightSkyBlue;
-                                }
+                                MainBody.Inlines.Add(rr);
                             }
-                            MainBody.Inlines.Add(rr);
+                            MainBody.Inlines.Add(new LineBreak());
                         }
-                        MainBody.Inlines.Add(new LineBreak());
                     }
                 }
             }
@@ -168,13 +208,19 @@ namespace AtelierMisaka.Views
             }
         }
 
-        private void AddDownload(object sender, System.Windows.RoutedEventArgs e)
+        private void Hl_Patreon_Click(object sender, RoutedEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            System.Diagnostics.Process.Start(link.NavigateUri.AbsoluteUri);
+        }
+
+        private void AddDownload(object sender, RoutedEventArgs e)
         {
             Hyperlink link = sender as Hyperlink;
             GlobalData.VM_DL.AddCommand.Execute(link.CommandParameter);
         }
 
-        private void Hl_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Hl_Click(object sender, RoutedEventArgs e)
         {
             Hyperlink link = sender as Hyperlink;
             System.Diagnostics.Process.Start((string)link.CommandParameter);
