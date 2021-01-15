@@ -60,6 +60,7 @@ namespace AtelierMisaka.Views
             if (!GlobalData.VM_MA.IsStarted)
             {
                 ShowLoading(true);
+                await Task.Delay(200);
                 if (await Begin())
                 {
                     _tempArt = new ArtistInfo()
