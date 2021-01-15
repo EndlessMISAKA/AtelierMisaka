@@ -14,7 +14,7 @@ namespace AtelierMisaka
     public class PatreonUtils : BaseUtils
     {
         private ChromiumWebBrowser _cwb;
-        private bool _needLogin = false;
+        private string _currentCookie = string.Empty;
         private readonly Regex _cidRegex = GlobalRegex.GetRegex(RegexType.PatreonCid);
         private readonly Regex _emailRegex = GlobalRegex.GetRegex(RegexType.PatreonEmail);
         private readonly Regex _htmlImg = GlobalRegex.GetRegex(RegexType.PatreonHtmlImg);
@@ -48,6 +48,10 @@ namespace AtelierMisaka
                         }
                         return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/home"));
                     }
+                    if (_currentCookie != GlobalData.VM_MA.Cookies)
+                    {
+                        return await Logout();
+                    }
                     return ResultHelper.NoError(false);
                 }
                 CefHelper.Initialize();
@@ -75,6 +79,10 @@ namespace AtelierMisaka
 
         private async Task<ResultMessage> LoginCheck(string htmlc)
         {
+            if (null == _cwb.Address)
+            {
+                return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/home"));
+            }
             if (_cwb.Address.Contains("login"))
             {
                 if (_cwb.Title.StartsWith("view-sou"))
@@ -101,8 +109,17 @@ namespace AtelierMisaka
                     var s = ma.Groups[1].Value;
                     if (s != GlobalData.VM_MA.Cookies)
                     {
-                        GlobalData.VM_MA.Messages = GlobalLanguage.Msg_ErrorCookiesAuto;
+                        if (GlobalData.VM_MA.ShowLogin)
+                        {
+                            GlobalData.VM_MA.Messages = GlobalLanguage.Msg_ErrorCookiesAuto;
+                        }
+                        else
+                        {
+                            await GetWebCode("view-source:https://www.patreon.com/logout?ru=%2Fhome");
+                            return await LoginCheck(await GetWebCode("view-source:https://www.patreon.com/home"));
+                        }
                     }
+                    _currentCookie = s;
                     GlobalData.VM_MA.Cookies = s;
                     GlobalData.VM_MA.IsInitialized = true;
                 }
@@ -114,6 +131,12 @@ namespace AtelierMisaka
                 GlobalData.VM_MA.ShowLogin = false;
                 return ResultHelper.NoError(false);
             }
+        }
+
+        public async Task<ResultMessage> Logout()
+        {
+            await GetWebCode("view-source:https://www.patreon.com/logout?ru=%2Fhome");
+            return await LoginCheck(await GetWebCode("https://www.patreon.com/login?ru=%2Fhome"));
         }
 
         private void Cwb_FrameLoadStart(object sender, FrameLoadStartEventArgs e)
@@ -141,6 +164,7 @@ namespace AtelierMisaka
                         {
                             GlobalData.VM_MA.Messages = GlobalLanguage.Msg_ErrorCookiesAuto;
                         }
+                        _currentCookie = s;
                         GlobalData.VM_MA.Cookies = s;
                         GlobalData.VM_MA.IsInitialized = true;
                     }
@@ -274,7 +298,7 @@ namespace AtelierMisaka
                                 CreateDate = dt,
                                 UpdateDate = dt,
                                 PID = jpp.data[i].id,
-                                Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jpp.data[i].attributes.title)),
+                                Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jpp.data[i].attributes.title)),
                                 IsLiked = jpp.data[i].attributes.current_user_has_liked,
                                 PLink = jpp.data[i].attributes.url
                             };
