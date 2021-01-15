@@ -210,7 +210,7 @@ namespace AtelierMisaka
                     {
                         PID = po.id,
                         Fee = po.feeRequired.ToString(),
-                        Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(po.title)),
+                        Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(po.title)),
                         CoverPic = po.coverImageUrl,
                         CoverPicThumb = po.coverImageUrl,
                         IsLiked = po.isLiked

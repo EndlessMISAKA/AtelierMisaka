@@ -125,6 +125,16 @@ namespace AtelierMisaka
             }
             return path.Trim();
         }
+        
+        public static string RemoveAllDot(string title)
+        {
+            title = title.Replace(".", "");
+            if (title.Length > 80)
+            {
+                title = title.Substring(0, 80);
+            }
+            return title.Trim();
+        }
 
 
 

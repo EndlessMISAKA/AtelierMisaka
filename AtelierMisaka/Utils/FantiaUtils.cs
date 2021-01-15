@@ -252,7 +252,7 @@ namespace AtelierMisaka
                         return false;
                     }
                     fi.FID = jfp.post.id.ToString();
-                    fi.Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title));
+                    fi.Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title));
                     GlobalData.VM_MA.PostTitle = fi.Title;
                     if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
@@ -280,7 +280,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}_{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}_{GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
@@ -395,7 +395,7 @@ namespace AtelierMisaka
                     }
                     
                     fi.FID = jfp.post.id.ToString();
-                    fi.Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title));
+                    fi.Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title));
                     GlobalData.VM_MA.PostTitle = fi.Title;
                     if (!string.IsNullOrEmpty(jfp.post.comment))
                     {
@@ -423,7 +423,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}_{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}_{GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
@@ -522,7 +522,7 @@ namespace AtelierMisaka
                     FantiaItem fi = new FantiaItem()
                     {
                         FID = jfp.post.id.ToString(),
-                        Title = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(jfp.post.title)),
+                        Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title)),
                     };
                     GlobalData.VM_MA.PostTitle = fi.Title;
                     if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
@@ -561,7 +561,7 @@ namespace AtelierMisaka
                         {
                             fee = ct.plan.price;
                         }
-                        var stitle = $"${fee}_{GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(ct.title))}";
+                        var stitle = $"${fee}_{GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(ct.title))}";
                         fi.Comments.Add("------------------------------------------------------------------------------------------");
                         fi.Comments.Add(stitle);
                         fi.Comments.Add(string.Empty);
