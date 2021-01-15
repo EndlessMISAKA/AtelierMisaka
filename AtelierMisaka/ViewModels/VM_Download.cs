@@ -592,10 +592,10 @@ namespace AtelierMisaka.ViewModels
                     }
                     for (int i = 0; i < fi.ContentUrls.Count; i++)
                     {
-                        if (GlobalMethord.OverPayment(int.Parse(fi.Fees[i])))
-                        {
-                            continue;
-                        }
+                        //if (GlobalMethord.OverPayment(int.Parse(fi.Fees[i])))
+                        //{
+                        //    continue;
+                        //}
                         if (!GlobalData.DLLogs.HasLog(fi.ContentUrls[i]))
                         {
                             var nsp = $"{sp}\\{fi.PTitles[i]}";
