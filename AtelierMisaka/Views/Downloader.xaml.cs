@@ -1,4 +1,5 @@
 ﻿using AtelierMisaka.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -113,16 +114,23 @@ namespace AtelierMisaka.Views
                                 }
                                 if (bi.Comments.Count > 0)
                                 {
-                                    var fp = Path.Combine(sp, "Comment.html");
-                                    if (File.Exists(fp))
+                                    try
                                     {
-                                        var cms = File.ReadAllLines(fp);
-                                        if (cms.Except(bi.Comments).Count() == 0)
+                                        var fp = Path.Combine(sp, "Comment.html");
+                                        if (File.Exists(fp))
                                         {
-                                            continue;
+                                            var cms = File.ReadAllLines(fp);
+                                            if (cms.Except(bi.Comments).Count() == 0)
+                                            {
+                                                continue;
+                                            }
                                         }
+                                        File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
                                     }
-                                    File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show(ex.Message + sp);
+                                    }
                                 }
                             }
                         }
@@ -231,16 +239,23 @@ namespace AtelierMisaka.Views
                                 }
                                 if (bi.Comments.Count > 0)
                                 {
-                                    var fp = Path.Combine(sp, "Comment.html");
-                                    if (File.Exists(fp))
+                                    try
                                     {
-                                        var cms = File.ReadAllLines(fp);
-                                        if (cms.Except(bi.Comments).Count() == 0)
+                                        var fp = Path.Combine(sp, "Comment.html");
+                                        if (File.Exists(fp))
                                         {
-                                            continue;
+                                            var cms = File.ReadAllLines(fp);
+                                            if (cms.Except(bi.Comments).Count() == 0)
+                                            {
+                                                continue;
+                                            }
                                         }
+                                        File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
                                     }
-                                    File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show(ex.Message + sp);
+                                    }
                                 }
                             }
                         }
