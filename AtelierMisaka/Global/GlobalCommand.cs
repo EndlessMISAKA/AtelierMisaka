@@ -90,10 +90,11 @@ namespace AtelierMisaka
                         string realurl = webResponse.Headers["Location"];
                         if (!string.IsNullOrEmpty(realurl))
                         {
-                            Match ma = new Regex(@"\d+\.\d+\.\d+$").Match(realurl);
-                            if (ma.Success)
+                            var tem = realurl.Split('/');
+                            var tep = tem[tem.Length - 1];
+                            if (tep.StartsWith("V"))
                             {
-                                GlobalData.VM_MA.LatestVersion = ma.Groups[0].Value;
+                                GlobalData.VM_MA.LatestVersion = tep;
                                 GlobalData.VM_MA.VersionLink = realurl;
                                 return;
                             }
