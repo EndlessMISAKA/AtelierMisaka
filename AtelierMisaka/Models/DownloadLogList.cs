@@ -25,9 +25,12 @@ namespace AtelierMisaka.Models
                 _selectedLogs.Clear();
             }
             var all = _sqlite.GetLogs(cid, st);
-            foreach (var item in all)
+            if (null != all)
             {
-                base.Add(item);
+                foreach (var item in all)
+                {
+                    base.Add(item);
+                }
             }
         }
 
