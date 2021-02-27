@@ -21,6 +21,7 @@ namespace AtelierMisaka
         private static string _regex_FantiaPlan = string.Empty;
         private static string _regex_FantiaPostId = string.Empty;
         private static string _regex_FantiaUrl = string.Empty;
+        private static string _regex_FantiaDataImage = string.Empty;
 
         private static Lazy<Regex> _re_RemoveLastDot = null;
         private static Lazy<Regex> _re_ProxyString = null;
@@ -31,7 +32,7 @@ namespace AtelierMisaka
             {
                 Directory.CreateDirectory("Settings");
             }
-            if (File.Exists("Settings\\RegexStr.ini"))
+            try
             {
                 string[] regexs = File.ReadAllLines("Settings\\RegexStr.ini");
                 _regex_RemoveLastDot = regexs[0];
@@ -49,8 +50,9 @@ namespace AtelierMisaka
                 _regex_FantiaPlan = regexs[9];
                 _regex_FantiaPostId = regexs[10];
                 _regex_FantiaUrl = regexs[11];
+                _regex_FantiaDataImage = regexs[12];
             }
-            else
+            catch
             {
                 _regex_RemoveLastDot = @"\.+$";
                 _regex_ProxyString = @"^\d+\.\d+\.\d+\.\d+:\d+$";
@@ -67,8 +69,9 @@ namespace AtelierMisaka
                 _regex_FantiaPlan = @"\(((\d+\,)?\d+)円/月\)</strong";
                 _regex_FantiaPostId = @"block"" href=""/posts/(\d+)";
                 _regex_FantiaUrl = @"^https://fantia.jp/fanclubs/(\d+)$";
+                _regex_FantiaDataImage = @"^data:image/(\w+);base64,(.+)$";
 
-                File.AppendAllLines("Settings\\RegexStr.ini", new string[] 
+                File.WriteAllLines("Settings\\RegexStr.ini", new string[]
                 {
                     _regex_RemoveLastDot,
                     _regex_ProxyString,
@@ -84,7 +87,8 @@ namespace AtelierMisaka
                     _regex_FantiaIdName,
                     _regex_FantiaPlan,
                     _regex_FantiaPostId,
-                    _regex_FantiaUrl
+                    _regex_FantiaUrl,
+                    _regex_FantiaDataImage
                 });
             }
             _re_RemoveLastDot = new Lazy<Regex>(() => new Regex(_regex_RemoveLastDot));
@@ -119,6 +123,8 @@ namespace AtelierMisaka
                     return new Regex(_regex_FantiaPostId);
                 case RegexType.FantiaUrl:
                     return new Regex(_regex_FantiaUrl);
+                case RegexType.FantiaDataImage:
+                    return new Regex(_regex_FantiaDataImage);
             }
             return null;
         }

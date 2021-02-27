@@ -18,6 +18,7 @@ namespace AtelierMisaka
         readonly Regex _artPlan = GlobalRegex.GetRegex(RegexType.FantiaPlan);
         readonly Regex _artPost = GlobalRegex.GetRegex(RegexType.FantiaPostId);
         readonly Regex _artUrl = GlobalRegex.GetRegex(RegexType.FantiaUrl);
+        readonly Regex _artDataImage = GlobalRegex.GetRegex(RegexType.FantiaDataImage);
         readonly string _nextP = "fa fa-angle-right";
         private HashSet<string> _pidList = null;
 
@@ -235,6 +236,7 @@ namespace AtelierMisaka
             try
             {
                 var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid);  for test
                 if (null != jfp.post)
 				{
                     FantiaItem fi = new FantiaItem();
@@ -337,10 +339,27 @@ namespace AtelierMisaka
                                         else if(ss.Type == JTokenType.Object)
                                         {
                                             string imgUrl = stem.fantiaImage.url;
-                                            var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
-                                            var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                            var fn = $"{stem.fantiaImage.id}{ext}";
-                                            fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                            string fn = string.Empty;
+                                            if (imgUrl.StartsWith("http"))
+                                            {
+                                                var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                                var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                                fn = $"{stem.fantiaImage.id}{ext}";
+                                                fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                            }
+                                            else
+                                            {
+                                                Match ma = _artDataImage.Match(imgUrl);
+                                                if (ma.Success)
+                                                {
+                                                    fn = $"{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                                }
+                                                else
+                                                {
+                                                    throw new Exception("Blog Image Type Error: " + imgUrl);
+                                                }
+                                            }
                                             fi.FileNames.Add(fn);
                                             fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
                                             fi.Fees.Add($"{fee}");
