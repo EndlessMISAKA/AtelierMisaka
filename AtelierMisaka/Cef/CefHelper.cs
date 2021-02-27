@@ -22,8 +22,6 @@ namespace AtelierMisaka
         {
             if (initialized) return;
 
-            CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
-
             var cefSettings = new CefSettings()
             {
                 BrowserSubprocessPath = Path.Combine(cefDirectory, "CefSharp.BrowserSubprocess.exe"),
@@ -31,6 +29,8 @@ namespace AtelierMisaka
             };
             cefSettings.CefCommandLineArgs.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36");
 
+            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+            CefSharpSettings.ShutdownOnExit = true;
             CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
             Cef.Initialize(cefSettings);
             initialized = true;
