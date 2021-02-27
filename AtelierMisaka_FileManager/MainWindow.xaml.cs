@@ -169,6 +169,7 @@ namespace AtelierMisaka_FileManager
                                     return !ss.Equals("Comment.txt") && !ss.Equals("Comment.html");
                                 }).ToList();
                             }
+                            int index = 1;
                             foreach (var fi in fis)
                             {
                                 var tp = Path.GetDirectoryName(fi);
@@ -176,13 +177,13 @@ namespace AtelierMisaka_FileManager
                                 ma = rex.Match(temp);
                                 if (ma.Success)
                                 {
-                                    if (VM_MA.UseTitleStr)
+                                    var tfn = Path.GetExtension(fi);
+                                    var fn = $"{temp.Substring(7).Replace("\\", "_")}_{Path.GetFileName(fi)}";
+                                    newFileName = Path.Combine(VM_MA.SavePath, ma.Groups[1].Value, $"{fn}");
+                                    while (File.Exists(newFileName))
                                     {
-                                        newFileName = Path.Combine(VM_MA.SavePath, ma.Groups[1].Value, $"{temp.Substring(7).Replace("\\", "_")}_{Path.GetFileName(fi)}");
-                                    }
-                                    else
-                                    {
-                                        newFileName = Path.Combine(VM_MA.SavePath, ma.Groups[1].Value, $"{ma.Groups[2].Value}_{Path.GetFileName(fi)}");
+                                        var fn1 = fn.Replace(tfn, $"_{index++}{tfn}");
+                                        newFileName = Path.Combine(VM_MA.SavePath, ma.Groups[1].Value, $"{fn1}");
                                     }
                                     File.Move(fi, newFileName);
                                 }
@@ -199,6 +200,7 @@ namespace AtelierMisaka_FileManager
                                     return !ss.Equals("Comment.txt") && !ss.Equals("Comment.html");
                                 }).ToList();
                             }
+                            int index = 1;
                             foreach (var fi in fis)
                             {
                                 var tp = Path.GetDirectoryName(fi);
@@ -206,13 +208,13 @@ namespace AtelierMisaka_FileManager
                                 ma = rex.Match(temp);
                                 if (ma.Success)
                                 {
-                                    if (VM_MA.UseTitleStr)
+                                    var tfn = Path.GetExtension(fi);
+                                    var fn = $"{temp.Replace("\\", "_")}_{Path.GetFileName(fi)}";
+                                    newFileName = Path.Combine(VM_MA.SavePath, $"{temp.Replace("\\", "_")}_{fn}");
+                                    while (File.Exists(newFileName))
                                     {
-                                        newFileName = Path.Combine(VM_MA.SavePath, $"{temp.Replace("\\", "_")}_{Path.GetFileName(fi)}");
-                                    }
-                                    else
-                                    {
-                                        newFileName = Path.Combine(VM_MA.SavePath, $"{ma.Groups[1].Value}_{ma.Groups[2].Value}_{Path.GetFileName(fi)}");
+                                        var fn1 = fn.Replace(tfn, $"_{index++}{tfn}");
+                                        newFileName = Path.Combine(VM_MA.SavePath, $"{fn1}");
                                     }
                                     File.Move(fi, newFileName);
                                 }
@@ -222,7 +224,7 @@ namespace AtelierMisaka_FileManager
                 }
                 catch (Exception ex)
                 {
-                    await GetCheck(GlobalLanguage.Msg_ErrorIO, ex.Message);
+                    await GetCheck(ex.Message);
                     GlobalData.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace);
                 }
             });

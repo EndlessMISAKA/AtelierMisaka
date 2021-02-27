@@ -56,7 +56,6 @@
         private string _date = string.Empty;
         private string _messages = string.Empty;
         private string _savePath = string.Empty;
-        private bool _useTitleStr = true;
         private bool _useDocumentStr = false;
         private bool _showCheck = false;
         private bool _showLoad = false;
@@ -157,19 +156,6 @@
                 if (_savePath != value)
                 {
                     _savePath = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public bool UseTitleStr
-        {
-            get => _useTitleStr;
-            set
-            {
-                if (_useTitleStr != value)
-                {
-                    _useTitleStr = value;
                     RaisePropertyChanged();
                 }
             }

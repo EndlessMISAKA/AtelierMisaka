@@ -19,14 +19,6 @@
     </Window.Resources>
     <Grid>
         <StackPanel Orientation="Vertical" Width="900" Height="360" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <!--<StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center">
-                <RadioButton Content="Fanbox" Style="{StaticResource RB_Setting}"
-                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static local:SiteType.Fanbox}}"/>
-                <RadioButton Content="Fantia" Style="{StaticResource RB_Setting}"
-                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static local:SiteType.Fantia}}"/>
-                <RadioButton Content="Patreon" Style="{StaticResource RB_Setting}"
-                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static local:SiteType.Patreon}}"/>
-            </StackPanel>-->
             <Grid Height="60">
                 <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_SavePathTag}" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="TextBox_MouseDoubleClick"/>
@@ -54,7 +46,6 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{DynamicResource Text_OtherStr}" Style="{StaticResource TBL_Setting}" Grid.ColumnSpan="2"/>
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
-                    <CheckBox Style="{StaticResource CB_Setting_Small}" Content="{DynamicResource Text_TitleStr}" IsChecked="{Binding UseTitleStr}"/>
                     <CheckBox Style="{StaticResource CB_Setting_Small}" Content="{DynamicResource Text_DocumentStr}" IsChecked="{Binding UseDocumentStr}"/>
                 </StackPanel>
             </Grid>
