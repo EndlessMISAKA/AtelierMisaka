@@ -352,7 +352,7 @@ namespace AtelierMisaka
                                                 Match ma = _artDataImage.Match(imgUrl);
                                                 if (ma.Success)
                                                 {
-                                                    fn = $"{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                    fn = $"dimg:{stem.fantiaImage.id}.{ma.Groups[1].Value}";
                                                     fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
                                                 }
                                                 else
@@ -383,7 +383,7 @@ namespace AtelierMisaka
                     GlobalData.VM_DL.AddFantiaCommand.Execute(fi);
                     do
                     {
-                        System.Threading.Thread.Sleep(1000);
+                        System.Threading.Thread.Sleep(2000);
                     } while (GlobalData.VM_DL.WaitDownloading);
 
                     return true;
@@ -499,10 +499,28 @@ namespace AtelierMisaka
                                         else if (ss.Type == JTokenType.Object)
                                         {
                                             string imgUrl = stem.fantiaImage.url;
-                                            var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
-                                            var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                            var fn = $"{stem.fantiaImage.id}{ext}";
-                                            fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                            string fn = string.Empty;
+                                            if (imgUrl.StartsWith("http"))
+                                            {
+                                                var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                                var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                                fn = $"{stem.fantiaImage.id}{ext}";
+                                                fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                            }
+                                            else
+                                            {
+                                                Match ma = _artDataImage.Match(imgUrl);
+                                                if (ma.Success)
+                                                {
+                                                    fn = $"dimg:{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                                    
+                                                }
+                                                else
+                                                {
+                                                    throw new Exception("Blog Image Type Error: " + imgUrl);
+                                                }
+                                            }
                                             fi.FileNames.Add(fn);
                                             fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
                                             fi.Fees.Add($"{fee}");

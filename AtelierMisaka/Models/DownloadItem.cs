@@ -33,6 +33,7 @@ namespace AtelierMisaka.Models
 
         public BaseItem SourceDocu = null;
         public string AId = string.Empty;
+        public bool IsDataImage = false;
 
         private void ShowSpeed(object state)
         {
@@ -491,7 +492,14 @@ namespace AtelierMisaka.Models
                     }
                     else if (_dlRet == ErrorType.IO)
                     {
-                        ErrorMsg = "HTTP404";
+                        if (IsDataImage)
+                        {
+                            ErrorMsg = "HTTP500";
+                        }
+                        else
+                        {
+                            ErrorMsg = "HTTP404";
+                        }
                         DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
