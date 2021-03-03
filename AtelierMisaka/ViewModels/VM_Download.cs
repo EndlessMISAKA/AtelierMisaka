@@ -35,7 +35,9 @@ namespace AtelierMisaka.ViewModels
         private Dictionary<FantiaItem, HashSet<DownloadItem>> _retryList = null;
 
         private static readonly object lock_Dl = new object();
+        private static readonly object lock_DList = new object();
         private static readonly object lock_Fantia = new object();
+        private readonly DownloadStatus[] dsArr = new DownloadStatus[] { DownloadStatus.Downloading, DownloadStatus.Waiting, DownloadStatus.WriteFile };
 
         public int ThreadCount
         {
@@ -178,7 +180,18 @@ namespace AtelierMisaka.ViewModels
         {
             get
             {
-                return _downLoadList.Count >= _threadCount;
+                int cou = 0;
+                lock (lock_DList)
+                {
+                    for (int i = 0; i < _downLoadList.Count; i++)
+                    {
+                        if (dsArr.Contains(_downLoadList[i].DLStatus))
+                        {
+                            cou++;
+                        }
+                    }
+                }
+                return cou >= _threadCount;
             }
         }
 
@@ -316,6 +329,13 @@ namespace AtelierMisaka.ViewModels
                                     }
                                 }
                             }
+                            if (_dlClients.Count < _threadCount)
+                            {
+                                if (_retryList.Count > 0)
+                                {
+                                    FantiaRetryCommand.Execute(null);
+                                }
+                            }
                         }
                         else
                         {
@@ -404,8 +424,11 @@ namespace AtelierMisaka.ViewModels
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
-                _downLoadList.Remove(di);
-                _completedList.Insert(0, di);
+                lock (lock_DList)
+                {
+                    _downLoadList.Remove(di);
+                    _completedList.Insert(0, di);
+                }
             });
         }
 
@@ -616,6 +639,11 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi,
                                 AId = _tempAI
                             };
+                            if (di.FileName.StartsWith("dimg:"))
+                            {
+                                di.FileName = di.FileName.Substring(5);
+                                di.IsDataImage = true;
+                            }
                             GlobalData.SyContext.Send((dd) =>
                             {
                                 GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
@@ -625,6 +653,10 @@ namespace AtelierMisaka.ViewModels
                     if (!_isDownloading && QuestCommand.CanExecute(null))
                     {
                         QuestCommand.Execute(null);
+                    }
+                    else
+                    {
+                        BeginNextCommand.Execute(null);
                     }
                     if (fi.Comments.Count > 0)
                     {
@@ -677,10 +709,17 @@ namespace AtelierMisaka.ViewModels
                 DownloadItem di = null;
                 foreach (var fi_old in _retryList)
                 {
-                    foreach (var diold in fi_old.Value)
+                    GlobalData.SyContext.Send((dd) =>
                     {
-                        _downLoadList.Remove(diold);
-                    }
+                        HashSet<DownloadItem> dds = (HashSet<DownloadItem>)dd;
+                        lock (lock_DList)
+                        {
+                            foreach (var diold in dds)
+                            {
+                                _downLoadList.Remove(diold);
+                            }
+                        }
+                    }, fi_old.Value);
                     var fi_new = GlobalData.FantiaRetryUtil.GetUrls(fi_old.Key.ID);
                     for (int i = 0; i < fi_new.ContentUrls.Count; i++)
                     {
@@ -734,6 +773,11 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi_new,
                                 AId = _tempAI
                             };
+                            if (di.FileName.StartsWith("dimg:"))
+                            {
+                                di.FileName = di.FileName.Substring(5);
+                                di.IsDataImage = true;
+                            }
                             GlobalData.SyContext.Send((dd) =>
                             {
                                 GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
@@ -743,6 +787,10 @@ namespace AtelierMisaka.ViewModels
                     if (!_isDownloading && QuestCommand.CanExecute(null))
                     {
                         QuestCommand.Execute(null);
+                    }
+                    else
+                    {
+                        BeginNextCommand.Execute(null);
                     }
                 }
             });
@@ -760,11 +808,12 @@ namespace AtelierMisaka.ViewModels
                         {
                             _dlClients.RemoveAll(x => x.Equals(di));
                         }
+                        int cou = 0;
                         for (int i = 0; i < _downLoadList.Count; i++)
                         {
-                            if (_dlClients.Count < _threadCount)
+                            if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
                             {
-                                if (_downLoadList[i].DLStatus == DownloadStatus.Waiting)
+                                if (_dlClients.Count < _threadCount)
                                 {
                                     if (!_dlClients.Contains(_downLoadList[i]))
                                     {
@@ -772,29 +821,47 @@ namespace AtelierMisaka.ViewModels
                                     }
                                     _downLoadList[i].Start();
                                 }
+                                else
+                                {
+                                    cou++;
+                                }
                             }
-                            else
+                            else if (_downLoadList[i].DLStatus == DownloadStatus.Downloading || _downLoadList[i].DLStatus == DownloadStatus.WriteFile)
+                            {
+                                cou++;
+                            }
+                        }
+                        if (cou > 0)
+                        {
+                            return;
+                        }
+
+                        IsDownloading = false;
+                        for (int i = 0; i < _downLoadList.Count; i++)
+                        {
+                            if (_downLoadList[i].DLStatus != DownloadStatus.Error)
                             {
                                 return;
                             }
-                        }
-                        if (_dlClients.Count == 0)
-                        {
-                            IsDownloading = false;
-                            if (_downLoadList.Count == 0)
+                            else if (!_downLoadList[i].ErrorMsg.Contains("HTTP404") && !_downLoadList[i].ErrorMsg.Contains("HTTP500"))
                             {
-                                if (!_isFantia)
+                                if (_retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
                                 {
-                                    GlobalData.VM_MA.Date = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                    GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                                    FantiaRetryCommand.Execute(null);
                                 }
-                                else
-                                {
-                                    if (_retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
-                                    {
-                                        FantiaRetryCommand.Execute(null);
-                                    }
-                                }
+                                return;
+                            }
+                        }
+                        if (!_isFantia)
+                        {
+                            GlobalData.VM_MA.Date = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                            GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                        }
+                        else
+                        {
+                            if (_retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
+                            {
+                                FantiaRetryCommand.Execute(null);
                             }
                         }
                     }
@@ -831,8 +898,11 @@ namespace AtelierMisaka.ViewModels
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
-                _downLoadList.Remove(di);
-                _downLoadList.Insert(0, di);
+                lock (lock_DList)
+                {
+                    _downLoadList.Remove(di);
+                    _downLoadList.Insert(0, di);
+                }
             });
         }
 
@@ -888,9 +958,12 @@ namespace AtelierMisaka.ViewModels
                 }
                 else if (di.DLStatus != DownloadStatus.WriteFile)
                 {
-                    di.DLStatus = DownloadStatus.Waiting;
-                    _downLoadList.Remove(di);
-                    _downLoadList.Insert(0, di);
+                    lock (lock_DList)
+                    {
+                        di.DLStatus = DownloadStatus.Waiting;
+                        _downLoadList.Remove(di);
+                        _downLoadList.Insert(0, di);
+                    }
                 }
             });
         }
@@ -911,8 +984,11 @@ namespace AtelierMisaka.ViewModels
                 {
                     di.DLStatus = DownloadStatus.Cancel;
                 }
-                _downLoadList.Remove(di);
-                _downLoadList.Add(di);
+                lock (lock_DList)
+                {
+                    _downLoadList.Remove(di);
+                    _downLoadList.Add(di);
+                }
             });
         }
 
