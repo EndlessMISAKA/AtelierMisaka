@@ -43,6 +43,7 @@
 
     <sys:String x:Key="Msg_LoadCover">Loading...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">Internet Error&#13;Please try again later</sys:String>
+    <sys:String x:Key="Msg_LogOutMsg">Logout?</sys:String>
 
     <!--#endregion-->
 

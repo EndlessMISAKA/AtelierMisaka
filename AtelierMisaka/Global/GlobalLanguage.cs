@@ -59,6 +59,7 @@ namespace AtelierMisaka
         public static string Msg_DLErrSecu { get; private set; }
         public static string Msg_LoadCov { get; private set; }
         public static string Msg_CoverErr { get; private set; }
+        public static string Msg_Logout { get; private set; }
 
         #endregion
 
@@ -111,6 +112,7 @@ namespace AtelierMisaka
             Msg_DLErrSecu = Application.Current.TryFindResource("Msg_DLErrorSecurity").ToString();
             Msg_LoadCov = Application.Current.TryFindResource("Msg_LoadCover").ToString();
             Msg_CoverErr = Application.Current.TryFindResource("Msg_CoverError").ToString();
+            Msg_Logout = Application.Current.TryFindResource("Msg_LogOutMsg").ToString();
         }
 
         public static void InitializeCulture()

@@ -98,7 +98,7 @@
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="Cookies" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="MouseDoubleClick_Logout"/>
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>

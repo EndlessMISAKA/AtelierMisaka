@@ -43,6 +43,7 @@
 
     <sys:String x:Key="Msg_LoadCover">加载中...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">网络错误，请重试</sys:String>
+    <sys:String x:Key="Msg_LogOutMsg">要注销吗？</sys:String>
 
     <!--#endregion-->
 

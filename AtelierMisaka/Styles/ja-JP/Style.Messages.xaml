@@ -43,6 +43,7 @@
     
     <sys:String x:Key="Msg_LoadCover">ロード中...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">ネットワークエラー&#13;もう一度試してください</sys:String>
+    <sys:String x:Key="Msg_LogOutMsg">ログアウトしますか？</sys:String>
 
     <!--#endregion-->
 

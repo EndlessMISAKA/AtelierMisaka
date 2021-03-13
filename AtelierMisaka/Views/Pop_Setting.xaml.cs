@@ -595,6 +595,40 @@ namespace AtelierMisaka.Views
             }
         }
 
+        private async void MouseDoubleClick_Logout(object sender, MouseButtonEventArgs e)
+        {
+            if (GlobalData.VM_MA.Site == SiteType.Patreon)
+            {
+                if (await GetCheck(GlobalLanguage.Msg_Logout))
+                {
+                    if (GlobalData.CheckResult == false)
+                    {
+                        return;
+                    }
+                }
+                ShowLoading(true);
+                await Task.Delay(100);
+                _utils = GlobalData.CaptureUtil;
+                var _ret = await (_utils as PatreonUtils).InitBrowser();
+                if (_ret.Error != ErrorType.NoError)
+                {
+                    await GetCheck(_ret.Msgs);
+                }
+                else
+                {
+                    if ((bool)_ret.Result)
+                    {
+                        GlobalData.VM_MA.Cookies = string.Empty;
+                    }
+                    else
+                    {
+                        await (_utils as PatreonUtils).Logout();
+                    }
+                }
+                ShowLoading(false);
+            }
+        }
+
         private class OldWindow : System.Windows.Forms.IWin32Window
         {
             IntPtr _handle;
