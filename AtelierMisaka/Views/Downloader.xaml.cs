@@ -77,6 +77,7 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
+                                        di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -93,6 +94,7 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
+                                        di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -109,6 +111,7 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
+                                        di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }
@@ -234,6 +237,7 @@ namespace AtelierMisaka.Views
                                             SourceDocu = bi,
                                             AId = VM_DD.TempAI
                                         };
+                                        di.CheckTempFile();
                                         _downLoadItemList.Add(di);
                                     }
                                 }

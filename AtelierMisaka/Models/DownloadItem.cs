@@ -278,7 +278,6 @@ namespace AtelierMisaka.Models
                 var fs = fi.Open(FileMode.Open);
                 _totalRC = fs.Length;
                 fs.Close();
-                //_totalRC = (new FileInfo(fnt)).Length;
             }
         }
 
@@ -301,7 +300,7 @@ namespace AtelierMisaka.Models
                         {
                             _request.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
                         }
-                        if (null != _dlData)
+                        if (_totalRC != 0)
                         {
                             _request.AddRange("bytes", _totalRC);
                         }
@@ -310,17 +309,21 @@ namespace AtelierMisaka.Models
                         {
                             if (long.TryParse(response.Headers[HttpResponseHeader.ContentLength], out long ll))
                             {
-                                ContentLength = ll;
-                                _dlData = new byte[_contentLength];
+                                if (ll < Int32.MaxValue)
+                                {
+                                    ContentLength = ll;
+                                    _dlData = new byte[_contentLength];
+                                }
+                                else
+                                {
+                                    ContentLength = -1;
+                                }
                             }
                             else
                             {
                                 ContentLength = -1;
                             }
                         }
-                        _fullPath = Path.Combine(_savePath, _fileName);
-                        //using (Stream sm = response.GetResponseStream())
-                        //{
                         Stream sm = response.GetResponseStream();
                         byte[] arra = new byte[1024];
                         int i = sm.Read(arra, 0, arra.Length);
@@ -330,11 +333,11 @@ namespace AtelierMisaka.Models
                             {
                                 Array.Copy(arra, 0, _dlData, _totalRC, i);
                                 Interlocked.Add(ref _totalRC, i);
-                                if (_isStop)
-                                {
-                                    _isStop = false;
-                                    return ErrorType.UnKnown;
-                                }
+                                //if (_isStop)
+                                //{
+                                //    _isStop = false;
+                                //    return ErrorType.UnKnown;
+                                //}
                                 i = sm.Read(arra, 0, arra.Length);
                             }
 
@@ -383,21 +386,21 @@ namespace AtelierMisaka.Models
                                     _fullPath = Path.Combine(_savePath, _fileName);
                                 }
                             }
-                            _fullPath += ".msk";
                             FileStream fs = null;
                             try
                             {
-                                fs = new FileStream(_fullPath, FileMode.Create, FileAccess.ReadWrite);
+                                fs = new FileStream($"{_fullPath}.msk", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                fs.Seek(_totalRC, SeekOrigin.Begin);
                                 while (i > 0)
                                 {
                                     fs.Write(arra, 0, i);
                                     Interlocked.Add(ref _totalRC, i);
-                                    if (_isStop)
-                                    {
-                                        fs.Close();
-                                        _isStop = false;
-                                        return ErrorType.UnKnown;
-                                    }
+                                    //if (_isStop)
+                                    //{
+                                    //    fs.Close();
+                                    //    _isStop = false;
+                                    //    return ErrorType.UnKnown;
+                                    //}
                                     i = sm.Read(arra, 0, arra.Length);
                                 }
                                 fs.Flush();
@@ -405,14 +408,18 @@ namespace AtelierMisaka.Models
                             }
                             catch
                             {
+                                //_isStop = false;
+                                sm.Dispose();
+                                throw;
+                            }
+                            finally
+                            {
                                 if (null != fs)
                                 {
                                     fs.Close();
                                 }
-                                sm.Dispose();
-                                throw;
                             }
-                            File.Move(_fullPath, _fullPath.Substring(0, _fullPath.Length - 4));
+                            File.Move($"{_fullPath}.msk", _fullPath);
                             GlobalData.DLLogs.Add(new DownloadLog()
                             {
                                 CId = AId,
@@ -425,7 +432,6 @@ namespace AtelierMisaka.Models
                             GC.Collect(9);
                         }
                         sm.Dispose();
-                        //}
                         DLStatus = DownloadStatus.Completed;
                         return ErrorType.NoError;
                     }
@@ -472,18 +478,19 @@ namespace AtelierMisaka.Models
                 }
                 else if (_ds == DownloadStatus.Downloading)
                 {
-                    DLStatus = DownloadStatus.Waiting;
+                    _ds = DownloadStatus.Error;
                     _request.Abort();
                     if (_dlRet == ErrorType.Web)
                     {
                         ErrorMsg = GlobalLanguage.Msg_DLErrWeb;
                         if (++_reTryC < 10)
                         {
+                            _ds = DownloadStatus.Waiting;
                             Start();
                         }
                         else
                         {
-                            DLStatus = DownloadStatus.Error;
+                            //DLStatus = DownloadStatus.Error;
                             GlobalData.SyContext.Send((dd) =>
                             {
                                 GlobalData.VM_DL.BeginNextCommand.Execute(dd);
@@ -500,7 +507,7 @@ namespace AtelierMisaka.Models
                         {
                             ErrorMsg = "HTTP404";
                         }
-                        DLStatus = DownloadStatus.Error;
+                        //DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
                             GlobalData.VM_DL.BeginNextCommand.Execute(dd);
@@ -509,7 +516,7 @@ namespace AtelierMisaka.Models
                     else if (_dlRet == ErrorType.UnKnown)
                     {
                         ErrorMsg = "HTTP403";
-                        DLStatus = DownloadStatus.Error;
+                        //DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
                             GlobalData.VM_DL.AddRetryCommand.Execute(dd);
@@ -526,7 +533,7 @@ namespace AtelierMisaka.Models
                         {
                             ErrorMsg = GlobalLanguage.Msg_DLErrSecu;
                         }
-                        DLStatus = DownloadStatus.Error;
+                        //DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
                             GlobalData.VM_DL.BeginNextCommand.Execute(dd);
@@ -540,14 +547,16 @@ namespace AtelierMisaka.Models
         {
             if (_ds == DownloadStatus.Downloading)
             {
-                DLStatus = DownloadStatus.Null;
-                _isStop = true;
-                while (_isStop)
-                {
-                    await Task.Delay(100);
-                }
-                _request.Abort();
                 DLStatus = DownloadStatus.Paused;
+                //_isStop = true;
+                _request.Abort();
+
+                await Task.Delay(100);
+                //while (_isStop)
+                //{
+                //    await Task.Delay(100);
+                //}
+                //DLStatus = DownloadStatus.Paused;
                 return true;
             }
             return false;
@@ -555,16 +564,17 @@ namespace AtelierMisaka.Models
 
         public async Task<bool> Cancel()
         {
-            _isStop = false;
+            //_isStop = false;
             if (_ds == DownloadStatus.Downloading || _ds == DownloadStatus.Error || _ds == DownloadStatus.Paused)
             {
                 DLStatus = DownloadStatus.Cancel;
-                _isStop = true;
-                while (_isStop)
-                {
-                    await Task.Delay(100);
-                }
+                //_isStop = true;
                 _request.Abort();
+                //while (_isStop)
+                //{
+                //    await Task.Delay(100);
+                //}
+                await Task.Delay(100);
 
                 if (_contentLength != -1)
                 {

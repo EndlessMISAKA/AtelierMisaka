@@ -331,7 +331,7 @@ namespace AtelierMisaka.ViewModels
                             }
                             if (_dlClients.Count < _threadCount)
                             {
-                                if (_retryList.Count > 0)
+                                if (_isFantia && _retryList.Count > 0)
                                 {
                                     FantiaRetryCommand.Execute(null);
                                 }
@@ -462,6 +462,7 @@ namespace AtelierMisaka.ViewModels
                                         SourceDocu = bi,
                                         AId = _tempAI
                                     };
+                                    di.CheckTempFile();
                                 }
                                 else
                                 {
@@ -476,6 +477,7 @@ namespace AtelierMisaka.ViewModels
                                             SourceDocu = bi,
                                             AId = _tempAI
                                         };
+                                        di.CheckTempFile();
                                     }
                                     else
                                     {
@@ -488,6 +490,7 @@ namespace AtelierMisaka.ViewModels
                                             SourceDocu = bi,
                                             AId = _tempAI
                                         };
+                                        di.CheckTempFile();
                                     }
                                 }
                                 GlobalData.VM_DL.DownLoadItemList.Add(di);
@@ -514,6 +517,7 @@ namespace AtelierMisaka.ViewModels
                                     SourceDocu = fi,
                                     AId = _tempAI
                                 };
+                                di.CheckTempFile();
                             }
                             else
                             {
@@ -535,6 +539,7 @@ namespace AtelierMisaka.ViewModels
                                     SourceDocu = fi,
                                     AId = _tempAI
                                 };
+                                di.CheckTempFile();
                             }
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
@@ -560,6 +565,7 @@ namespace AtelierMisaka.ViewModels
                                     SourceDocu = bi,
                                     AId = _tempAI
                                 };
+                                di.CheckTempFile();
                             }
                             else
                             {
@@ -572,6 +578,7 @@ namespace AtelierMisaka.ViewModels
                                     SourceDocu = bi,
                                     AId = _tempAI
                                 };
+                                di.CheckTempFile();
                             }
                             GlobalData.VM_DL.DownLoadItemList.Add(di);
                         }
@@ -607,6 +614,7 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi,
                                 AId = _tempAI
                             };
+                            di.CheckTempFile();
                             GlobalData.SyContext.Send((dd) =>
                             {
                                 GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
@@ -639,6 +647,7 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi,
                                 AId = _tempAI
                             };
+                            di.CheckTempFile();
                             if (di.FileName.StartsWith("dimg:"))
                             {
                                 di.FileName = di.FileName.Substring(5);
@@ -743,6 +752,7 @@ namespace AtelierMisaka.ViewModels
                                     SourceDocu = fi_new,
                                     AId = _tempAI
                                 };
+                                di.CheckTempFile();
                                 GlobalData.SyContext.Send((dd) =>
                                 {
                                     GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
@@ -773,6 +783,7 @@ namespace AtelierMisaka.ViewModels
                                 SourceDocu = fi_new,
                                 AId = _tempAI
                             };
+                            di.CheckTempFile();
                             if (di.FileName.StartsWith("dimg:"))
                             {
                                 di.FileName = di.FileName.Substring(5);
@@ -845,7 +856,7 @@ namespace AtelierMisaka.ViewModels
                             }
                             else if (!_downLoadList[i].ErrorMsg.Contains("HTTP404") && !_downLoadList[i].ErrorMsg.Contains("HTTP500"))
                             {
-                                if (_retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
+                                if (_isFantia && _retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
                                 {
                                     FantiaRetryCommand.Execute(null);
                                 }
@@ -961,8 +972,9 @@ namespace AtelierMisaka.ViewModels
                     lock (lock_DList)
                     {
                         di.DLStatus = DownloadStatus.Waiting;
-                        _downLoadList.Remove(di);
-                        _downLoadList.Insert(0, di);
+                        BeginNextCommand.Execute(null);
+                        //_downLoadList.Remove(di);
+                        //_downLoadList.Insert(0, di);
                     }
                 }
             });
