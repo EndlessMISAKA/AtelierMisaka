@@ -88,6 +88,7 @@ namespace AtelierMisaka
                     {
                         var webResponse = webRequest.GetResponse();
                         string realurl = webResponse.Headers["Location"];
+                        webResponse.Close();
                         if (!string.IsNullOrEmpty(realurl))
                         {
                             var tem = realurl.Split('/');

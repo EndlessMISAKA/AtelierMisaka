@@ -30,8 +30,11 @@ namespace AtelierMisaka
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
             System.Threading.Tasks.Task.Run(() =>
             {
-                System.Threading.Thread.Sleep(5000);
-                GlobalCommand.CheckVersionCommand.Execute(null);
+                System.Threading.Thread.Sleep(300000);
+                if (GlobalData.VM_MA.LatestVersion.EndsWith("ck"))
+                {
+                    GlobalCommand.CheckVersionCommand.Execute(null);
+                }
             });
         }
 
