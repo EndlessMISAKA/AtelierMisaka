@@ -36,12 +36,13 @@
                     <Run Text="--"/>
                     <Run Text="{Binding Artist.Id}"/>
                 </TextBlock>
-                <ToggleButton Template="{StaticResource ComboBoxToggleButton}" HorizontalAlignment="Right" MouseEnter="Togb_MouseEnter" MouseLeave="Togb_MouseLeave"
+                <ToggleButton Template="{StaticResource ComboBoxToggleButton}" HorizontalAlignment="Right"
                               x:Name="togb" Focusable="false" ClickMode="Press" Margin="{Binding ElementName=popt, Path=Margin}"
+                              IsChecked="{Binding IsOpen}" MouseEnter="Togb_MouseEnter" MouseLeave="Togb_MouseLeave"
                               Width="{Binding Artist.AName, Converter={StaticResource ntwc}}" Height="{Binding ElementName=popt, Path=Height}"
                               Visibility="{Binding ArtistList.Count, Converter={StaticResource itvc}, Mode=OneWay}"/>
-                <local:PopupEx IsOpen="{Binding ElementName=togb, Path=IsChecked}" Placement="Bottom" x:Name="popup" Width="{Binding ElementName=popt, Path=Width}"
-                       Focusable="True" AllowsTransparency="True" PopupAnimation="Slide" PlacementTarget="{Binding ElementName=popt}" StaysOpen="False">
+                <local:PopupEx IsOpen="{Binding IsOpen}" Placement="Bottom" x:Name="popup" Width="{Binding ElementName=popt, Path=Width}"
+                       Focusable="False" AllowsTransparency="True" PopupAnimation="Slide" PlacementTarget="{Binding ElementName=popt}" StaysOpen="False">
                     <Border x:Name="DropDown" Background="Black" BorderBrush="Gray" BorderThickness="1,0,1,1" SnapsToDevicePixels="True" MaxHeight="205">
                         <Border.Effect>
                             <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="0" Opacity="0.5"/>
@@ -106,11 +107,15 @@
             </Grid>
             <Grid Height="60">
                 <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Proxy}" IsChecked="{Binding UseProxy}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_ProxyTag}" IsEnabled="{Binding UseProxy}" Text="{Binding Proxy, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_ProxyTag}" IsEnabled="{Binding UseProxy}"
+                         Text="{Binding Proxy, UpdateSourceTrigger=PropertyChanged}" Margin="80,10" Width="670"/>
+                <Image Height="40" Width="40" HorizontalAlignment="Right" Margin="20,10" Source="/AtelierMisaka;component/Resources/Status_Cancel.png"
+                       Visibility="{Binding IsProxyError, Converter={StaticResource btvc}}"/>
             </Grid>
             <Grid Height="60">
                 <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Date}" IsChecked="{Binding UseDate}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}" IsEnabled="{Binding UseDate}" Text="{Binding Date}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
+                         IsEnabled="{Binding UseDate}" Text="{Binding Date}" Margin="80,10" Width="670"/>
             </Grid>
             <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="280"/>

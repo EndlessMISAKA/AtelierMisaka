@@ -137,19 +137,19 @@ namespace AtelierMisaka.ViewModels
         private string _cookiesFanbox = string.Empty;
         private string _proxyFanbox = string.Empty;
         private string _savePathFanbox = string.Empty;
-        private bool _useProxyFanbox = true;
+        private bool _useProxyFanbox = false;
 
         private ArtistInfo _artistPatreon = new ArtistInfo();
         private string _cookiesPatreon = string.Empty;
         private string _proxyPatreon = string.Empty;
         private string _savePathPatreon = string.Empty;
-        private bool _useProxyPatreon = true;
+        private bool _useProxyPatreon = false;
 
         private ArtistInfo _artistFantia = new ArtistInfo();
         private string _cookiesFantia = string.Empty;
         private string _proxyFantia = string.Empty;
         private string _savePathFantia = string.Empty;
-        private bool _useProxyFantia = true;
+        private bool _useProxyFantia = false;
 
         private string _date = string.Empty;
         private string _messages = string.Empty;
@@ -167,9 +167,13 @@ namespace AtelierMisaka.ViewModels
         private WebProxy _myProxyFanbox = null;
         private WebProxy _myProxyPatreon = null;
         private WebProxy _myProxyFantia = null;
+        private WebProxy _myProxySystem = null;
+        private string _proxySystem = string.Empty;
 
         private object _patreonBrowser = null;
         private bool _isInitialized = false;
+        private bool _isOpen = false;
+        private bool _isProxyError = false;
 
         private int _postCount = 0;
         private string _postTitle = string.Empty;
@@ -242,6 +246,32 @@ namespace AtelierMisaka.ViewModels
                 if (_isInitialized != value)
                 {
                     _isInitialized = value;
+                }
+            }
+        }
+
+        public bool IsOpen
+        {
+            get => _isOpen;
+            set
+            {
+                if (_isOpen != value)
+                {
+                    _isOpen = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool IsProxyError
+        {
+            get => _isProxyError;
+            set
+            {
+                if (_isProxyError != value)
+                {
+                    _isProxyError = value;
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -598,14 +628,26 @@ namespace AtelierMisaka.ViewModels
         {
             get
             {
+                var res = string.Empty;
                 switch (_site)
                 {
                     case SiteType.Fanbox:
-                        return _proxyFanbox;
+                        res = _proxyFanbox;
+                        break;
                     case SiteType.Fantia:
-                        return _proxyFantia;
+                        res = _proxyFantia;
+                        break;
                     default:
-                        return _proxyPatreon;
+                        res = _proxyPatreon;
+                        break;
+                }
+                if (string.IsNullOrEmpty(res))
+                {
+                    return _proxySystem;
+                }
+                else
+                {
+                    return res;
                 }
             }
             set
@@ -628,6 +670,7 @@ namespace AtelierMisaka.ViewModels
                             {
                                 _myProxyFanbox = null;
                             }
+                            IsProxyError = _myProxyFanbox == null;
                         }
                         break;
                     case SiteType.Fantia:
@@ -646,6 +689,7 @@ namespace AtelierMisaka.ViewModels
                             {
                                 _myProxyFantia = null;
                             }
+                            IsProxyError = _myProxyFantia == null;
                         }
                         break;
                     default:
@@ -664,6 +708,7 @@ namespace AtelierMisaka.ViewModels
                             {
                                 _myProxyPatreon = null;
                             }
+                            IsProxyError = _myProxyPatreon == null;
                         }
                         break;
                 }
@@ -671,10 +716,38 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public string ProxySystem
+        {
+            set
+            {
+                if (_proxySystem != value)
+                {
+                    _proxySystem = value;
+                    if (_regex.IsMatch(_proxySystem))
+                    {
+                        try
+                        {
+                            _myProxySystem = new WebProxy(_proxySystem);
+                        }
+                        catch { _myProxySystem = null; }
+                    }
+                    else
+                    {
+                        _myProxySystem = null;
+                    }
+                    RaisePropertyChanged("Proxy");
+                }
+            }
+        }
+
         public WebProxy MyProxy
         {
             get
             {
+                if (string.IsNullOrEmpty(Proxy) || _isProxyError)
+                {
+                    return _myProxySystem;
+                }
                 switch (_site)
                 {
                     case SiteType.Fanbox:

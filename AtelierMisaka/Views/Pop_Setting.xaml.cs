@@ -251,6 +251,7 @@ namespace AtelierMisaka.Views
                 await GetCheck(GlobalLanguage.Msg_CreateSP);
                 return false;
             }
+            GetSystemProxy();
 
             if (null != GlobalData.DownLP)
             {
@@ -353,6 +354,44 @@ namespace AtelierMisaka.Views
             return true;
         }
 
+        private void GetSystemProxy()
+        {
+            var proxyConfig = new WinHttpCurrentUserIEProxyConfig();
+            Win32Utils.WinHttpGetIEProxyConfigForCurrentUser(ref proxyConfig);
+            if (string.IsNullOrEmpty(proxyConfig.Proxy))
+            {
+                GlobalData.VM_MA.ProxySystem = string.Empty;
+            }
+            else
+            {
+                if (!proxyConfig.Proxy.Contains("="))
+                {
+                    GlobalData.VM_MA.ProxySystem = proxyConfig.Proxy;
+                }
+                else
+                {
+                    var settings = proxyConfig.Proxy.Split(';');
+                    foreach (var setting in settings)
+                    {
+                        var groups = GlobalRegex.ProxyPattern.Match(setting).Groups;
+                        if (groups.Count < 1) continue;
+                        switch (groups["scheme"].Value)
+                        {
+                            case "http":
+                                if (ushort.TryParse(groups["port"].Value, out var httpPort))
+                                {
+                                    GlobalData.VM_MA.ProxySystem = $"{groups["host"].Value}:{httpPort}";
+                                }
+                                return;
+                            default:
+                                break;
+                        }
+                    }
+                    GlobalData.VM_MA.ProxySystem = string.Empty;
+                }
+            }
+        }
+
         private async void Btn_GetList_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
@@ -363,6 +402,7 @@ namespace AtelierMisaka.Views
             ShowLoading(true);
             await Task.Delay(100);
             ResultMessage _ret = null;
+            GetSystemProxy();
             _utils = GlobalData.CaptureUtil;
             if (_utils is PatreonUtils)
             {

@@ -132,6 +132,7 @@
     <Compile Include="Utils\SQLiteCLastDateHelper.cs" />
     <Compile Include="Utils\SQLiteConnectionFactory.cs" />
     <Compile Include="Utils\SQLiteDownloadLogHelper.cs" />
+    <Compile Include="Utils\Win32Utils.cs" />
     <Compile Include="ViewModels\NotifyModel.cs" />
     <Compile Include="ViewModels\VM_Download.cs" />
     <Compile Include="ViewModels\VM_Main.cs" />

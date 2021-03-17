@@ -26,6 +26,8 @@ namespace AtelierMisaka
         private static Lazy<Regex> _re_RemoveLastDot = null;
         private static Lazy<Regex> _re_ProxyString = null;
 
+        public static Regex ProxyPattern = new Regex("(?<scheme>http|https|ftp|socks)=(?<host>[^:]*)(:(?<port>\\d+))?", RegexOptions.Singleline | RegexOptions.Compiled);
+
         public static void Initialize()
         {
             if (!Directory.Exists("Settings"))
@@ -91,8 +93,8 @@ namespace AtelierMisaka
                     _regex_FantiaDataImage
                 });
             }
-            _re_RemoveLastDot = new Lazy<Regex>(() => new Regex(_regex_RemoveLastDot));
-            _re_ProxyString = new Lazy<Regex>(() => new Regex(_regex_ProxyString));
+            _re_RemoveLastDot = new Lazy<Regex>(() => new Regex(_regex_RemoveLastDot, RegexOptions.Compiled));
+            _re_ProxyString = new Lazy<Regex>(() => new Regex(_regex_ProxyString, RegexOptions.Compiled));
         }
 
         public static Regex GetRegex(RegexType rt)
@@ -104,27 +106,27 @@ namespace AtelierMisaka
                 case RegexType.ProxyString:
                     return _re_ProxyString.Value;
                 case RegexType.PatreonCid:
-                    return new Regex(_regex_PatreonCid);
+                    return new Regex(_regex_PatreonCid, RegexOptions.Compiled);
                 case RegexType.PatreonEmail:
-                    return new Regex(_regex_PatreonEmail);
+                    return new Regex(_regex_PatreonEmail, RegexOptions.Compiled);
                 case RegexType.PatreonHtmlImg:
-                    return new Regex(_regex_PatreonHtmlImg);
+                    return new Regex(_regex_PatreonHtmlImg, RegexOptions.Compiled);
                 case RegexType.FanboxUrl1:
-                    return new Regex(_regex_FanboxUrl1);
+                    return new Regex(_regex_FanboxUrl1, RegexOptions.Compiled);
                 case RegexType.FanboxUrl2:
-                    return new Regex(_regex_FanboxUrl2);
+                    return new Regex(_regex_FanboxUrl2, RegexOptions.Compiled);
                 case RegexType.FanboxCSRF:
-                    return new Regex(_regex_FanboxCSRF);
+                    return new Regex(_regex_FanboxCSRF, RegexOptions.Compiled);
                 case RegexType.FantiaIdName:
-                    return new Regex(_regex_FantiaIdName);
+                    return new Regex(_regex_FantiaIdName, RegexOptions.Compiled);
                 case RegexType.FantiaPlan:
-                    return new Regex(_regex_FantiaPlan);
+                    return new Regex(_regex_FantiaPlan, RegexOptions.Compiled);
                 case RegexType.FantiaPostId:
-                    return new Regex(_regex_FantiaPostId);
+                    return new Regex(_regex_FantiaPostId, RegexOptions.Compiled);
                 case RegexType.FantiaUrl:
-                    return new Regex(_regex_FantiaUrl);
+                    return new Regex(_regex_FantiaUrl, RegexOptions.Compiled);
                 case RegexType.FantiaDataImage:
-                    return new Regex(_regex_FantiaDataImage);
+                    return new Regex(_regex_FantiaDataImage, RegexOptions.Compiled);
             }
             return null;
         }
