@@ -28,6 +28,11 @@ namespace AtelierMisaka
             GlobalCommand.BackCommand.Execute(BackType.Main);
             GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                System.Threading.Thread.Sleep(5000);
+                GlobalCommand.CheckVersionCommand.Execute(null);
+            });
         }
 
         #region TitleButton
@@ -44,21 +49,37 @@ namespace AtelierMisaka
 
         private void CloseWindow(object sender, ExecutedRoutedEventArgs e)
         {
+            if (GlobalData.VM_MA.IsOpen)
+            {
+                GlobalData.VM_MA.IsOpen = false;
+            }
             GlobalCommand.ExitCommand.Execute(null);
         }
 
         private void MaximizeWindow(object sender, ExecutedRoutedEventArgs e)
         {
+            if (GlobalData.VM_MA.IsOpen)
+            {
+                GlobalData.VM_MA.IsOpen = false;
+            }
             SystemCommands.MaximizeWindow(this);
         }
 
         private void MinimizeWindow(object sender, ExecutedRoutedEventArgs e)
         {
+            if (GlobalData.VM_MA.IsOpen)
+            {
+                GlobalData.VM_MA.IsOpen = false;
+            }
             SystemCommands.MinimizeWindow(this);
         }
 
         private void RestoreWindow(object sender, ExecutedRoutedEventArgs e)
         {
+            if (GlobalData.VM_MA.IsOpen)
+            {
+                GlobalData.VM_MA.IsOpen = false;
+            }
             SystemCommands.RestoreWindow(this);
         }
 
