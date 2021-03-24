@@ -222,6 +222,10 @@ namespace AtelierMisaka
                     ais.AddRange(tais);
                     return ResultHelper.NoError(ais);
                 }
+                if (ss == "{\"data\":[]}")
+                {
+                    return ResultHelper.NoError(new List<ArtistInfo>());
+                }
                 return ResultHelper.IOError();
             }
             catch (Exception ex)
