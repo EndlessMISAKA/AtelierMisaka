@@ -236,7 +236,7 @@ namespace AtelierMisaka
             try
             {
                 var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
-                //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid);  for test
+                //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid); //for test
                 if (null != jfp.post)
 				{
                     FantiaItem fi = new FantiaItem();
@@ -338,32 +338,39 @@ namespace AtelierMisaka
                                         }
                                         else if(ss.Type == JTokenType.Object)
                                         {
-                                            string imgUrl = stem.fantiaImage.url;
-                                            string fn = string.Empty;
-                                            if (imgUrl.StartsWith("http"))
+                                            if (null == stem.fantiaImage)
                                             {
-                                                var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
-                                                var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                                fn = $"{stem.fantiaImage.id}{ext}";
-                                                fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                                fi.Comments.Add(stem.ToString());
                                             }
                                             else
                                             {
-                                                Match ma = _artDataImage.Match(imgUrl);
-                                                if (ma.Success)
+                                                string imgUrl = stem.fantiaImage.url;
+                                                string fn = string.Empty;
+                                                if (imgUrl.StartsWith("http"))
                                                 {
-                                                    fn = $"dimg:{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                                    fn = $"{stem.fantiaImage.id}{ext}";
                                                     fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
                                                 }
                                                 else
                                                 {
-                                                    throw new Exception("Blog Image Type Error: " + imgUrl);
+                                                    Match ma = _artDataImage.Match(imgUrl);
+                                                    if (ma.Success)
+                                                    {
+                                                        fn = $"dimg:{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                        fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                                    }
+                                                    else
+                                                    {
+                                                        throw new Exception("Blog Image Type Error: " + imgUrl);
+                                                    }
                                                 }
+                                                fi.FileNames.Add(fn);
+                                                fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
+                                                fi.Fees.Add($"{fee}");
+                                                fi.PTitles.Add(stitle);
                                             }
-                                            fi.FileNames.Add(fn);
-                                            fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
-                                            fi.Fees.Add($"{fee}");
-                                            fi.PTitles.Add(stitle);
                                         }
                                         else
                                         {

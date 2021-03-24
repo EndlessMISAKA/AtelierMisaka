@@ -28,6 +28,12 @@ namespace AtelierMisaka
             GlobalCommand.BackCommand.Execute(BackType.Main);
             GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
+
+            //for fantia test
+            //FantiaUtils fu = new FantiaUtils();
+            //GlobalData.DownLP = new Views.Downloader(new System.Collections.Generic.List<Models.BaseItem>());
+            //fu.GetUrls(System.IO.File.ReadAllText("1.txt"), new System.Collections.Generic.List<Models.BaseItem>());
+
             System.Threading.Tasks.Task.Run(() =>
             {
                 System.Threading.Thread.Sleep(300000);
