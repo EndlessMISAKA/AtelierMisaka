@@ -261,9 +261,13 @@ namespace AtelierMisaka
                 while (true)
                 {
                     var jpp = JsonConvert.DeserializeObject<JsonData_Patreon_Post>(ss);
-                    if (null != jpp.data && null != jpp.included && null != jpp.meta)
+                    if (null != jpp.data && null != jpp.meta)
                     {
-                        var incll = jpp.included.ToList();
+                        List<Included> incll = new List<Included>();
+                        if (null != jpp.included)
+                        {
+                            incll = jpp.included.ToList();
+                        }
                         for (int i = 0; i < jpp.data.Length; i++)
                         {
                             if (DateTime.TryParse(jpp.data[i].attributes.published_at, out DateTime dt))
@@ -350,6 +354,7 @@ namespace AtelierMisaka
                         }
                         return ResultHelper.NoError(pis);
                     }
+                    GlobalMethord.ErrorLog("Json Error" + Environment.NewLine + ss + Environment.NewLine + "-----------------------------------------------");
                     return ResultHelper.IOError();
                 }
             }
