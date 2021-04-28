@@ -309,14 +309,14 @@ namespace AtelierMisaka.Models
                         {
                             if (long.TryParse(response.Headers[HttpResponseHeader.ContentLength], out long ll))
                             {
+                                ContentLength = ll;
                                 if (ll < Int32.MaxValue)
                                 {
-                                    ContentLength = ll;
                                     _dlData = new byte[_contentLength];
                                 }
                                 else
                                 {
-                                    ContentLength = -1;
+                                    _dlData = null;
                                 }
                             }
                             else
@@ -327,17 +327,12 @@ namespace AtelierMisaka.Models
                         Stream sm = response.GetResponseStream();
                         byte[] arra = new byte[1024];
                         int i = sm.Read(arra, 0, arra.Length);
-                        if (_contentLength != -1)
+                        if (_dlData != null)
                         {
                             while (i > 0)
                             {
                                 Array.Copy(arra, 0, _dlData, _totalRC, i);
                                 Interlocked.Add(ref _totalRC, i);
-                                //if (_isStop)
-                                //{
-                                //    _isStop = false;
-                                //    return ErrorType.UnKnown;
-                                //}
                                 i = sm.Read(arra, 0, arra.Length);
                             }
 
@@ -387,36 +382,61 @@ namespace AtelierMisaka.Models
                                 }
                             }
                             FileStream fs = null;
-                            try
+                            if (_contentLength != -1)
                             {
-                                fs = new FileStream($"{_fullPath}.msk", FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                                fs.Seek(_totalRC, SeekOrigin.Begin);
-                                while (i > 0)
+                                try
                                 {
-                                    fs.Write(arra, 0, i);
-                                    Interlocked.Add(ref _totalRC, i);
-                                    //if (_isStop)
-                                    //{
-                                    //    fs.Close();
-                                    //    _isStop = false;
-                                    //    return ErrorType.UnKnown;
-                                    //}
-                                    i = sm.Read(arra, 0, arra.Length);
-                                }
-                                fs.Flush();
-                                fs.Close();
-                            }
-                            catch
-                            {
-                                //_isStop = false;
-                                sm.Dispose();
-                                throw;
-                            }
-                            finally
-                            {
-                                if (null != fs)
-                                {
+                                    fs = new FileStream($"{_fullPath}.msk", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                    fs.Seek(_totalRC, SeekOrigin.Begin);
+                                    while (i > 0)
+                                    {
+                                        fs.Write(arra, 0, i);
+                                        Interlocked.Add(ref _totalRC, i);
+                                        i = sm.Read(arra, 0, arra.Length);
+                                    }
+                                    fs.Flush();
                                     fs.Close();
+                                }
+                                catch
+                                {
+                                    sm.Dispose();
+                                    throw;
+                                }
+                                finally
+                                {
+                                    if (null != fs)
+                                    {
+                                        fs.Close();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    _totalRC = 0;
+                                    _receviedCount = 0;
+                                    fs = new FileStream($"{_fullPath}.msk", FileMode.Create, FileAccess.ReadWrite);
+                                    while (i > 0)
+                                    {
+                                        fs.Write(arra, 0, i);
+                                        Interlocked.Add(ref _totalRC, i);
+                                        i = sm.Read(arra, 0, arra.Length);
+                                    }
+                                    fs.Flush();
+                                    fs.Close();
+                                }
+                                catch
+                                {
+                                    sm.Dispose();
+                                    throw;
+                                }
+                                finally
+                                {
+                                    if (null != fs)
+                                    {
+                                        fs.Close();
+                                    }
                                 }
                             }
                             File.Move($"{_fullPath}.msk", _fullPath);
@@ -478,19 +498,18 @@ namespace AtelierMisaka.Models
                 }
                 else if (_ds == DownloadStatus.Downloading)
                 {
-                    _ds = DownloadStatus.Error;
+                    DLStatus = DownloadStatus.Error;
                     _request.Abort();
                     if (_dlRet == ErrorType.Web)
                     {
                         ErrorMsg = GlobalLanguage.Msg_DLErrWeb;
                         if (++_reTryC < 10)
                         {
-                            _ds = DownloadStatus.Waiting;
+                            DLStatus = DownloadStatus.Waiting;
                             Start();
                         }
                         else
                         {
-                            //DLStatus = DownloadStatus.Error;
                             GlobalData.SyContext.Send((dd) =>
                             {
                                 GlobalData.VM_DL.BeginNextCommand.Execute(dd);
@@ -507,7 +526,6 @@ namespace AtelierMisaka.Models
                         {
                             ErrorMsg = "HTTP404";
                         }
-                        //DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
                             GlobalData.VM_DL.BeginNextCommand.Execute(dd);
@@ -516,7 +534,6 @@ namespace AtelierMisaka.Models
                     else if (_dlRet == ErrorType.UnKnown)
                     {
                         ErrorMsg = "HTTP403";
-                        //DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
                             GlobalData.VM_DL.AddRetryCommand.Execute(dd);
@@ -533,7 +550,6 @@ namespace AtelierMisaka.Models
                         {
                             ErrorMsg = GlobalLanguage.Msg_DLErrSecu;
                         }
-                        //DLStatus = DownloadStatus.Error;
                         GlobalData.SyContext.Send((dd) =>
                         {
                             GlobalData.VM_DL.BeginNextCommand.Execute(dd);
