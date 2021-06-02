@@ -356,7 +356,7 @@ namespace AtelierMisaka.Models
                             {
                                 CId = AId,
                                 PId = SourceDocu.ID,
-                                Url = _link.Split('?').First(),
+                                Url = _link.Split('?').FirstOrDefault(),
                                 SavePath = _savePath,
                                 FileName = _fileName,
                                 Site = GlobalData.VM_DL.TempSite
@@ -444,7 +444,7 @@ namespace AtelierMisaka.Models
                             {
                                 CId = AId,
                                 PId = SourceDocu.ID,
-                                Url = _link.Split('?').First(),
+                                Url = _link.Split('?').FirstOrDefault(),
                                 SavePath = _savePath,
                                 FileName = _fileName,
                                 Site = GlobalData.VM_DL.TempSite
@@ -624,7 +624,7 @@ namespace AtelierMisaka.Models
             }
             else if (obj is DownloadItem di)
             {
-                return di.Link == _link;
+                return di.Link.Split('?').FirstOrDefault() == _link.Split('?').FirstOrDefault();
             }
             else
             {

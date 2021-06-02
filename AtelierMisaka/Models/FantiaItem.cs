@@ -64,5 +64,23 @@ namespace AtelierMisaka.Models
                 }
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null)
+            {
+                return false;
+            }
+            else if (obj is FantiaItem fi)
+            {
+                return fi.ID == this.ID;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

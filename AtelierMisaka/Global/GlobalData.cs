@@ -2,6 +2,7 @@
 using AtelierMisaka.ViewModels;
 using AtelierMisaka.Views;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace AtelierMisaka
@@ -24,6 +25,8 @@ namespace AtelierMisaka
 
         public static Pop_Setting Pop_Setting = null;
         public static Pop_Document Pop_Document = null;
+
+        public static Dictionary<string, int> RetryCounter = new Dictionary<string, int>();
 
         private static Lazy<FanboxUtils> _utilFanbox = new Lazy<FanboxUtils>();
         private static Lazy<FantiaUtils> _utilFantia = new Lazy<FantiaUtils>();

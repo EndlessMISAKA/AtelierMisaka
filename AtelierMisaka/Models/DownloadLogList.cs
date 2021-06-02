@@ -39,9 +39,9 @@ namespace AtelierMisaka.Models
             if (_pid != pid)
             {
                 _pid = pid;
-                _selectedLogs = base.FindAll(x => x.PId == _pid);
-                IsExist = _selectedLogs.Count > 0;
             }
+            _selectedLogs = base.FindAll(x => x.PId == _pid);
+            IsExist = _selectedLogs.Count > 0;
         }
 
         public bool HasLog(string link)

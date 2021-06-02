@@ -32,7 +32,7 @@ namespace AtelierMisaka.ViewModels
         private IList<DownloadItem> _downLoadList = null;
         private IList<DownloadItem> _completedList = null;
 
-        private Dictionary<FantiaItem, HashSet<DownloadItem>> _retryList = null;
+        private HashSet<string> _retryList = null;
 
         private static readonly object lock_Dl = new object();
         private static readonly object lock_DList = new object();
@@ -231,7 +231,7 @@ namespace AtelierMisaka.ViewModels
                     _isFantia = value;
                     if (_isFantia)
                     {
-                        _retryList = new Dictionary<FantiaItem, HashSet<DownloadItem>>();
+                        _retryList = new HashSet<string>();
                     }
                 }
             }
@@ -329,18 +329,29 @@ namespace AtelierMisaka.ViewModels
                                     }
                                 }
                             }
-                            if (_dlClients.Count < _threadCount)
-                            {
-                                if (_isFantia && _retryList.Count > 0)
-                                {
-                                    FantiaRetryCommand.Execute(null);
-                                }
-                            }
                         }
                         else
                         {
                             _dlClients.ForEach(x => x.Pause());
                             _dlClients.Clear();
+                        }
+                    }
+                    if (_isDownloading)
+                    {
+                        var dl = _downLoadList.ToList();
+                        if (dl.FindIndex(x => x.DLStatus != DownloadStatus.Cancel) == -1)
+                        {
+                            IsDownloading = false;
+                            if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+                            {
+                                GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                            }
+                            else
+                            {
+                                GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
+                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
+                            }
                         }
                     }
                 });
@@ -623,10 +634,10 @@ namespace AtelierMisaka.ViewModels
                     }
                     for (int i = 0; i < fi.ContentUrls.Count; i++)
                     {
-                        //if (GlobalMethord.OverPayment(int.Parse(fi.Fees[i])))
-                        //{
-                        //    continue;
-                        //}
+                        if (GlobalMethord.OverPayment(int.Parse(fi.Fees[i])))
+                        {
+                            continue;
+                        }
                         if (!GlobalData.DLLogs.HasLog(fi.ContentUrls[i]))
                         {
                             var nsp = $"{sp}\\{fi.PTitles[i]}";
@@ -692,15 +703,7 @@ namespace AtelierMisaka.ViewModels
                 {
                     lock (lock_Fantia)
                     {
-                        FantiaItem fi = (FantiaItem)di.SourceDocu;
-                        if (_retryList.ContainsKey(fi))
-                        {
-                            _retryList[fi].Add(di);
-                        }
-                        else
-                        {
-                            _retryList.Add(fi, new HashSet<DownloadItem>() { di });
-                        }
+                        _retryList.Add(di.SourceDocu.ID);
                     }
                 }
 
@@ -709,90 +712,73 @@ namespace AtelierMisaka.ViewModels
 
         public CommonCommand FantiaRetryCommand
         {
-            get => new CommonCommand(() =>
+            get => new CommonCommand(async () =>
             {
-                if (!_isFantia)
+                string[] tar = _retryList.ToArray();
+                _retryList.Clear();
+                var dler = _downLoadList.ToList();
+                foreach (var fi_old in tar)
                 {
-                    return;
-                }
-                DownloadItem di = null;
-                foreach (var fi_old in _retryList)
-                {
-                    GlobalData.SyContext.Send((dd) =>
+                    var fi_new = await GlobalData.FantiaRetryUtil.GetUrls(fi_old);
+                    GlobalData.DLLogs.SetPId(fi_new.ID);
+                    if (!string.IsNullOrEmpty(fi_new.CoverPic))
                     {
-                        HashSet<DownloadItem> dds = (HashSet<DownloadItem>)dd;
-                        lock (lock_DList)
+                        if (!GlobalData.DLLogs.HasLog(fi_new.CoverPic))
                         {
-                            foreach (var diold in dds)
+                            var keys = fi_new.CoverPic.Split('?').FirstOrDefault();
+                            if (GlobalData.RetryCounter.ContainsKey(keys))
                             {
-                                _downLoadList.Remove(diold);
+                                GlobalData.RetryCounter[keys]++;
+                            }
+                            else
+                            {
+                                GlobalData.RetryCounter.Add(keys, 1);
+                            }
+                            var dtar = dler.Find(x => x.Link.Contains(keys));
+                            dtar.Link = fi_new.CoverPic;
+                            dtar.SourceDocu = fi_new;
+                            dtar.CheckTempFile();
+                            if (GlobalData.RetryCounter[keys] < 15)
+                            {
+                                dtar.DLStatus = DownloadStatus.Waiting;
+                            }
+                            else
+                            {
+                                dtar.ErrorMsg = "HTTP403";
+                                dtar.DLStatus = DownloadStatus.Cancel;
                             }
                         }
-                    }, fi_old.Value);
-                    var fi_new = GlobalData.FantiaRetryUtil.GetUrls(fi_old.Key.ID);
+                    }
                     for (int i = 0; i < fi_new.ContentUrls.Count; i++)
                     {
-                        string sp = $"{_savePath}\\{GlobalData.VM_MA.Artist.AName}\\{fi_new.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{fi_new.Title}";
-                        Directory.CreateDirectory(sp);
-                        if (!Directory.Exists(sp))
-                        {
-                            sp = GlobalMethord.ReplacePath(sp);
-                            Directory.CreateDirectory(sp);
-                        }
-                        GlobalData.DLLogs.SetPId(fi_new.ID);
-                        if (!string.IsNullOrEmpty(fi_new.CoverPic))
-                        {
-                            if (!GlobalData.DLLogs.HasLog(fi_new.CoverPic))
-                            {
-                                di = new DownloadItem
-                                {
-                                    FileName = fi_new.CoverPicName,
-                                    Link = fi_new.CoverPic,
-                                    SavePath = sp,
-                                    SourceDocu = fi_new,
-                                    AId = _tempAI
-                                };
-                                di.CheckTempFile();
-                                GlobalData.SyContext.Send((dd) =>
-                                {
-                                    GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
-                                }, di);
-                            }
-                        }
                         if (GlobalMethord.OverPayment(int.Parse(fi_new.Fees[i])))
                         {
                             continue;
                         }
                         if (!GlobalData.DLLogs.HasLog(fi_new.ContentUrls[i]))
                         {
-                            var nsp = $"{sp}\\{fi_new.PTitles[i]}";
-                            if (!Directory.Exists(nsp))
+                            var keys = fi_new.ContentUrls[i].Split('?').FirstOrDefault();
+                            if (GlobalData.RetryCounter.ContainsKey(keys))
                             {
-                                Directory.CreateDirectory(nsp);
-                                if (!Directory.Exists(nsp))
-                                {
-                                    sp = GlobalMethord.ReplacePath(nsp);
-                                    Directory.CreateDirectory(nsp);
-                                }
+                                GlobalData.RetryCounter[keys]++;
                             }
-                            di = new DownloadItem
+                            else
                             {
-                                FileName = fi_new.FileNames[i],
-                                Link = fi_new.ContentUrls[i],
-                                SavePath = nsp,
-                                SourceDocu = fi_new,
-                                AId = _tempAI
-                            };
-                            di.CheckTempFile();
-                            if (di.FileName.StartsWith("dimg:"))
-                            {
-                                di.FileName = di.FileName.Substring(5);
-                                di.IsDataImage = true;
+                                GlobalData.RetryCounter.Add(keys, 1);
                             }
-                            GlobalData.SyContext.Send((dd) =>
+                            var dtar = dler.Find(x => x.Link.Contains(keys));
+                            dtar.Link = fi_new.ContentUrls[i];
+                            dtar.SourceDocu = fi_new;
+                            dtar.CheckTempFile();
+                            if (GlobalData.RetryCounter[keys] < 15)
                             {
-                                GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
-                            }, di);
+                                dtar.DLStatus = DownloadStatus.Waiting;
+                            }
+                            else
+                            {
+                                dtar.ErrorMsg = "HTTP403";
+                                dtar.DLStatus = DownloadStatus.Cancel;
+                            }
                         }
                     }
                     if (!_isDownloading && QuestCommand.CanExecute(null))
@@ -846,33 +832,54 @@ namespace AtelierMisaka.ViewModels
                         {
                             return;
                         }
+                    }
 
-                        IsDownloading = false;
-                        for (int i = 0; i < _downLoadList.Count; i++)
+                    IsDownloading = false;
+                    for (int i = 0; i < _downLoadList.Count; i++)
+                    {
+                        if (_downLoadList[i].DLStatus != DownloadStatus.Error)
                         {
-                            if (_downLoadList[i].DLStatus != DownloadStatus.Error)
-                            {
-                                return;
-                            }
-                            else if (!_downLoadList[i].ErrorMsg.Contains("HTTP404") && !_downLoadList[i].ErrorMsg.Contains("HTTP500"))
-                            {
-                                if (_isFantia && _retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
-                                {
-                                    FantiaRetryCommand.Execute(null);
-                                }
-                                return;
-                            }
+                            return;
                         }
-                        if (!_isFantia)
+                        else if (!_downLoadList[i].ErrorMsg.Contains("HTTP404") && !_downLoadList[i].ErrorMsg.Contains("HTTP500"))
                         {
-                            GlobalData.VM_MA.Date = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                            if (_isFantia && _retryList.Count != 0)
+                            {
+                                FantiaRetryCommand.Execute(null);
+                            }
+                            return;
+                        }
+                    }
+                    if (!_isFantia)
+                    {
+                        if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+                        {
+                            GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
                             GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
                         }
                         else
                         {
-                            if (_retryList.Count != 0 && GlobalData.VM_MA.IsStarted)
+                            GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
+                            GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
+                        }
+                    }
+                    else
+                    {
+                        if (_retryList.Count != 0)
+                        {
+                            FantiaRetryCommand.Execute(null);
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
                             {
-                                FantiaRetryCommand.Execute(null);
+                                GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+                            }
+                            else
+                            {
+                                GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
+                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
                             }
                         }
                     }
