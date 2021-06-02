@@ -151,7 +151,8 @@ namespace AtelierMisaka.ViewModels
         private string _savePathFantia = string.Empty;
         private bool _useProxyFantia = false;
 
-        private string _date = string.Empty;
+        private string _dateS = string.Empty;
+        private string _dateE = string.Empty;
         private string _messages = string.Empty;
         private bool _useDate = false;
         private bool _showCheck = false;
@@ -181,6 +182,7 @@ namespace AtelierMisaka.ViewModels
         private string _latestVer = "Check";
 
         public DateTime LastDate = DateTime.Parse("2010/01/01");
+        public DateTime LastDate_End = DateTime.Now;
 
         public string CurrVersion { get; } = System.Windows.Application.ResourceAssembly.GetName().Version.ToString();
 
@@ -352,6 +354,16 @@ namespace AtelierMisaka.ViewModels
                     }
                     RaisePropertyChanged();
                     RaisePropertyChanged("HasSelected");
+                    if (GlobalData.LastDateDic.TryGetValue(GlobalData.VM_MA.Site, value.Id, out DateTime dt))
+                    {
+                        Date_Start = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                        UseDate = true;
+                    }
+                    else
+                    {
+                        Date_Start = string.Empty;
+                        UseDate = false;
+                    }
                 }
             }
         }
@@ -600,24 +612,48 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
-        public string Date
+        public string Date_Start
         {
-            get => _date;
+            get => _dateS;
             set
             {
-                if (_date != value)
+                if (_dateS != value)
                 {
-                    _date = value;
+                    _dateS = value;
                     RaisePropertyChanged();
-                    if (string.IsNullOrEmpty(_date))
+                    if (string.IsNullOrEmpty(_dateS))
                     {
                         LastDate = DateTime.Parse("2010/01/01");
                     }
                     else
                     {
-                        if (DateTime.TryParse(_date, out DateTime dt))
+                        if (DateTime.TryParse(_dateS, out DateTime dt))
                         {
                             LastDate = dt;
+                        }
+                    }
+                }
+            }
+        }
+
+        public string Date_End
+        {
+            get => _dateE;
+            set
+            {
+                if (_dateE != value)
+                {
+                    _dateE = value;
+                    RaisePropertyChanged();
+                    if (string.IsNullOrEmpty(_dateE))
+                    {
+                        LastDate_End = DateTime.Now;
+                    }
+                    else
+                    {
+                        if (DateTime.TryParse(_dateE, out DateTime dt))
+                        {
+                            LastDate_End = dt;
                         }
                     }
                 }

@@ -274,7 +274,14 @@ namespace AtelierMisaka
                             {
                                 if (GlobalMethord.OverTime(dt))
                                 {
-                                    return ResultHelper.NoError(pis);
+                                    if (dt > GlobalData.VM_MA.LastDate_End)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        return ResultHelper.NoError(pis);
+                                    }
                                 }
                             }
 

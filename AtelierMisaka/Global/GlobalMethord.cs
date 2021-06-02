@@ -76,7 +76,18 @@ namespace AtelierMisaka
 
         public static bool OverTime(DateTime dt)
         {
-            return GlobalData.VM_MA.UseDate && dt <= GlobalData.VM_MA.LastDate;
+            if (GlobalData.VM_MA.UseDate)
+            {
+                if (dt < GlobalData.VM_MA.LastDate)
+                {
+                    return true;
+                }
+                else if (!string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+                {
+                    return dt > GlobalData.VM_MA.LastDate_End;
+                }
+            }
+            return false;
         }
 
         public static string ConverToJson(IEnumerable<ArtistInfo> ais)

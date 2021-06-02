@@ -251,7 +251,10 @@ namespace AtelierMisaka
 
                     if (GlobalMethord.OverTime(fi.UpdateDate))
                     {
-                        return false;
+                        if (GlobalMethord.OverTime(fi.CreateDate))
+                        {
+                            return fi.UpdateDate > GlobalData.VM_MA.LastDate;
+                        }
                     }
                     fi.FID = jfp.post.id.ToString();
                     fi.Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title));
@@ -403,273 +406,160 @@ namespace AtelierMisaka
             }
         }
 
-        public FantiaItem GetUrls(string pid)
+        public async Task<FantiaItem> GetUrls(string pid)
         {
-            try
+            return await Task.Run(() =>
             {
-                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
-                if (null != jfp.post)
+                try
                 {
-                    FantiaItem fi = new FantiaItem();
-                    if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
+                    var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                    if (null != jfp.post)
                     {
-                        fi.CreateDate = dt;
-                    }
-                    if (DateTime.TryParse(jfp.post.converted_at, out dt))
-                    {
-                        fi.UpdateDate = dt;
-                    }
-                    
-                    fi.FID = jfp.post.id.ToString();
-                    fi.Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title));
-                    GlobalData.VM_MA.PostTitle = fi.Title;
-                    if (!string.IsNullOrEmpty(jfp.post.comment))
-                    {
-                        fi.Comments.Add(jfp.post.comment);
-                        fi.Comments.Add(string.Empty);
-                    }
-                    if (null != jfp.post.thumb)
-                    {
-                        fi.CoverPic = jfp.post.thumb.original;
-                        fi.CoverPicThumb = jfp.post.thumb.ogp;
-                    }
-                    if (DateTime.TryParse(jfp.post.deadline, out dt))
-                    {
-                        fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    }
-                    else
-                    {
-                        fi.DeadDate = "---";
-                    }
-
-                    foreach (var ct in jfp.post.post_contents)
-                    {
-                        var fee = 0;
-                        if (null != ct.plan)
+                        FantiaItem fi = new FantiaItem();
+                        if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
                         {
-                            fee = ct.plan.price;
+                            fi.CreateDate = dt;
                         }
-                        var stitle = $"${fee}_{GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(ct.title))}";
-                        fi.Comments.Add("------------------------------------------------------------------------------------------");
-                        fi.Comments.Add(stitle);
-                        fi.Comments.Add(string.Empty);
-                        if (ct.visible_status == "visible")
+                        if (DateTime.TryParse(jfp.post.converted_at, out dt))
                         {
-                            if (ct.category != "blog" && !string.IsNullOrEmpty(ct.comment))
+                            fi.UpdateDate = dt;
+                        }
+
+                        fi.FID = jfp.post.id.ToString();
+                        fi.Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title));
+                        GlobalData.VM_MA.PostTitle = fi.Title;
+                        if (!string.IsNullOrEmpty(jfp.post.comment))
+                        {
+                            fi.Comments.Add(jfp.post.comment);
+                            fi.Comments.Add(string.Empty);
+                        }
+                        if (null != jfp.post.thumb)
+                        {
+                            fi.CoverPic = jfp.post.thumb.original;
+                            fi.CoverPicThumb = jfp.post.thumb.ogp;
+                        }
+                        if (DateTime.TryParse(jfp.post.deadline, out dt))
+                        {
+                            fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
+                        }
+                        else
+                        {
+                            fi.DeadDate = "---";
+                        }
+
+                        foreach (var ct in jfp.post.post_contents)
+                        {
+                            var fee = 0;
+                            if (null != ct.plan)
                             {
-                                fi.Comments.Add(ct.comment);
-                                fi.Comments.Add(string.Empty);
+                                fee = ct.plan.price;
                             }
-                            if (ct.category == "photo_gallery")
+                            var stitle = $"${fee}_{GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(ct.title))}";
+                            fi.Comments.Add("------------------------------------------------------------------------------------------");
+                            fi.Comments.Add(stitle);
+                            fi.Comments.Add(string.Empty);
+                            if (ct.visible_status == "visible")
                             {
-                                var imgs = ct.post_content_photos;
-                                foreach (var img in imgs)
+                                if (ct.category != "blog" && !string.IsNullOrEmpty(ct.comment))
                                 {
-                                    var imgUrl = img.url.original;
-                                    if (!string.IsNullOrEmpty(img.comment))
+                                    fi.Comments.Add(ct.comment);
+                                    fi.Comments.Add(string.Empty);
+                                }
+                                if (ct.category == "photo_gallery")
+                                {
+                                    var imgs = ct.post_content_photos;
+                                    foreach (var img in imgs)
                                     {
-                                        fi.Comments.Add(img.comment);
+                                        var imgUrl = img.url.original;
+                                        if (!string.IsNullOrEmpty(img.comment))
+                                        {
+                                            fi.Comments.Add(img.comment);
+                                        }
+                                        var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                        var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                        var fn = $"{img.id}{ext}";
+                                        fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                        fi.FileNames.Add(fn);
+                                        fi.ContentUrls.Add(imgUrl);
+                                        fi.Fees.Add($"{fee}");
+                                        fi.PTitles.Add(stitle);
                                     }
-                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
-                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                    var fn = $"{img.id}{ext}";
-                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
-                                    fi.FileNames.Add(fn);
-                                    fi.ContentUrls.Add(imgUrl);
+                                }
+                                else if (ct.category == "file")
+                                {
+                                    fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
+                                    fi.FileNames.Add(ct.filename);
+                                    fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                     fi.Fees.Add($"{fee}");
                                     fi.PTitles.Add(stitle);
                                 }
-                            }
-                            else if (ct.category == "file")
-                            {
-                                fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
-                                fi.FileNames.Add(ct.filename);
-                                fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
-                                fi.Fees.Add($"{fee}");
-                                fi.PTitles.Add(stitle);
-                            }
-                            else if (ct.category == "blog")
-                            {
-                                try
+                                else if (ct.category == "blog")
                                 {
-                                    JObject dd = JsonConvert.DeserializeObject(ct.comment) as JObject;
-                                    JArray ja = JArray.Parse(dd["ops"].ToString());
-
-                                    foreach (var js in ja)
+                                    try
                                     {
-                                        var ss = js.SelectToken("insert");
-                                        dynamic stem = ss;
-                                        if (ss.Type == JTokenType.String)
+                                        JObject dd = JsonConvert.DeserializeObject(ct.comment) as JObject;
+                                        JArray ja = JArray.Parse(dd["ops"].ToString());
+
+                                        foreach (var js in ja)
                                         {
-                                            fi.Comments.Add(stem.Value.Replace("\\n", Environment.NewLine));
-                                        }
-                                        else if (ss.Type == JTokenType.Object)
-                                        {
-                                            string imgUrl = stem.fantiaImage.url;
-                                            string fn = string.Empty;
-                                            if (imgUrl.StartsWith("http"))
+                                            var ss = js.SelectToken("insert");
+                                            dynamic stem = ss;
+                                            if (ss.Type == JTokenType.String)
                                             {
-                                                var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
-                                                var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                                fn = $"{stem.fantiaImage.id}{ext}";
-                                                fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                                fi.Comments.Add(stem.Value.Replace("\\n", Environment.NewLine));
                                             }
-                                            else
+                                            else if (ss.Type == JTokenType.Object)
                                             {
-                                                Match ma = _artDataImage.Match(imgUrl);
-                                                if (ma.Success)
+                                                string imgUrl = stem.fantiaImage.url;
+                                                string fn = string.Empty;
+                                                if (imgUrl.StartsWith("http"))
                                                 {
-                                                    fn = $"dimg:{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
+                                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
+                                                    fn = $"{stem.fantiaImage.id}{ext}";
                                                     fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
-                                                    
                                                 }
                                                 else
                                                 {
-                                                    throw new Exception("Blog Image Type Error: " + imgUrl);
+                                                    Match ma = _artDataImage.Match(imgUrl);
+                                                    if (ma.Success)
+                                                    {
+                                                        fn = $"dimg:{stem.fantiaImage.id}.{ma.Groups[1].Value}";
+                                                        fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+
+                                                    }
+                                                    else
+                                                    {
+                                                        throw new Exception("Blog Image Type Error: " + imgUrl);
+                                                    }
                                                 }
+                                                fi.FileNames.Add(fn);
+                                                fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
+                                                fi.Fees.Add($"{fee}");
+                                                fi.PTitles.Add(stitle);
                                             }
-                                            fi.FileNames.Add(fn);
-                                            fi.ContentUrls.Add($"https://fantia.jp{stem.fantiaImage.original_url}");
-                                            fi.Fees.Add($"{fee}");
-                                            fi.PTitles.Add(stitle);
-                                        }
-                                        else
-                                        {
-                                            throw new Exception("Blog type unknown: " + ss.Type.ToString());
+                                            else
+                                            {
+                                                throw new Exception("Blog type unknown: " + ss.Type.ToString());
+                                            }
                                         }
                                     }
-                                }
-                                catch
-                                {
-                                    throw;
-                                }
-                            }
-                        }
-                    }
-                    return fi;
-                }
-                return null;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        private void GetUrls_Loop(int pid, List<BaseItem> bis)
-        {
-            try
-            {
-                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
-                if (null != jfp.post)
-                {
-                    FantiaItem fi = new FantiaItem()
-                    {
-                        FID = jfp.post.id.ToString(),
-                        Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title)),
-                    };
-                    GlobalData.VM_MA.PostTitle = fi.Title;
-                    if (DateTime.TryParse(jfp.post.posted_at, out DateTime dt))
-                    {
-                        fi.CreateDate = dt;
-                    }
-                    if (DateTime.TryParse(jfp.post.converted_at, out dt))
-                    {
-                        fi.UpdateDate = dt;
-                    }
-
-                    if (!string.IsNullOrEmpty(jfp.post.comment))
-                    {
-                        fi.Comments.Add(jfp.post.comment);
-                        fi.Comments.Add(string.Empty);
-                    }
-                    if (null != jfp.post.thumb)
-                    {
-                        fi.CoverPic = jfp.post.thumb.original;
-                        fi.CoverPicThumb = jfp.post.thumb.ogp;
-                    }
-                    if (DateTime.TryParse(jfp.post.deadline, out dt))
-                    {
-                        fi.DeadDate = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                    }
-                    else
-                    {
-                        fi.DeadDate = "---";
-                    }
-
-                    var contents = jfp.post.post_contents;
-                    foreach (var ct in contents)
-                    {
-                        var fee = 0;
-                        if (null != ct.plan)
-                        {
-                            fee = ct.plan.price;
-                        }
-                        var stitle = $"${fee}_{GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(ct.title))}";
-                        fi.Comments.Add("------------------------------------------------------------------------------------------");
-                        fi.Comments.Add(stitle);
-                        fi.Comments.Add(string.Empty);
-                        if (ct.visible_status == "visible")
-                        {
-                            if (!string.IsNullOrEmpty(ct.comment))
-                            {
-                                fi.Comments.Add(ct.comment);
-                                fi.Comments.Add(string.Empty);
-                            }
-                            if (ct.category == "photo_gallery")
-                            {
-                                var imgs = ct.post_content_photos;
-                                foreach (var img in imgs)
-                                {
-                                    var imgUrl = img.url.original;
-
-                                    if (!string.IsNullOrEmpty(img.comment))
+                                    catch
                                     {
-                                        fi.Comments.Add(img.comment);
+                                        throw;
                                     }
-                                    var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
-                                    var ext = ffn.Substring(ffn.LastIndexOf('.'));
-                                    var fn = $"{img.id}{ext}";
-                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
-                                    fi.FileNames.Add(fn);
-                                    fi.ContentUrls.Add(imgUrl);
-                                    fi.Fees.Add($"{fee}");
-                                    fi.PTitles.Add(stitle);
                                 }
                             }
-                            else if (ct.category == "file")
-                            {
-                                fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
-                                fi.FileNames.Add(ct.filename);
-                                fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
-                                fi.Fees.Add($"{fee}");
-                                fi.PTitles.Add(stitle);
-                            }
                         }
+                        return fi;
                     }
-                    bis.Add(fi);
-                    GlobalData.VM_MA.PostCount++;
-                    if (null != jfp.post.links && null != jfp.post.links.previous)
-                    {
-                        if (!DateTime.TryParse(jfp.post.links.previous.converted_at, out DateTime dtp))
-                        {
-                            if (!DateTime.TryParse(jfp.post.links.previous.posted_at, out dtp))
-                            {
-                                GetUrls_Loop(jfp.post.links.previous.id, bis);
-                                return;
-                            }
-                        }
-                        if (!GlobalMethord.OverTime(dtp))
-                        {
-                            GetUrls_Loop(jfp.post.links.previous.id, bis);
-                        }
-                    }
+                    return null;
                 }
-            }
-            catch
-            {
-                throw;
-            }
+                catch
+                {
+                    throw;
+                }
+            });
         }
 
         private string GetWebCode(string url)

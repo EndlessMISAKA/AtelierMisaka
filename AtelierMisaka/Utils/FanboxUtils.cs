@@ -224,7 +224,7 @@ namespace AtelierMisaka
                     {
                         pi.UpdateDate = dt;
                     }
-                    if (GlobalMethord.OverPayment(int.Parse(pi.Fee)) || GlobalMethord.OverTime(pi.UpdateDate))
+                    if (GlobalMethord.OverPayment(int.Parse(pi.Fee)) || (GlobalMethord.OverTime(pi.UpdateDate) && GlobalMethord.OverTime(pi.CreateDate)))
                     {
                         pi.Skip = true;
                     }

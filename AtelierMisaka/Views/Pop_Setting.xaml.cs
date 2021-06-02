@@ -25,6 +25,7 @@ namespace AtelierMisaka.Views
         private string _tempProxy = string.Empty;
         private string _tempCookies = string.Empty;
         private string _tempDate = string.Empty;
+        private string _tempDate_end = string.Empty;
         private string _tempSP = string.Empty;
         private bool _tempUP = false;
         private bool _tempUD = false;
@@ -56,6 +57,10 @@ namespace AtelierMisaka.Views
             }
 
             GlobalData.StartTime = DateTime.Now;
+            if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+            {
+                GlobalData.VM_MA.LastDate_End = DateTime.Now;
+            }
 
             if (!GlobalData.VM_MA.IsStarted)
             {
@@ -74,7 +79,8 @@ namespace AtelierMisaka.Views
                     _tempSite = GlobalData.VM_MA.Site;
                     _tempCookies = GlobalData.VM_MA.Cookies;
                     _tempProxy = GlobalData.VM_MA.Proxy;
-                    _tempDate = GlobalData.VM_MA.Date;
+                    _tempDate = GlobalData.VM_MA.Date_Start;
+                    _tempDate_end = GlobalData.VM_MA.Date_End;
                     _tempSP = GlobalData.VM_MA.SavePath;
                     _tempUP = GlobalData.VM_MA.UseProxy;
                     _tempUD = GlobalData.VM_MA.UseDate;
@@ -110,7 +116,8 @@ namespace AtelierMisaka.Views
                         _tempSite = GlobalData.VM_MA.Site;
                         _tempCookies = GlobalData.VM_MA.Cookies;
                         _tempProxy = GlobalData.VM_MA.Proxy;
-                        _tempDate = GlobalData.VM_MA.Date;
+                        _tempDate = GlobalData.VM_MA.Date_Start;
+                        _tempDate_end = GlobalData.VM_MA.Date_End;
                         _tempSP = GlobalData.VM_MA.SavePath;
 
                         GlobalData.CurrentSite = _tempSite;
@@ -178,9 +185,9 @@ namespace AtelierMisaka.Views
                     _tempCookies = GlobalData.VM_MA.Cookies;
                 }
 
-                if (_tempDate != GlobalData.VM_MA.Date || _tempUD != GlobalData.VM_MA.UseDate)
+                if (_tempDate != GlobalData.VM_MA.Date_Start || _tempDate_end != GlobalData.VM_MA.Date_End || _tempUD != GlobalData.VM_MA.UseDate)
                 {
-                    if (GlobalData.VM_MA.Site == SiteType.Fanbox || CompareDate(GlobalData.VM_MA.Date, _tempDate))
+                    if (GlobalData.VM_MA.Site == SiteType.Fanbox || CompareDate(GlobalData.VM_MA.Date_Start, _tempDate) || CompareDate(GlobalData.VM_MA.Date_End, _tempDate_end))
                     {
                         await Task.Run(() =>
                         {
@@ -190,7 +197,8 @@ namespace AtelierMisaka.Views
                             }
                         });
                         GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                        _tempDate = GlobalData.VM_MA.Date;
+                        _tempDate = GlobalData.VM_MA.Date_Start;
+                        _tempDate_end = GlobalData.VM_MA.Date_End;
                         _tempUD = GlobalData.VM_MA.UseDate;
                     }
                     else
@@ -216,7 +224,8 @@ namespace AtelierMisaka.Views
                             _tempSite = GlobalData.VM_MA.Site;
                             _tempCookies = GlobalData.VM_MA.Cookies;
                             _tempProxy = GlobalData.VM_MA.Proxy;
-                            _tempDate = GlobalData.VM_MA.Date;
+                            _tempDate = GlobalData.VM_MA.Date_Start;
+                            _tempDate_end = GlobalData.VM_MA.Date_End;
                             _tempSP = GlobalData.VM_MA.SavePath;
 
                             GlobalData.CurrentSite = _tempSite;
@@ -328,8 +337,6 @@ namespace AtelierMisaka.Views
                 }
                 GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
-                GlobalData.VM_MA.Date = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
-                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
             }
             else
             {
@@ -557,36 +564,6 @@ namespace AtelierMisaka.Views
                 }
             }
             catch { }
-        }
-
-        private void Lst_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0)
-            {
-                ArtistInfo ai = (ArtistInfo)e.AddedItems[0];
-                if (_selectF)
-                {
-                    SetLastDate(ai.Id);
-                }
-                else
-                {
-                    _selectF = true;
-                }
-            }
-        }
-
-        private void SetLastDate(string id)
-        {
-            if (GlobalData.LastDateDic.TryGetValue(GlobalData.VM_MA.Site, id, out DateTime dt))
-            {
-                GlobalData.VM_MA.Date = dt.ToString("yyyy/MM/dd HH:mm:ss");
-                GlobalData.VM_MA.UseDate = true;
-            }
-            else
-            {
-                GlobalData.VM_MA.Date = string.Empty;
-                GlobalData.VM_MA.UseDate = false;
-            }
         }
 
         private void UserControl_PreviewMouseDown(object sender, MouseButtonEventArgs e)

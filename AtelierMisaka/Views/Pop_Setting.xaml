@@ -48,8 +48,7 @@
                             <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="0" Opacity="0.5"/>
                         </Border.Effect>
                         <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="Lst" Focusable="True"
-                                 ItemsSource="{Binding ArtistList}" SelectedItem="{Binding Artist, UpdateSourceTrigger=PropertyChanged}"
-                                 SelectionChanged="Lst_SelectionChanged">
+                                 ItemsSource="{Binding ArtistList}" SelectedItem="{Binding Artist, UpdateSourceTrigger=PropertyChanged}">
                             <ListBox.Style>
                                 <Style TargetType="ListBox">
                                     <Setter Property="ItemContainerStyle" Value="{StaticResource LBI_Artist}"/>
@@ -114,8 +113,13 @@
             </Grid>
             <Grid Height="60">
                 <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Date}" IsChecked="{Binding UseDate}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
-                         IsEnabled="{Binding UseDate}" Text="{Binding Date}" Margin="80,10" Width="670"/>
+                <StackPanel Orientation="Horizontal" Margin="130,0,10,0">
+                    <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
+                         IsEnabled="{Binding UseDate}" Text="{Binding Date_Start}" Margin="20,0,15,0" Width="340"/>
+                    <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="0"/>
+                    <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
+                         IsEnabled="{Binding UseDate}" Text="{Binding Date_End}" Margin="15,0,0,0" Width="340"/>
+                </StackPanel>
             </Grid>
             <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="280"/>
