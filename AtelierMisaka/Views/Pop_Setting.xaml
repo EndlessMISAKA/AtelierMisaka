@@ -115,10 +115,10 @@
                 <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Date}" IsChecked="{Binding UseDate}"/>
                 <StackPanel Orientation="Horizontal" Margin="130,0,10,0">
                     <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
-                         IsEnabled="{Binding UseDate}" Text="{Binding Date_Start}" Margin="20,0,15,0" Width="340"/>
+                         IsEnabled="{Binding UseDate}" Text="{Binding Date_Start, UpdateSourceTrigger=PropertyChanged}" Margin="20,0,15,0" Width="340"/>
                     <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="0"/>
                     <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
-                         IsEnabled="{Binding UseDate}" Text="{Binding Date_End}" Margin="15,0,0,0" Width="340"/>
+                         IsEnabled="{Binding UseDate}" Text="{Binding Date_End, UpdateSourceTrigger=PropertyChanged}" Margin="15,0,0,0" Width="340"/>
                 </StackPanel>
             </Grid>
             <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">

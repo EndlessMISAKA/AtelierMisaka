@@ -117,7 +117,7 @@ namespace AtelierMisaka
 
         public static void InitializeCulture()
         {
-            if (File.Exists("Lang.ini"))
+            try
             {
                 if (int.TryParse(File.ReadAllText("Lang.ini"), out int temp))
                 {
@@ -126,6 +126,7 @@ namespace AtelierMisaka
                     return;
                 }
             }
+            catch { }
             SetCulture(CultureInfo.CurrentCulture.Name);
         }
 
@@ -153,7 +154,11 @@ namespace AtelierMisaka
 
         private static void SaveConfig(int index)
         {
-            File.WriteAllText("Lang.ini", index.ToString());
+            try
+            {
+                File.WriteAllText("Lang.ini", index.ToString());
+            }
+            catch { }
         }
 
         private static void ChangeCulture(string cultureName)
