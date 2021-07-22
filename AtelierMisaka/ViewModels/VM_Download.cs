@@ -336,6 +336,10 @@ namespace AtelierMisaka.ViewModels
                             _dlClients.Clear();
                         }
                     }
+                    if (GlobalData.VM_MA.ShowLoad)
+                    {
+                        return;
+                    }
                     if (_isDownloading)
                     {
                         var dl = _downLoadList.ToList();
@@ -871,6 +875,10 @@ namespace AtelierMisaka.ViewModels
                         }
                         else
                         {
+                            if (GlobalData.VM_MA.ShowLoad)
+                            {
+                                return;
+                            }
                             if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
                             {
                                 GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");

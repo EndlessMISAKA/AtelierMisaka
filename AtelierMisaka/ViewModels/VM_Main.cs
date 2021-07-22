@@ -361,8 +361,11 @@ namespace AtelierMisaka.ViewModels
                     }
                     else
                     {
-                        Date_Start = string.Empty;
-                        UseDate = false;
+                        if (!ShowLoad)
+                        {
+                            Date_Start = string.Empty;
+                            UseDate = false;
+                        }
                     }
                 }
             }
