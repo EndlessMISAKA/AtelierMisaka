@@ -824,7 +824,7 @@ namespace AtelierMisaka.ViewModels
                                 }
                                 else
                                 {
-                                    cou++;
+                                    return;
                                 }
                             }
                             else if (_downLoadList[i].DLStatus == DownloadStatus.Downloading || _downLoadList[i].DLStatus == DownloadStatus.WriteFile)
