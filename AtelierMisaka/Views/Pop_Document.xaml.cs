@@ -275,7 +275,7 @@ namespace AtelierMisaka.Views
         private void Hl_Patreon_Click(object sender, RoutedEventArgs e)
         {
             Hyperlink link = sender as Hyperlink;
-            System.Diagnostics.Process.Start(link.NavigateUri.AbsoluteUri);
+            System.Diagnostics.Process.Start(link.NavigateUri + (string.IsNullOrEmpty(link.TargetName) ? "" : $"#{link.TargetName}"));
         }
 
         private void AddDownload(object sender, RoutedEventArgs e)

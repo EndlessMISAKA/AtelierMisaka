@@ -46,6 +46,7 @@ namespace AtelierMisaka.Views
             await Task.Run(() =>
             {
                 DownloadItem di = null;
+                var linkfile = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\link_{DateTime.Now}.html";
                 switch (GlobalData.VM_MA.Site)
                 {
                     case SiteType.Fanbox:
@@ -129,6 +130,15 @@ namespace AtelierMisaka.Views
                                             }
                                         }
                                         File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
+                                        bi.Comments.ForEach(x =>
+                                        {
+                                            var ma = GlobalRegex.Regex_Url.Match(x);
+                                            while (ma.Success)
+                                            {
+                                                var tar = ma.Groups[0].Value;
+                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a>{Environment.NewLine}");
+                                            }
+                                        });
                                     }
                                     catch (Exception ex)
                                     {
@@ -255,6 +265,15 @@ namespace AtelierMisaka.Views
                                             }
                                         }
                                         File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
+                                        bi.Comments.ForEach(x =>
+                                        {
+                                            var ma = GlobalRegex.Regex_Url.Match(x);
+                                            while (ma.Success)
+                                            {
+                                                var tar = ma.Groups[0].Value;
+                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a>{Environment.NewLine}");
+                                            }
+                                        });
                                     }
                                     catch (Exception ex)
                                     {
