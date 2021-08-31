@@ -83,6 +83,11 @@ namespace AtelierMisaka
                     _needLogin = true;
                     return await LoginCheck(await GetWebCode("https://www.patreon.com/login?ru=%2Fhome"));
                 }
+                else if (_cwb.Address.Contains("login?ru"))
+                {
+                    _needLogin = true;
+                    return await LoginCheck(await GetWebCode("https://www.patreon.com/login?ru=%2Fhome"));
+                }
                 else
                 {
                     if (string.IsNullOrEmpty(htmlc))

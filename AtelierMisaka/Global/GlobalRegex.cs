@@ -28,6 +28,8 @@ namespace AtelierMisaka
 
         public static Regex ProxyPattern = new Regex("(?<scheme>http|https|ftp|socks)=(?<host>[^:]*)(:(?<port>\\d+))?", RegexOptions.Singleline | RegexOptions.Compiled);
 
+        public static Regex Regex_Url = new Regex(@"(https?)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+
         public static void Initialize()
         {
             if (!Directory.Exists("Settings"))
