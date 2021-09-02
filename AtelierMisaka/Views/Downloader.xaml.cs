@@ -46,7 +46,7 @@ namespace AtelierMisaka.Views
             await Task.Run(() =>
             {
                 DownloadItem di = null;
-                var linkfile = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\link_{DateTime.Now}.html";
+                var linkfile = Path.Combine(VM_DD.SavePath, GlobalData.VM_MA.Artist.AName, $"link_{DateTime.Now}.html");
                 switch (GlobalData.VM_MA.Site)
                 {
                     case SiteType.Fanbox:
@@ -57,12 +57,18 @@ namespace AtelierMisaka.Views
                                 {
                                     continue;
                                 }
-                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_${bi.Fee}_{bi.Title}";
-                                Directory.CreateDirectory(sp);
-                                if (!Directory.Exists(sp))
+                                string sp = Path.Combine(VM_DD.SavePath, GlobalData.VM_MA.Artist.AName, $"{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_${bi.Fee}_{bi.Title}");
+                                try
                                 {
-                                    sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
+                                }
+                                catch
+                                {
+                                    if (!Directory.Exists(sp))
+                                    {
+                                        sp = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(sp));
+                                        Directory.CreateDirectory(sp);
+                                    }
                                 }
                                 GlobalData.DLLogs.SetPId(bi.ID);
                                 if (!string.IsNullOrEmpty(bi.CoverPic))
@@ -142,7 +148,7 @@ namespace AtelierMisaka.Views
                                     }
                                     catch (Exception ex)
                                     {
-                                        MessageBox.Show(ex.Message + sp);
+                                        GlobalMethord.ErrorLog(ex.Message + sp);
                                     }
                                 }
                             }
@@ -226,12 +232,19 @@ namespace AtelierMisaka.Views
                         {
                             foreach (var bi in _baseItems)
                             {
-                                string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{bi.Title}";
-                                Directory.CreateDirectory(sp);
-                                if (!Directory.Exists(sp))
+                                //string sp = $"{VM_DD.SavePath}\\{GlobalData.VM_MA.Artist.AName}\\{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{bi.Title}";
+                                string sp = Path.Combine(VM_DD.SavePath, GlobalData.VM_MA.Artist.AName, $"{bi.CreateDate.ToString("yyyyMM\\\\dd_HHmm")}_{bi.Title}");
+                                try
                                 {
-                                    sp = GlobalMethord.ReplacePath(sp);
                                     Directory.CreateDirectory(sp);
+                                }
+                                catch
+                                {
+                                    if (!Directory.Exists(sp))
+                                    {
+                                        sp = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(sp));
+                                        Directory.CreateDirectory(sp);
+                                    }
                                 }
                                 GlobalData.DLLogs.SetPId(bi.ID);
                                 for (int i = 0; i < bi.ContentUrls.Count; i++)
@@ -277,7 +290,7 @@ namespace AtelierMisaka.Views
                                     }
                                     catch (Exception ex)
                                     {
-                                        MessageBox.Show(ex.Message + sp);
+                                        GlobalMethord.ErrorLog(ex.Message + sp);
                                     }
                                 }
                             }
