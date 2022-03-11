@@ -46,7 +46,7 @@ namespace AtelierMisaka.Views
             await Task.Run(() =>
             {
                 DownloadItem di = null;
-                var linkfile = Path.Combine(VM_DD.SavePath, GlobalData.VM_MA.Artist.AName, $"link_{DateTime.Now}.html");
+                var linkfile = Path.Combine(VM_DD.SavePath, GlobalData.VM_MA.Artist.AName, $"link_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.html");
                 switch (GlobalData.VM_MA.Site)
                 {
                     case SiteType.Fanbox:
@@ -142,13 +142,14 @@ namespace AtelierMisaka.Views
                                             while (ma.Success)
                                             {
                                                 var tar = ma.Groups[0].Value;
-                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a>{Environment.NewLine}");
+                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a><br/>{Environment.NewLine}");
+                                                ma = ma.NextMatch();
                                             }
                                         });
                                     }
                                     catch (Exception ex)
                                     {
-                                        GlobalMethord.ErrorLog(ex.Message + sp);
+                                        GlobalMethord.ErrorLog(ex.Message + linkfile);
                                     }
                                 }
                             }
@@ -284,13 +285,14 @@ namespace AtelierMisaka.Views
                                             while (ma.Success)
                                             {
                                                 var tar = ma.Groups[0].Value;
-                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a>{Environment.NewLine}");
+                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a><br/>{Environment.NewLine}");
+                                                ma = ma.NextMatch();
                                             }
                                         });
                                     }
                                     catch (Exception ex)
                                     {
-                                        GlobalMethord.ErrorLog(ex.Message + sp);
+                                        GlobalMethord.ErrorLog(ex.Message + linkfile);
                                     }
                                 }
                             }

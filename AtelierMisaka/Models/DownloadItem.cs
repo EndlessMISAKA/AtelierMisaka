@@ -387,11 +387,11 @@ namespace AtelierMisaka.Models
                                 try
                                 {
                                     fs = new FileStream($"{_fullPath}.msk", FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                                    fs.Seek(_totalRC, SeekOrigin.Begin);
+                                    //fs.Seek(_totalRC, SeekOrigin.Begin);
                                     while (i > 0)
                                     {
                                         fs.Write(arra, 0, i);
-                                        Interlocked.Add(ref _totalRC, i);
+                                        //Interlocked.Add(ref _totalRC, i);
                                         i = sm.Read(arra, 0, arra.Length);
                                     }
                                     fs.Flush();
