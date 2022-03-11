@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +15,12 @@ namespace AtelierMisaka
         static App()
         {
             AppDomain.CurrentDomain.AssemblyResolve += CefHelper.ResolveCefSharpAssembly;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            GlobalMethord.ErrorLog(e.ExceptionObject.ToString());
         }
 
         protected override void OnStartup(StartupEventArgs e)
