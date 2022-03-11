@@ -4,6 +4,7 @@ using CefSharp.Wpf;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -26,6 +27,8 @@ namespace AtelierMisaka
         private readonly string _webCharSet = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/></head><body>{0}</body></html>";
 
         private Dictionary<string, string> _unicodeDic = new Dictionary<string, string>();
+
+        private HashSet<string> _idList = null;
 
         public async Task<ResultMessage> InitBrowser()
         {
@@ -78,14 +81,16 @@ namespace AtelierMisaka
         {
             if (!_needLogin)
             {
-                if (!htmlc.Contains("currentUser"))
+                if (!htmlc.Contains("window.patreon.userId"))
                 {
                     _needLogin = true;
+                    await GetWebCode("about:blank");
                     return await LoginCheck(await GetWebCode("https://www.patreon.com/login?ru=%2Fhome"));
                 }
                 else if (_cwb.Address.Contains("login?ru"))
                 {
                     _needLogin = true;
+                    await GetWebCode("about:blank");
                     return await LoginCheck(await GetWebCode("https://www.patreon.com/login?ru=%2Fhome"));
                 }
                 else
@@ -118,6 +123,7 @@ namespace AtelierMisaka
         {
             await GetWebCode("https://www.patreon.com/logout?ru=%2Fhome");
             _needLogin = true;
+            await GetWebCode("about:blank");
             return await LoginCheck(await GetWebCode("https://www.patreon.com/login?ru=%2Fhome"));
         }
 
@@ -136,7 +142,7 @@ namespace AtelierMisaka
             if (e.Frame.IsMain)
             {
                 string htmlc = await e.Browser.MainFrame.GetTextAsync();
-                if (htmlc.Contains("currentUser"))
+                if (htmlc.Contains("window.patreon.userId"))
                 {
                     Match ma = _emailRegex.Match(htmlc);
                     if (ma.Success)
@@ -261,6 +267,7 @@ namespace AtelierMisaka
         {
             try
             {
+                _idList = new HashSet<string>();
                 string ss = ChangeUnicode(await GetAPI(string.Format(_postUrl, uid)));
                 List<BaseItem> pis = new List<BaseItem>();
                 while (true)
@@ -299,6 +306,11 @@ namespace AtelierMisaka
                                 IsLiked = jpp.data[i].attributes.current_user_has_liked,
                                 PLink = jpp.data[i].attributes.url
                             };
+                            if (!_idList.Add(pi.ID))
+                            {
+                                return ResultHelper.NoError(pis);
+                            }
+
                             GlobalData.VM_MA.PostTitle = pi.Title;
                             if (!string.IsNullOrEmpty(jpp.data[i].attributes.content))
                             {
