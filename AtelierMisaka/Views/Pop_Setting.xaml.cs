@@ -187,21 +187,21 @@ namespace AtelierMisaka.Views
 
                 if (_tempDate != GlobalData.VM_MA.Date_Start || _tempDate_end != GlobalData.VM_MA.Date_End || _tempUD != GlobalData.VM_MA.UseDate)
                 {
-                    if (GlobalData.VM_MA.Site == SiteType.Fanbox || CompareDate(GlobalData.VM_MA.Date_Start, _tempDate) || CompareDate(GlobalData.VM_MA.Date_End, _tempDate_end))
-                    {
-                        await Task.Run(() =>
-                        {
-                            foreach (var bi in _tempBis)
-                            {
-                                bi.Skip = GlobalMethord.OverTime(bi.UpdateDate);
-                            }
-                        });
-                        GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                        _tempDate = GlobalData.VM_MA.Date_Start;
-                        _tempDate_end = GlobalData.VM_MA.Date_End;
-                        _tempUD = GlobalData.VM_MA.UseDate;
-                    }
-                    else
+                    //if (GlobalData.VM_MA.Site == SiteType.Fanbox || CompareDate(GlobalData.VM_MA.Date_Start, _tempDate) || CompareDate(GlobalData.VM_MA.Date_End, _tempDate_end))
+                    //{
+                    //    await Task.Run(() =>
+                    //    {
+                    //        foreach (var bi in _tempBis)
+                    //        {
+                    //            bi.Skip = GlobalMethord.OverTime(bi.UpdateDate);
+                    //        }
+                    //    });
+                    //    GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
+                    //    _tempDate = GlobalData.VM_MA.Date_Start;
+                    //    _tempDate_end = GlobalData.VM_MA.Date_End;
+                    //    _tempUD = GlobalData.VM_MA.UseDate;
+                    //}
+                    //else
                     {
                         if (GlobalData.VM_DL.IsDownloading)
                         {

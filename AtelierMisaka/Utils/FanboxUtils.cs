@@ -164,7 +164,7 @@ namespace AtelierMisaka
                         _referer = $"https://{uid}.fanbox.cc";
                     }
 
-                    string nurl = GetUrls(GetWebCode(url), bis);
+                    string nurl = GetUrls_List(GetWebCode(url), bis);
                     if (!string.IsNullOrEmpty(nurl))
                     {
                         GetPostIDs_Next(nurl, bis);
@@ -187,7 +187,7 @@ namespace AtelierMisaka
         {
             try
             {
-                string nurl = GetUrls(GetWebCode(url), bis);
+                string nurl = GetUrls_List(GetWebCode(url), bis);
                 if (!string.IsNullOrEmpty(nurl))
                 {
                     GetPostIDs_Next(nurl, bis);
@@ -199,141 +199,148 @@ namespace AtelierMisaka
             }
         }
 
-        private string GetUrls(string jsondata, IList<BaseItem> bis)
+        private string GetUrls_List(string jsondata, IList<BaseItem> bis)
         {
-            var fd = JsonConvert.DeserializeObject<JsonData_Fanbox_Post>(jsondata);
+            var fd = JsonConvert.DeserializeObject<JsonData_Fanbox_PostList>(jsondata);
             if (null != fd.body && null != fd.body.items)
             {
                 foreach (var po in fd.body.items)
                 {
-                    var pi = new FanboxItem()
+                    var id = po.id;
+                    var fee = po.feeRequired;
+                    if (DateTime.TryParse(po.publishedDatetime, out var dtp) && DateTime.TryParse(po.updatedDatetime, out var dtu))
                     {
-                        PID = po.id,
-                        Fee = po.feeRequired.ToString(),
-                        Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(po.title)),
-                        CoverPic = po.coverImageUrl,
-                        CoverPicThumb = po.coverImageUrl,
-                        IsLiked = po.isLiked
-                    };
-                    GlobalData.VM_MA.PostTitle = pi.Title;
-                    if (DateTime.TryParse(po.publishedDatetime, out DateTime dt))
-                    {
-                        pi.CreateDate = dt;
-                    }
-                    if (DateTime.TryParse(po.updatedDatetime, out dt))
-                    {
-                        pi.UpdateDate = dt;
-                    }
-                    if (GlobalMethord.OverPayment(int.Parse(pi.Fee)) || (GlobalMethord.OverTime(pi.UpdateDate) && GlobalMethord.OverTime(pi.CreateDate)))
-                    {
-                        pi.Skip = true;
-                    }
-
-                    if (null != po.body)
-                    {
-                        switch (po.type)
+                        if (GlobalMethord.OverPayment(fee) || (GlobalMethord.OverTime(dtu) && GlobalMethord.OverTime(dtp)))
                         {
-                            case "file":
-                                {
-                                    if (!string.IsNullOrEmpty(po.body.text))
-                                    {
-                                        pi.Comments.Add(po.body.text);
-                                        pi.Comments.Add(string.Empty);
-                                    }
-                                    foreach (var finfo in po.body.files)
-                                    {
-                                        pi.ContentUrls.Add(finfo.url);
-                                        var fn = $"{finfo.name}.{finfo.extension}";
-                                        pi.FileNames.Add(fn);
-                                        pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {fn} ({GetSize(finfo.size)})>");
-                                    }
-                                }
-                                break;
-                            case "image":
-                                {
-                                    if (!string.IsNullOrEmpty(po.body.text))
-                                    {
-                                        pi.Comments.Add(po.body.text);
-                                        pi.Comments.Add(string.Empty);
-                                    }
-                                    int index = 1;
-                                    foreach (var iinfo in po.body.images)
-                                    {
-                                        pi.MediaUrls.Add(iinfo.originalUrl);
-                                        var fn = $"{index++}.{iinfo.extension}";
-                                        pi.MediaNames.Add(fn);
-                                        pi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn} ({iinfo.width}x{iinfo.height}px)>");
-                                    }
-                                }
-                                break;
-                            case "article":
-                                {
-                                    int index_pic = 1;
-                                    foreach (var binfo in po.body.blocks)
-                                    {
-                                        switch (binfo.type)
-                                        {
-                                            case "p":
-                                                pi.Comments.Add(binfo.text);
-                                                break;
-                                            case "file":
-                                                if (null != po.body.fileMap && po.body.fileMap.TryGetValue(binfo.fileId, out FileItem fitem))
-                                                {
-                                                    pi.ContentUrls.Add(fitem.url);
-                                                    var fn = $"{fitem.name}.{fitem.extension}";
-                                                    pi.FileNames.Add(fn);
-                                                    pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {fn} ({GetSize(fitem.size)})>");
-                                                }
-                                                break;
-                                            case "image":
-                                                if (null != po.body.imageMap && po.body.imageMap.TryGetValue(binfo.imageId, out ImageItem iitem))
-                                                {
-                                                    pi.MediaUrls.Add(iitem.originalUrl);
-                                                    var fn = $"{index_pic++}.{iitem.extension}";
-                                                    pi.MediaNames.Add(fn);
-                                                    pi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn} ({iitem.width}x{iitem.height}px)>");
-                                                }
-                                                break;
-                                            case "embed":
-                                                if (null != po.body.embedMap && po.body.embedMap.TryGetValue(binfo.embedId, out EmbedItem eitem))
-                                                {
-                                                    pi.Comments.Add(string.Empty);
-                                                    if (eitem.serviceProvider == "twitter" && !string.IsNullOrEmpty(GlobalData.VM_MA.Artist.Twitter))
-                                                    {
-                                                        pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId} >");
-                                                    }
-                                                    else if (eitem.serviceProvider == "fanbox")
-                                                    {
-
-                                                        pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()} >");
-                                                    }
-                                                    else
-                                                    {
-                                                        pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {eitem.serviceProvider} ({eitem.contentId})>");
-                                                    }
-                                                    pi.Comments.Add(string.Empty);
-                                                }
-                                                break;
-                                        }
-                                    }
-                                }
-                                break;
-                            case "text":
-                                {
-                                    if (!string.IsNullOrEmpty(po.body.text))
-                                    {
-                                        pi.Comments.Add(po.body.text);
-                                    }
-                                }
-                                break;
+                            GlobalData.VM_MA.PostTitle = po.title;
+                            GlobalData.VM_MA.PostCount++;
+                            continue;
                         }
+                        GetUrls(GetWebCode("https://api.fanbox.cc/post.info?postId=" + id), bis);
                     }
-                    bis.Add(pi);
-                    GlobalData.VM_MA.PostCount++;
                 }
                 return fd.body.nextUrl ?? null;
             }
             return null;
+        }
+
+        private bool GetUrls(string jsondata, IList<BaseItem> bis)
+        {
+            var fd = JsonConvert.DeserializeObject<JsonData_Fanbox_Post>(jsondata);
+            if (null != fd.body && null != fd.body.body)
+            {
+                var pi = new FanboxItem()
+                {
+                    PID = fd.body.id,
+                    Fee = fd.body.feeRequired.ToString(),
+                    Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(fd.body.title)),
+                    CoverPic = fd.body.coverImageUrl,
+                    CoverPicThumb = fd.body.coverImageUrl,
+                    IsLiked = fd.body.isLiked
+                };
+                GlobalData.VM_MA.PostTitle = pi.Title;
+                switch (fd.body.type)
+                {
+                    case "file":
+                        {
+                            if (!string.IsNullOrEmpty(fd.body.body.text))
+                            {
+                                pi.Comments.Add(fd.body.body.text);
+                                pi.Comments.Add(string.Empty);
+                            }
+                            foreach (var finfo in fd.body.body.files)
+                            {
+                                pi.ContentUrls.Add(finfo.url);
+                                var fn = $"{finfo.name}.{finfo.extension}";
+                                pi.FileNames.Add(fn);
+                                pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {fn} ({GetSize(finfo.size)})>");
+                            }
+                        }
+                        break;
+                    case "image":
+                        {
+                            if (!string.IsNullOrEmpty(fd.body.body.text))
+                            {
+                                pi.Comments.Add(fd.body.body.text);
+                                pi.Comments.Add(string.Empty);
+                            }
+                            int index = 1;
+                            foreach (var iinfo in fd.body.body.images)
+                            {
+                                pi.MediaUrls.Add(iinfo.originalUrl);
+                                var fn = $"{index++}.{iinfo.extension}";
+                                pi.MediaNames.Add(fn);
+                                pi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn} ({iinfo.width}x{iinfo.height}px)>");
+                            }
+                        }
+                        break;
+                    case "article":
+                        {
+                            int index_pic = 1;
+                            foreach (var binfo in fd.body.body.blocks)
+                            {
+                                switch (binfo.type)
+                                {
+                                    case "p":
+                                        pi.Comments.Add(binfo.text);
+                                        break;
+                                    case "file":
+                                        if (null != fd.body.body.fileMap && fd.body.body.fileMap.TryGetValue(binfo.fileId, out FileItem fitem))
+                                        {
+                                            pi.ContentUrls.Add(fitem.url);
+                                            var fn = $"{fitem.name}.{fitem.extension}";
+                                            pi.FileNames.Add(fn);
+                                            pi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {fn} ({GetSize(fitem.size)})>");
+                                        }
+                                        break;
+                                    case "image":
+                                        if (null != fd.body.body.imageMap && fd.body.body.imageMap.TryGetValue(binfo.imageId, out ImageItem iitem))
+                                        {
+                                            pi.MediaUrls.Add(iitem.originalUrl);
+                                            var fn = $"{index_pic++}.{iitem.extension}";
+                                            pi.MediaNames.Add(fn);
+                                            pi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn} ({iitem.width}x{iitem.height}px)>");
+                                        }
+                                        break;
+                                    case "embed":
+                                        if (null != fd.body.body.embedMap && fd.body.body.embedMap.TryGetValue(binfo.embedId, out EmbedItem eitem))
+                                        {
+                                            pi.Comments.Add(string.Empty);
+                                            if (eitem.serviceProvider == "twitter" && !string.IsNullOrEmpty(GlobalData.VM_MA.Artist.Twitter))
+                                            {
+                                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {GlobalData.VM_MA.Artist.Twitter}/{eitem.contentId} >");
+                                            }
+                                            else if (eitem.serviceProvider == "fanbox")
+                                            {
+
+                                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {GlobalData.VM_MA.Artist.PostUrl}/posts/{eitem.contentId.Split('/').Last()} >");
+                                            }
+                                            else
+                                            {
+                                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {eitem.serviceProvider} ({eitem.contentId})>");
+                                            }
+                                            pi.Comments.Add(string.Empty);
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                        break;
+                    case "text":
+                        {
+                            if (!string.IsNullOrEmpty(fd.body.body.text))
+                            {
+                                pi.Comments.Add(fd.body.body.text);
+                            }
+                        }
+                        break;
+                }
+                bis.Add(pi);
+                GlobalData.VM_MA.PostCount++;
+                //return fd.body.nextUrl ?? null;
+            }
+            return true;
+            //return null;
         }
 
         public async override Task<ResultMessage> LikePost(string pid, string cid)
