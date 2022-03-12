@@ -238,6 +238,14 @@ namespace AtelierMisaka
                     CoverPicThumb = fd.body.coverImageUrl,
                     IsLiked = fd.body.isLiked
                 };
+                if (DateTime.TryParse(fd.body.publishedDatetime, out DateTime dt))
+                {
+                    pi.CreateDate = dt;
+                }
+                if (DateTime.TryParse(fd.body.updatedDatetime, out dt))
+                {
+                    pi.UpdateDate = dt;
+                }
                 GlobalData.VM_MA.PostTitle = pi.Title;
                 switch (fd.body.type)
                 {
