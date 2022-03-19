@@ -36,11 +36,8 @@ namespace AtelierMisaka
 
             System.Threading.Tasks.Task.Run(() =>
             {
-                System.Threading.Thread.Sleep(300000);
-                if (GlobalData.VM_MA.LatestVersion.EndsWith("ck"))
-                {
-                    GlobalCommand.CheckVersionCommand.Execute(null);
-                }
+                System.Threading.Thread.Sleep(10000);
+                GlobalCommand.CheckVersionCommand.Execute(null);
             });
         }
 
