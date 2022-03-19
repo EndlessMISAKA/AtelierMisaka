@@ -562,6 +562,11 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
                 }
+                if (File.Exists("Settings\\Setting_Normal.ini"))
+                {
+                    var ms = File.ReadAllLines("Settings\\Setting_Normal.ini");
+                    GlobalData.VM_MA.CheckFile = ms[0] == "1";
+                }
             }
             catch { }
         }

@@ -90,6 +90,28 @@ namespace AtelierMisaka
             return false;
         }
 
+        public static bool IsFileExist(string folder, string name)
+        {
+            if (GlobalData.VM_MA.CheckFile)
+            {
+                var fp = Path.Combine(folder, name);
+                return File.Exists(fp);
+            }
+            return true;
+        }
+
+        public static void SaveNorSet()
+        {
+            try
+            {
+                File.WriteAllText("Settings\\Setting_Normal.ini", GlobalData.VM_MA.CheckFile ? "1" : "0");
+            }
+            catch (Exception ex)
+            {
+                GlobalData.VM_MA.Messages = ex.Message;
+            }
+        }
+
         public static string ConverToJson(IEnumerable<ArtistInfo> ais)
         {
             return JsonConvert.SerializeObject(ais);

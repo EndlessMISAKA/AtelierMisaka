@@ -46,7 +46,12 @@ namespace AtelierMisaka.Models
 
         public bool HasLog(string link)
         {
-            return IsExist && _selectedLogs.FindIndex(x => link.Contains(x.Url)) != -1;
+            if (IsExist)
+            {
+                var dl = _selectedLogs.Find(x => link.Contains(x.Url));
+                return dl == null ? false : GlobalMethord.IsFileExist(dl.SavePath, dl.FileName);
+            }
+            return false;
         }
 
         public new bool Add(DownloadLog dl)

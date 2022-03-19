@@ -154,6 +154,7 @@ namespace AtelierMisaka.ViewModels
         private string _dateS = string.Empty;
         private string _dateE = string.Empty;
         private string _messages = string.Empty;
+        private bool _checkFile = false;
         private bool _useDate = false;
         private bool _showCheck = false;
         private bool _showLoad = false;
@@ -187,6 +188,7 @@ namespace AtelierMisaka.ViewModels
         public string CurrVersion { get; } = System.Windows.Application.ResourceAssembly.GetName().Version.ToString();
 
         public string VersionLink = "https://github.com/EndlessMISAKA/AtelierMisaka/releases/latest";
+        //public string VersionDL = "https://github.com/EndlessMISAKA/AtelierMisaka/releases/download/V{0}/AtelierMisaka_Soft_{1}.zip";
 
         public string LatestVersion
         {
@@ -274,6 +276,20 @@ namespace AtelierMisaka.ViewModels
                 {
                     _isProxyError = value;
                     RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool CheckFile
+        {
+            get => _checkFile;
+            set
+            {
+                if(_checkFile != value)
+                {
+                    _checkFile = value;
+                    RaisePropertyChanged();
+                    GlobalMethord.SaveNorSet();
                 }
             }
         }
