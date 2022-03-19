@@ -45,6 +45,7 @@
     <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
     <sys:String x:Key="Text_Date">截止日期</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14</sys:String>
+    <sys:String x:Key="Text_CheckFile">检查本地文件</sys:String>
     <sys:String x:Key="Text_UpdateList">更新支援列表</sys:String>
     <sys:String x:Key="Text_StarButton">确定</sys:String>
     <sys:String x:Key="Text_ExitButton">退出</sys:String>

@@ -45,6 +45,7 @@
     <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
     <sys:String x:Key="Text_Date">タイムリミット</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14(半角注意)</sys:String>
+    <sys:String x:Key="Text_CheckFile">ファイルチェック</sys:String>
     <sys:String x:Key="Text_UpdateList">支援リストを更新</sys:String>
     <sys:String x:Key="Text_StarButton">調合開始</sys:String>
     <sys:String x:Key="Text_ExitButton">調合をやめる</sys:String>

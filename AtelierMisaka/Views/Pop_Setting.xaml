@@ -18,7 +18,7 @@
         </Storyboard>
     </UserControl.Resources>
     <Grid Background="#2D2D30">
-        <StackPanel Orientation="Vertical" Width="900" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel Orientation="Vertical" Width="900" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center">
                 <RadioButton Content="Fanbox" Style="{StaticResource RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fanbox}}"/>
@@ -122,9 +122,10 @@
                 </StackPanel>
             </Grid>
             <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="280"/>
-                <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_StarButton}" Margin="20,0"/>
+                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="200"/>
+                <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_StarButton}" Margin="20,0" Width="150"/>
                 <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_ExitButton}"/>
+                <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_CheckFile}" IsChecked="{Binding CheckFile}" Margin="20,0"/>
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,5" Orientation="Horizontal">

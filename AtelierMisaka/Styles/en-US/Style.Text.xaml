@@ -45,6 +45,7 @@
     <sys:String x:Key="Text_ProxyTag">e.g. 127.0.0.1:1080</sys:String>
     <sys:String x:Key="Text_Date">Until</sys:String>
     <sys:String x:Key="Text_DateTag">e.g. 1919/07/21 11:45:14</sys:String>
+    <sys:String x:Key="Text_CheckFile">Check Local File</sys:String>
     <sys:String x:Key="Text_UpdateList">Update SupportList</sys:String>
     <sys:String x:Key="Text_StarButton">OK</sys:String>
     <sys:String x:Key="Text_ExitButton">Exit</sys:String>
