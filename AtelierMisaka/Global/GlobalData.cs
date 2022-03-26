@@ -28,6 +28,17 @@ namespace AtelierMisaka
 
         public static Dictionary<string, int> RetryCounter = new Dictionary<string, int>();
 
+        public static Dictionary<string, string> UrlProvider = new Dictionary<string, string>()
+        {
+            { "youtube", "https://www.youtube.com/watch?v=" },
+            { "fanbox", "https://www.fanbox.cc/" },
+            { "gist", "https://gist.github.com/" },
+            { "soundcloud", "https://soundcloud.com/" },
+            { "vimeo", "https://vimeo.com/" },
+            { "twitter", "https://twitter.com/i/web/status/" },
+            { "google_forms", "https://docs.google.com/forms/d/e/" },
+        };
+
         private static Lazy<FanboxUtils> _utilFanbox = new Lazy<FanboxUtils>();
         private static Lazy<FantiaUtils> _utilFantia = new Lazy<FantiaUtils>();
         private static Lazy<PatreonUtils> _utilPatreon = new Lazy<PatreonUtils>();

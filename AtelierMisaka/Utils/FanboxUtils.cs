@@ -330,6 +330,9 @@ namespace AtelierMisaka
                                             pi.Comments.Add(string.Empty);
                                         }
                                         break;
+                                    default:
+                                        pi.Comments.Add(JsonConvert.SerializeObject(binfo));
+                                        break;
                                 }
                             }
                         }
@@ -341,6 +344,25 @@ namespace AtelierMisaka
                                 pi.Comments.Add(fd.body.body.text);
                             }
                         }
+                        break;
+                    case "video":
+                        {
+                            if (!string.IsNullOrEmpty(fd.body.body.text))
+                            {
+                                pi.Comments.Add(fd.body.body.text);
+                            }
+                            if (GlobalData.UrlProvider.TryGetValue(fd.body.body.video.serviceProvider, out var url))
+                            {
+                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {url}{fd.body.body.video.videoId} >");
+                            }
+                            else
+                            {
+                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {fd.body.body.video.serviceProvider} ({fd.body.body.video.videoId})>");
+                            }
+                        }
+                        break;
+                    default:
+                        pi.Comments.Add(JsonConvert.SerializeObject(fd.body));
                         break;
                 }
                 bis.Add(pi);

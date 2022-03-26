@@ -118,8 +118,15 @@ namespace AtelierMisaka.Models
 		public Dictionary<string, EmbedItem> embedMap { get; set; }
 		public ImageItem[] images { get; set; }
 		public FileItem[] files { get; set; }
-		public string text { get; set; }
+        public VideoItem video { get; set; }
+        public string text { get; set; }
 	}
+
+    public class VideoItem
+    {
+        public string serviceProvider { get; set; }
+        public string videoId { get; set; }
+    }
 
 	public class ImageItem
 	{
