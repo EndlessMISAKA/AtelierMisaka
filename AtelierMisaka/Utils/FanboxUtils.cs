@@ -291,6 +291,13 @@ namespace AtelierMisaka
                                 {
                                     case "p":
                                         pi.Comments.Add(binfo.text);
+                                        if (binfo.links != null)
+                                        {
+                                            binfo.links.ForEach(x =>
+                                            {
+                                                pi.Comments.Add($"<{GlobalLanguage.Text_LinkPref} {x.url} >");
+                                            });
+                                        }
                                         break;
                                     case "file":
                                         if (null != fd.body.body.fileMap && fd.body.body.fileMap.TryGetValue(binfo.fileId, out FileItem fitem))

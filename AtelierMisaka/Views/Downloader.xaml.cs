@@ -126,23 +126,30 @@ namespace AtelierMisaka.Views
                                 {
                                     try
                                     {
+                                        var commentContent = string.Join("<br/>", bi.Comments);
                                         var fp = Path.Combine(sp, "Comment.html");
                                         if (File.Exists(fp))
                                         {
-                                            var cms = File.ReadAllLines(fp);
-                                            if (cms.Except(bi.Comments).Count() == 0)
+                                            var cms = File.ReadAllText(fp);
+                                            if (cms == commentContent)
                                             {
                                                 continue;
                                             }
                                         }
-                                        File.WriteAllLines(Path.Combine(sp, "Comment.html"), bi.Comments);
+                                        File.WriteAllText(Path.Combine(sp, "Comment.html"), commentContent);
+                                        bool flag = true;
                                         bi.Comments.ForEach(x =>
                                         {
                                             var ma = GlobalRegex.Regex_Url.Match(x);
                                             while (ma.Success)
                                             {
+                                                if (flag)
+                                                {
+                                                    flag = false;
+                                                    File.AppendAllText(linkfile, $"({bi.CreateDate:yyyy-MM-dd}) {bi.Title}:<br/>");
+                                                }
                                                 var tar = ma.Groups[0].Value;
-                                                File.AppendAllText(linkfile, $"<a href=\"{tar}\">{tar}</a><br/>{Environment.NewLine}");
+                                                File.AppendAllText(linkfile, $"<a target=\"_blank\" href=\"{tar}\">{tar}</a><br/>");
                                                 ma = ma.NextMatch();
                                             }
                                         });

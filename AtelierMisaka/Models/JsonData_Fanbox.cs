@@ -160,7 +160,14 @@ namespace AtelierMisaka.Models
 		public string embedId { get; set; }
 		public string imageId { get; set; }
 		public string fileId { get; set; }
+        public List<LinkItem> links { get; set; }
 	}
+
+    public class LinkItem
+    {
+        public string url { get; set; }
+    }
+
 	/**/
     #endregion
 
