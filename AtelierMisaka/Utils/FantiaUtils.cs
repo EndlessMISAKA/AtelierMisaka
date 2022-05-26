@@ -277,7 +277,7 @@ namespace AtelierMisaka
                     {
                         fi.DeadDate = "---";
                     }
-					
+
                     foreach (var ct in jfp.post.post_contents)
                     {
                         var fee = 0;
@@ -309,17 +309,17 @@ namespace AtelierMisaka
                                     var ffn = imgUrl.Substring(0, imgUrl.IndexOf("?Key"));
                                     var ext = ffn.Substring(ffn.LastIndexOf('.'));
                                     var fn = $"{img.id}{ext}";
-									fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
-									fi.FileNames.Add(fn);
+                                    fi.Comments.Add($"<{GlobalLanguage.Text_ImagePref} {fn}>");
+                                    fi.FileNames.Add(fn);
                                     fi.ContentUrls.Add(imgUrl);
                                     fi.Fees.Add($"{fee}");
                                     fi.PTitles.Add(stitle);
                                 }
                             }
                             else if (ct.category == "file")
-							{
-								fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
-								fi.FileNames.Add(ct.filename);
+                            {
+                                fi.Comments.Add($"<{GlobalLanguage.Text_FilePref} {ct.filename}>");
+                                fi.FileNames.Add(ct.filename);
                                 fi.ContentUrls.Add($"https://fantia.jp{ct.download_uri}");
                                 fi.Fees.Add($"{fee}");
                                 fi.PTitles.Add(stitle);
