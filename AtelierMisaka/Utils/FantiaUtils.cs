@@ -19,8 +19,10 @@ namespace AtelierMisaka
         readonly Regex _artPost = GlobalRegex.GetRegex(RegexType.FantiaPostId);
         readonly Regex _artUrl = GlobalRegex.GetRegex(RegexType.FantiaUrl);
         readonly Regex _artDataImage = GlobalRegex.GetRegex(RegexType.FantiaDataImage);
+        readonly Regex _csrf = GlobalRegex.GetRegex(RegexType.FantiaCsrf);
         readonly string _nextP = "fa fa-angle-right";
         private HashSet<string> _pidList = null;
+        private string _csrftoken = "";
 
         public async override Task<ResultMessage> GetArtistInfo(string url)
         {
@@ -104,7 +106,7 @@ namespace AtelierMisaka
             try
             {
                 List<ArtistInfo> ais = new List<ArtistInfo>();
-                string sphtml = GetWebCode($"https://fantia.jp/mypage/users/plans?page={index}&type={free}free");
+                string sphtml = GetWebCode($"https://fantia.jp/mypage/users/plans?page={index}&type={free}free", false);
                 Match ma = _artIdName.Match(sphtml);
                 while (ma.Success)
                 {
@@ -197,8 +199,14 @@ namespace AtelierMisaka
             try
             {
                 List<BaseItem> bis = new List<BaseItem>();
-                string sphtml = GetWebCode($"https://fantia.jp/fanclubs/{uid}/posts?page={index}&utf8=%E2%9C%93&q%5Bs%5D=newer");
-                Match ma = _artPost.Match(sphtml);
+                string sphtml = GetWebCode($"https://fantia.jp/fanclubs/{uid}/posts?page={index}&utf8=%E2%9C%93&q%5Bs%5D=newer", false);
+                Match ma = _csrf.Match(sphtml);
+                if (!ma.Success)
+                {
+                    throw new Exception("Csrf Token Not Found");
+                }
+                _csrftoken = ma.Groups[1].Value;
+                ma = _artPost.Match(sphtml);
                 bool flag = true;
                 while (ma.Success)
                 {
@@ -235,7 +243,8 @@ namespace AtelierMisaka
         {
             try
             {
-                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                var html = GetWebCode($"https://fantia.jp/api/v1/posts/{pid}");
+                var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(html);
                 //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid); //for test
                 if (null != jfp.post)
 				{
@@ -413,6 +422,7 @@ namespace AtelierMisaka
                 try
                 {
                     var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
+                    //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid);
                     if (null != jfp.post)
                     {
                         FantiaItem fi = new FantiaItem();
@@ -562,11 +572,13 @@ namespace AtelierMisaka
             });
         }
 
-        private string GetWebCode(string url)
+        private string GetWebCode(string url, bool flag = true)
         {
             WebClient wc = new WebClient();
             try
             {
+                if(flag)
+                    wc.Headers.Add("x-csrf-token", _csrftoken);
                 wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
                 if (GlobalData.VM_MA.UseProxy)
                 {

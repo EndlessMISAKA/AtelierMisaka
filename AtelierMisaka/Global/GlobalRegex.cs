@@ -22,6 +22,7 @@ namespace AtelierMisaka
         private static string _regex_FantiaPostId = string.Empty;
         private static string _regex_FantiaUrl = string.Empty;
         private static string _regex_FantiaDataImage = string.Empty;
+        private static string _regex_FantiaCsrf = string.Empty;
 
         private static Lazy<Regex> _re_RemoveLastDot = null;
         private static Lazy<Regex> _re_ProxyString = null;
@@ -55,6 +56,7 @@ namespace AtelierMisaka
                 _regex_FantiaPostId = regexs[10];
                 _regex_FantiaUrl = regexs[11];
                 _regex_FantiaDataImage = regexs[12];
+                _regex_FantiaCsrf = regexs[13];
             }
             catch
             {
@@ -74,6 +76,7 @@ namespace AtelierMisaka
                 _regex_FantiaPostId = @"block"" href=""/posts/(\d+)";
                 _regex_FantiaUrl = @"^https://fantia.jp/fanclubs/(\d+)$";
                 _regex_FantiaDataImage = @"^data:image/(\w+);base64,(.+)$";
+                _regex_FantiaCsrf = @"csrf-token"" content=""(.+?)""";
 
                 File.WriteAllLines("Settings\\RegexStr.ini", new string[]
                 {
@@ -92,7 +95,8 @@ namespace AtelierMisaka
                     _regex_FantiaPlan,
                     _regex_FantiaPostId,
                     _regex_FantiaUrl,
-                    _regex_FantiaDataImage
+                    _regex_FantiaDataImage,
+                    _regex_FantiaCsrf
                 });
             }
             _re_RemoveLastDot = new Lazy<Regex>(() => new Regex(_regex_RemoveLastDot, RegexOptions.Compiled));
@@ -129,6 +133,8 @@ namespace AtelierMisaka
                     return new Regex(_regex_FantiaUrl, RegexOptions.Compiled);
                 case RegexType.FantiaDataImage:
                     return new Regex(_regex_FantiaDataImage, RegexOptions.Compiled);
+                case RegexType.FantiaCsrf:
+                    return new Regex(_regex_FantiaCsrf, RegexOptions.Compiled);
             }
             return null;
         }

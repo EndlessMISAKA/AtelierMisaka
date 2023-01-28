@@ -27,7 +27,7 @@ namespace AtelierMisaka.Views
             MainBody.Inlines.Clear();
             var doms = bi.Comments;
             string link = string.Empty;
-            bool flag = false;
+            //bool flag = false;
             string _preFile = $"<{GlobalLanguage.Text_FilePref}";
             string _preImage = $"<{GlobalLanguage.Text_ImagePref}";
             string _preLink = $"<{GlobalLanguage.Text_LinkPref}";
