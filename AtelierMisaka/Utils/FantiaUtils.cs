@@ -200,13 +200,13 @@ namespace AtelierMisaka
             {
                 List<BaseItem> bis = new List<BaseItem>();
                 string sphtml = GetWebCode($"https://fantia.jp/fanclubs/{uid}/posts?page={index}&utf8=%E2%9C%93&q%5Bs%5D=newer", false);
-                Match ma = _csrf.Match(sphtml);
-                if (!ma.Success)
-                {
-                    throw new Exception("Csrf Token Not Found");
-                }
-                _csrftoken = ma.Groups[1].Value;
-                ma = _artPost.Match(sphtml);
+                //Match ma = _csrf.Match(sphtml);
+                //if (!ma.Success)
+                //{
+                //    throw new Exception("Csrf Token Not Found");
+                //}
+                //_csrftoken = ma.Groups[1].Value;
+                Match ma = _artPost.Match(sphtml);
                 bool flag = true;
                 while (ma.Success)
                 {
@@ -243,6 +243,7 @@ namespace AtelierMisaka
         {
             try
             {
+                GetCsrfToken($"https://fantia.jp/posts/{pid}");
                 var html = GetWebCode($"https://fantia.jp/api/v1/posts/{pid}");
                 var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(html);
                 //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid); //for test
@@ -421,8 +422,9 @@ namespace AtelierMisaka
             {
                 try
                 {
-                    var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(GetWebCode($"https://fantia.jp/api/v1/posts/{pid}"));
-                    //var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(pid);
+                    GetCsrfToken($"https://fantia.jp/posts/{pid}");
+                    var html = GetWebCode($"https://fantia.jp/api/v1/posts/{pid}");
+                    var jfp = JsonConvert.DeserializeObject<JsonData_Fantia_Post>(html);
                     if (null != jfp.post)
                     {
                         FantiaItem fi = new FantiaItem();
@@ -572,13 +574,44 @@ namespace AtelierMisaka
             });
         }
 
+        private void GetCsrfToken(string url)
+        {
+            WebClient wc = new WebClient();
+            try
+            {
+                wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                if (GlobalData.VM_MA.UseProxy)
+                {
+                    wc.Proxy = GlobalData.VM_MA.MyProxy;
+                }
+                var ts = wc.DownloadData(url);
+                string tts = Encoding.UTF8.GetString(ts);
+                Match ma = _csrf.Match(tts);
+                if (!ma.Success)
+                {
+                    throw new Exception("Csrf Token Not Found");
+                }
+                _csrftoken = ma.Groups[1].Value;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                wc.Dispose();
+            }
+        }
+
         private string GetWebCode(string url, bool flag = true)
         {
             WebClient wc = new WebClient();
             try
             {
-                if(flag)
+                if (flag)
+                {
                     wc.Headers.Add("x-csrf-token", _csrftoken);
+                }
                 wc.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
                 if (GlobalData.VM_MA.UseProxy)
                 {
