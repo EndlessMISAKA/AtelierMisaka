@@ -39,6 +39,7 @@
 
     <sys:String x:Key="Text_CreatorUrl">Url</sys:String>
     <sys:String x:Key="Text_Cost">Cost</sys:String>
+    <sys:String x:Key="Text_OpBrowser">Open Browser</sys:String>
     <sys:String x:Key="Text_SavePath">SavePath</sys:String>
     <sys:String x:Key="Text_SavePathTag">e.g. E:\Setu</sys:String>
     <sys:String x:Key="Text_Proxy">Proxy</sys:String>
@@ -54,9 +55,9 @@
     <sys:String x:Key="Text_CurrVer">Current Version:</sys:String>
     <sys:String x:Key="Text_LaVer">Latest Version:</sys:String>
 
-    <sys:String x:Key="Text_CookiesTagFanbox">e.g. FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
-    <sys:String x:Key="Text_CookiesTagFantia">e.g. _session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>
-    <sys:String x:Key="Text_CookiesTagPatreon">Input your mail-address</sys:String>
+    <sys:String x:Key="Text_CookiesTagFanbox">Input your pixiv ID.(e.g. 1802453)</sys:String>
+    <sys:String x:Key="Text_CookiesTagFantia">Input your account name.(e.g. misakacpy)</sys:String>
+    <sys:String x:Key="Text_CookiesTagPatreon">Input your account name.(e.g. misakacpy)</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>

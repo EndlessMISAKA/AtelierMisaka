@@ -304,7 +304,7 @@ namespace AtelierMisaka.ViewModels
 
         public CommonCommand QuestCommand
         {
-            get => new CommonCommand(async() =>
+            get => new CommonCommand(async () =>
             {
                 _isQuest = true;
                 await Task.Run(() =>
@@ -1025,7 +1025,7 @@ namespace AtelierMisaka.ViewModels
             {
                 if (di.DLStatus == DownloadStatus.Cancel)
                     return;
-                
+
                 if (di.DLStatus == DownloadStatus.Downloading)
                 {
                     await di.Cancel();

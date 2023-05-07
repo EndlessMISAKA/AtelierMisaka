@@ -13,7 +13,8 @@ namespace AtelierMisaka
     public static class CefHelper
     {
         private static readonly string asesmblyDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-        public static readonly string cefDirectory = Path.Combine(asesmblyDirectory, Environment.Is64BitProcess ? "x64" : "x86");
+        public static readonly string cefDirectory = Path.Combine(asesmblyDirectory, "CefChrome");
+        public static readonly string dllDirectory = Path.Combine(asesmblyDirectory, "Dlls");
         private static bool initialized;
 
         public static string CachePath => Path.Combine(asesmblyDirectory, "ChromiumCache");
@@ -24,36 +25,50 @@ namespace AtelierMisaka
 
             var cefSettings = new CefSettings()
             {
+                LocalesDirPath = Path.Combine(cefDirectory, "locales"),
+                ResourcesDirPath = cefDirectory,
                 BrowserSubprocessPath = Path.Combine(cefDirectory, "CefSharp.BrowserSubprocess.exe"),
                 CachePath = CachePath,
             };
-            cefSettings.CefCommandLineArgs.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36");
+            cefSettings.CefCommandLineArgs.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
             cefSettings.LogSeverity = LogSeverity.Disable;
-            
-            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+
+            CefSharpSettings.WcfEnabled = true;
             CefSharpSettings.ShutdownOnExit = true;
             CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
             Cef.Initialize(cefSettings);
+
             initialized = true;
         }
 
         public static Assembly ResolveCefSharpAssembly(object sender, ResolveEventArgs args)
         {
+            var assemblyName = args.Name.Split(new[] { ',' }, 2).FirstOrDefault() + ".dll";
             if (args.Name.StartsWith("CefSharp"))
             {
-                var assemblyName = args.Name.Split(new[] { ',' }, 2).FirstOrDefault() + ".dll";
                 var archSpecificPath = Path.Combine(cefDirectory, assemblyName);
 
                 return File.Exists(archSpecificPath)
                     ? Assembly.LoadFile(archSpecificPath)
                     : null;
             }
-            return null;
+            else
+            {
+                var archSpecificPath = Path.Combine(dllDirectory, assemblyName);
+
+                return File.Exists(archSpecificPath)
+                    ? Assembly.LoadFile(archSpecificPath)
+                    : null;
+            }
         }
 
         public static async Task<bool> SetProxy(ChromiumWebBrowser cwb, string Address)
         {
-            return await CefSharp.Cef.UIThreadTaskFactory.StartNew(delegate
+            if (!GlobalRegex.Regex_Proxy.IsMatch(Address))
+            {
+                return false;
+            }
+            return await Cef.UIThreadTaskFactory.StartNew(delegate
             {
                 var rc = cwb.GetBrowser().GetHost().RequestContext;
                 var v = new Dictionary<string, object>();

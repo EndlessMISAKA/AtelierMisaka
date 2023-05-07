@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,8 +23,10 @@ namespace AtelierMisaka
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            SetDllDirectory(CefHelper.cefDirectory);
-            
+            SetDllDirectory(CefHelper.dllDirectory);
+
+            CefHelper.Initialize();
+
             Control.IsTabStopProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(false));
 
             GlobalRegex.Initialize();

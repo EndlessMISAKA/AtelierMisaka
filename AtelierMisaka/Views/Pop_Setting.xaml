@@ -97,8 +97,13 @@
                 </StackPanel>
             </Grid>
             <Grid Height="60">
-                <TextBlock Text="Cookies" Style="{StaticResource TBL_Setting}"/>
-                <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}" Text="{Binding Cookies, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="MouseDoubleClick_Logout"/>
+                <TextBlock Text="IDName" Style="{StaticResource TBL_Setting}"/>
+                <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}"
+                         Text="{Binding IDName, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="80,10,250,10" Width="500"/>
+                <Button Style="{StaticResource BTN_Setting}" HorizontalAlignment="Right"
+                        Width="210" Margin="20,10" Height="40" Click="Btn_OpenBrowser_Click"
+                        Content="{DynamicResource Text_OpBrowser}"/>
             </Grid>
             <Grid Height="60">
                 <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>
@@ -203,8 +208,21 @@
                 </TextBlock>
             </StackPanel>
         </Grid>
-        <Grid Visibility="{Binding ShowLogin, Converter={StaticResource btvc}}">
+        <Grid Visibility="{Binding ShowLogin, Converter={StaticResource btvc}}" Background="#10FFFFFF">
             <ContentControl Content="{Binding PatreonCefBrowser}" Margin="3,0,3,3"/>
+            <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Margin="10"
+                    Height="27" ToolTip="{DynamicResource Text_ClosePost}" Cursor="Hand"
+                    Command="{x:Static basens:GlobalCommand.CloseBrowserCommand}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <Ellipse Width="27" Height="27" Fill="Gray"/>
+                            <Path Data="M0,1.5 A1.5,1.5 0 0 1 1.5,0 L6,4.5 A1,1 0 0 0 7,4.5 L11.5,0 A1.5,1.5 0 0 1 13,1.5 L8.5,6 A1,1 0 0 0 8.5,7 L13,11.5 A1.5,1.5 0 0 1 11.5,13 L7,8.5 A1,1 0 0 0 6,8.5 L1.5,13 A1.5,1.5 0 0 1 0,11.5 L4.5,7 A1,1 0 0 0 4.5,6Z"
+                              Fill="#2D2D30" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6.562,6.437,6.437,6.562"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

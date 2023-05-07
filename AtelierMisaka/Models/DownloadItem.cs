@@ -20,13 +20,12 @@ namespace AtelierMisaka.Models
         private DateTime _cTime = DateTime.Now;
         private int _percent = 0;
         private int _reTryC = 0;
-        private bool _isStop = false;
         private long _contentLength = 0;
         private long _receviedCount = 0;
         private long _totalRC = 0;
         private int _zeroCount = 0;
         private byte[] _dlData = null;
-        
+
         private Timer _showSpeed = null;
 
         private HttpWebRequest _request;
@@ -44,7 +43,7 @@ namespace AtelierMisaka.Models
         {
             _showSpeed = new Timer(ShowSpeed);
         }
-        
+
         public DownloadStatus DLStatus
         {
             get => _ds;
@@ -594,8 +593,11 @@ namespace AtelierMisaka.Models
 
                 if (_contentLength != -1)
                 {
-                    Array.Clear(_dlData, 0, _dlData.Length);
-                    _dlData = null;
+                    if (_dlData != null)
+                    {
+                        Array.Clear(_dlData, 0, _dlData.Length);
+                        _dlData = null;
+                    }
                     _contentLength = 0;
                     _totalRC = 0;
                     _receviedCount = 0;

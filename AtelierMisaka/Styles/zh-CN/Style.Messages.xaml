@@ -32,7 +32,7 @@
     <sys:String x:Key="Msg_ChangeSavePath" xml:space="preserve">保存路径的修改&#13;将在下次生效</sys:String>
     <sys:String x:Key="Msg_CheckSavePath">保存路径不能为空</sys:String>
     <sys:String x:Key="Msg_CreateSavePathError">创建保存路径失败</sys:String>
-    <sys:String x:Key="Msg_CheckCookies">Cookies不能为空</sys:String>
+    <sys:String x:Key="Msg_CheckCookies">IDName不能为空</sys:String>
     <sys:String x:Key="Msg_NoPosts">没有可阅读的文章</sys:String>
 
     <sys:String x:Key="Msg_StartConfirm">确定使用这个配方吗?</sys:String>
@@ -44,6 +44,8 @@
     <sys:String x:Key="Msg_LoadCover">加载中...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">网络错误，请重试</sys:String>
     <sys:String x:Key="Msg_LogOutMsg">要注销吗？</sys:String>
+    <sys:String x:Key="Msg_NeedLoginMsg">请先登录</sys:String>
+    <sys:String x:Key="Msg_ChangeAccountMsg">与输入的帐号不同</sys:String>
 
     <!--#endregion-->
 

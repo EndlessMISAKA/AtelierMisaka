@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AtelierMisaka.Models
+﻿namespace AtelierMisaka.Models
 {
     #region Post
 

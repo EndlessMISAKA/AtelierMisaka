@@ -1,4 +1,5 @@
 ﻿using AtelierMisaka.Models;
+using AtelierMisaka.Utils;
 using AtelierMisaka.Views;
 using Newtonsoft.Json;
 using System;
@@ -112,11 +113,6 @@ namespace AtelierMisaka
             }
         }
 
-        public static string ConverToJson(IEnumerable<ArtistInfo> ais)
-        {
-            return JsonConvert.SerializeObject(ais);
-        }
-
         public static List<ArtistInfo> ReadArtists(string jsonp)
         {
             List<ArtistInfo> ais = new List<ArtistInfo>() { new ArtistInfo() };
@@ -124,7 +120,7 @@ namespace AtelierMisaka
             {
                 try
                 {
-                    ais = JsonConvert.DeserializeObject<List<ArtistInfo>>(File.ReadAllText(jsonp));
+                    ais = JsonHelper.ToObject<List<ArtistInfo>>(File.ReadAllText(jsonp));
                 }
                 catch { }
             }

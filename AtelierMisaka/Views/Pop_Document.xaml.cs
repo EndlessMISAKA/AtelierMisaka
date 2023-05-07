@@ -27,7 +27,6 @@ namespace AtelierMisaka.Views
             MainBody.Inlines.Clear();
             var doms = bi.Comments;
             string link = string.Empty;
-            //bool flag = false;
             string _preFile = $"<{GlobalLanguage.Text_FilePref}";
             string _preImage = $"<{GlobalLanguage.Text_ImagePref}";
             string _preLink = $"<{GlobalLanguage.Text_LinkPref}";
@@ -167,7 +166,7 @@ namespace AtelierMisaka.Views
                 MainBody.Inlines.Add(new Run(GlobalLanguage.Text_FList) { FontSize = 25 });
                 MainBody.Inlines.Add(new LineBreak());
 
-                for (int i = 0; i< bi.ContentUrls.Count; i++)
+                for (int i = 0; i < bi.ContentUrls.Count; i++)
                 {
                     Hyperlink hl = new Hyperlink(new Run(bi.FileNames[i]))
                     {
@@ -244,7 +243,7 @@ namespace AtelierMisaka.Views
                     hl.Click += Hl_Click;
                     if (index != 0)
                     {
-                        MainBody.Inlines.Add(new Run(dis.Substring(0, index)) { Foreground = fl? Brushes.LightSkyBlue : Brushes.White });
+                        MainBody.Inlines.Add(new Run(dis.Substring(0, index)) { Foreground = fl ? Brushes.LightSkyBlue : Brushes.White });
                     }
                     MainBody.Inlines.Add(hl);
                     if (flag && i2 != dis.Length - 1)

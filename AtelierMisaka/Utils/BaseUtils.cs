@@ -1,12 +1,13 @@
 ﻿using AtelierMisaka.Models;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka
 {
     public abstract class BaseUtils
     {
+        public abstract Task<ResultMessage> CheckCookies();
+
         public abstract Task<ResultMessage> GetArtistInfo(string url);
 
         public abstract Task<ResultMessage> GetArtistList();
@@ -26,7 +27,7 @@ namespace AtelierMisaka
         protected void Wc_DownloadDataCompleted(object sender, System.Net.DownloadDataCompletedEventArgs e)
         {
             BaseItem bi = (BaseItem)e.UserState;
-            if(e.Cancelled || e.Error != null)
+            if (e.Cancelled || e.Error != null)
             {
                 bi.Percent = -1;
             }

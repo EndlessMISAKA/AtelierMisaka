@@ -39,6 +39,7 @@
 
     <sys:String x:Key="Text_CreatorUrl">リンク</sys:String>
     <sys:String x:Key="Text_Cost">コスト</sys:String>
+    <sys:String x:Key="Text_OpBrowser">ブラウザを開く</sys:String>
     <sys:String x:Key="Text_SavePath">保存エリア</sys:String>
     <sys:String x:Key="Text_SavePathTag">例: E:\勉強資料</sys:String>
     <sys:String x:Key="Text_Proxy">プロキシサーバ</sys:String>
@@ -54,9 +55,9 @@
     <sys:String x:Key="Text_CurrVer">バージョン:</sys:String>
     <sys:String x:Key="Text_LaVer">最新バージョン:</sys:String>
 
-    <sys:String x:Key="Text_CookiesTagFanbox">例: FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
-    <sys:String x:Key="Text_CookiesTagFantia">例: _session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>
-    <sys:String x:Key="Text_CookiesTagPatreon">メールアドレスを入力してね</sys:String>
+    <sys:String x:Key="Text_CookiesTagFanbox">PixivのIDを入力してね</sys:String>
+    <sys:String x:Key="Text_CookiesTagFantia">アカウントネームを入力してね</sys:String>
+    <sys:String x:Key="Text_CookiesTagPatreon">アカウントネームを入力してね</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>

@@ -39,6 +39,7 @@
 
     <sys:String x:Key="Text_CreatorUrl">作者链接</sys:String>
     <sys:String x:Key="Text_Cost">付费区间</sys:String>
+    <sys:String x:Key="Text_OpBrowser">打开浏览器</sys:String>
     <sys:String x:Key="Text_SavePath">保存路径</sys:String>
     <sys:String x:Key="Text_SavePathTag">例: E:\Setu</sys:String>
     <sys:String x:Key="Text_Proxy">代理设置</sys:String>
@@ -53,10 +54,10 @@
     <sys:String x:Key="Text_ShowDownloader">查看炼精炉</sys:String>
     <sys:String x:Key="Text_CurrVer">当前版本:</sys:String>
     <sys:String x:Key="Text_LaVer">最新版本:</sys:String>
-    
-    <sys:String x:Key="Text_CookiesTagFanbox">例：FANBOXSESSID=2432443_2313213d5sa6348csa3284dsa1c1as4</sys:String>
-    <sys:String x:Key="Text_CookiesTagFantia">例：_session_id=dsadw13232rfcd43tcfwwb6e3f0ec</sys:String>
-    <sys:String x:Key="Text_CookiesTagPatreon">请输入你的邮箱地址</sys:String>
+
+    <sys:String x:Key="Text_CookiesTagFanbox">请输入你的Pixiv的ID号</sys:String>
+    <sys:String x:Key="Text_CookiesTagFantia">请输入你的帐号名</sys:String>
+    <sys:String x:Key="Text_CookiesTagPatreon">请输入你的帐号名</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>

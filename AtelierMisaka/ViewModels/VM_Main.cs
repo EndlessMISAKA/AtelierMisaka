@@ -135,21 +135,27 @@ namespace AtelierMisaka.ViewModels
 
         private ArtistInfo _artistFanbox = new ArtistInfo();
         private string _cookiesFanbox = string.Empty;
+        private string _idFanbox = string.Empty;
         private string _proxyFanbox = string.Empty;
         private string _savePathFanbox = string.Empty;
         private bool _useProxyFanbox = false;
+        private bool _needCookieFanbox = true;
 
         private ArtistInfo _artistPatreon = new ArtistInfo();
         private string _cookiesPatreon = string.Empty;
+        private string _idPatreon = string.Empty;
         private string _proxyPatreon = string.Empty;
         private string _savePathPatreon = string.Empty;
         private bool _useProxyPatreon = false;
+        private bool _needCookiePatreon = true;
 
         private ArtistInfo _artistFantia = new ArtistInfo();
         private string _cookiesFantia = string.Empty;
+        private string _idFantia = string.Empty;
         private string _proxyFantia = string.Empty;
         private string _savePathFantia = string.Empty;
         private bool _useProxyFantia = false;
+        private bool _needCookieFantia = true;
 
         private string _dateS = string.Empty;
         private string _dateE = string.Empty;
@@ -189,6 +195,22 @@ namespace AtelierMisaka.ViewModels
 
         public string VersionLink = "https://github.com/EndlessMISAKA/AtelierMisaka/releases/latest";
         //public string VersionDL = "https://github.com/EndlessMISAKA/AtelierMisaka/releases/download/V{0}/AtelierMisaka_Soft_{1}.zip";
+
+        public string MainPage
+        {
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return "https://www.fanbox.cc";
+                    case SiteType.Fantia:
+                        return "https://fantia.jp";
+                    default:
+                        return "https://www.patreon.com";
+                }
+            }
+        }
 
         public string LatestVersion
         {
@@ -285,7 +307,7 @@ namespace AtelierMisaka.ViewModels
             get => _checkFile;
             set
             {
-                if(_checkFile != value)
+                if (_checkFile != value)
                 {
                     _checkFile = value;
                     RaisePropertyChanged();
@@ -317,7 +339,7 @@ namespace AtelierMisaka.ViewModels
                     _site = value;
                     RaisePropertyChanged();
                     RaisePropertyChanged("ArtistList");
-                    RaisePropertyChanged("Cookies");
+                    RaisePropertyChanged("IDName");
                     RaisePropertyChanged("UseProxy");
                     RaisePropertyChanged("Proxy");
                     RaisePropertyChanged("SavePath");
@@ -576,6 +598,77 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public bool NeedCookie
+        {
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _needCookieFanbox;
+                    case SiteType.Fantia:
+                        return _needCookieFantia;
+                    default:
+                        return _needCookiePatreon;
+                }
+            }
+            set
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        _needCookieFanbox = value;
+                        break;
+                    case SiteType.Fantia:
+                        _needCookieFantia = value;
+                        break;
+                    default:
+                        _needCookiePatreon = value;
+                        break;
+                }
+            }
+        }
+
+        public string IDName
+        {
+            get
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        return _idFanbox;
+                    case SiteType.Fantia:
+                        return _idFantia;
+                    default:
+                        return _idPatreon;
+                }
+            }
+            set
+            {
+                switch (_site)
+                {
+                    case SiteType.Fanbox:
+                        if (_idFanbox != value)
+                        {
+                            _idFanbox = value;
+                        }
+                        break;
+                    case SiteType.Fantia:
+                        if (_idFantia != value)
+                        {
+                            _idFantia = value;
+                        }
+                        break;
+                    default:
+                        if (_idPatreon != value)
+                        {
+                            _idPatreon = value;
+                        }
+                        break;
+                }
+            }
+        }
+
         public string Cookies
         {
             get
@@ -639,7 +732,7 @@ namespace AtelierMisaka.ViewModels
                 if (_dateS != value)
                 {
                     _dateS = value;
-                    RaisePropertyChanged();
+                    //RaisePropertyChanged();
                     if (string.IsNullOrEmpty(_dateS))
                     {
                         LastDate = DateTime.Parse("2010/01/01");

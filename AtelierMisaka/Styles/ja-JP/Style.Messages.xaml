@@ -32,7 +32,7 @@
     <sys:String x:Key="Msg_ChangeSavePath" xml:space="preserve">保存エリアの変更は&#13;次回で反映されます</sys:String>
     <sys:String x:Key="Msg_CheckSavePath">保存エリアは必要なものです</sys:String>
     <sys:String x:Key="Msg_CreateSavePathError">保存エリアを作れません</sys:String>
-    <sys:String x:Key="Msg_CheckCookies">Cookiesは必要なものです</sys:String>
+    <sys:String x:Key="Msg_CheckCookies">IDNameは必要なものです</sys:String>
     <sys:String x:Key="Msg_NoPosts">見られる文章はございません</sys:String>
 
     <sys:String x:Key="Msg_StartConfirm">このレシピでいいですか？</sys:String>
@@ -44,6 +44,8 @@
     <sys:String x:Key="Msg_LoadCover">ロード中...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">ネットワークエラー&#13;もう一度試してください</sys:String>
     <sys:String x:Key="Msg_LogOutMsg">ログアウトしますか？</sys:String>
+    <sys:String x:Key="Msg_NeedLoginMsg">ログインしてください</sys:String>
+    <sys:String x:Key="Msg_ChangeAccountMsg">入力したアカウントと異なります</sys:String>
 
     <!--#endregion-->
 

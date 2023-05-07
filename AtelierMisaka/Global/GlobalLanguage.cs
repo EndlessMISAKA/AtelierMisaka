@@ -60,59 +60,69 @@ namespace AtelierMisaka
         public static string Msg_LoadCov { get; private set; }
         public static string Msg_CoverErr { get; private set; }
         public static string Msg_Logout { get; private set; }
+        public static string Msg_NeedLogin { get; private set; }
+        public static string Msg_ChangeAccount { get; private set; }
 
         #endregion
 
         private static string[] _cultureSupports = new string[] { "zh-CN", "ja-JP", "en-US" };
-        
+
+        private static string GetResource(string name)
+        {
+            var ln = Application.Current.TryFindResource(name);
+            return ln == null ? string.Empty : (string)ln;
+        }
+
         private static void Initialize()
         {
-            Text_CookiesFanbox = Application.Current.TryFindResource("Text_CookiesTagFanbox").ToString();
-            Text_CookiesFantia = Application.Current.TryFindResource("Text_CookiesTagFantia").ToString();
-            Text_CookiesPatreon = Application.Current.TryFindResource("Text_CookiesTagPatreon").ToString();
-            Text_CreatorUrlFanbox = Application.Current.TryFindResource("Text_CreatorUrlTagFanbox").ToString();
-            Text_CreatorUrlFantia = Application.Current.TryFindResource("Text_CreatorUrlTagFantia").ToString();
-            Text_CreatorUrlPatreon = Application.Current.TryFindResource("Text_CreatorUrlTagPatreon").ToString();
-            Text_DefaultAName = Application.Current.TryFindResource("Text_DefaultName").ToString();
-            Text_FilePref = Application.Current.TryFindResource("Text_FilePrefix").ToString();
-            Text_ImagePref = Application.Current.TryFindResource("Text_ImagePrefix").ToString();
-            Text_LinkPref = Application.Current.TryFindResource("Text_LinkPrefix").ToString();
-            Text_AllStart = Application.Current.TryFindResource("Text_PlayButton").ToString();
-            Text_AllPause = Application.Current.TryFindResource("Text_PauseButton").ToString();
-            Text_FList = Application.Current.TryFindResource("Text_FileList").ToString();
-            Text_IList = Application.Current.TryFindResource("Text_ImageList").ToString();
-            Text_UnKnownSize = Application.Current.TryFindResource("Text_FileSize").ToString();
-            Text_FileCou = Application.Current.TryFindResource("Text_FileCount").ToString();
-            Text_FileImgCou = Application.Current.TryFindResource("Text_FICount").ToString();
-            Text_NoCov = Application.Current.TryFindResource("Text_NoCover").ToString();
-            Text_NeedLC = Application.Current.TryFindResource("Text_NeedLoad").ToString();
-            Text_UseBrowser = Application.Current.TryFindResource("Text_Browser").ToString();
+            Text_CookiesFanbox = GetResource("Text_CookiesTagFanbox");
+            Text_CookiesFantia = GetResource("Text_CookiesTagFantia");
+            Text_CookiesPatreon = GetResource("Text_CookiesTagPatreon");
+            Text_CreatorUrlFanbox = GetResource("Text_CreatorUrlTagFanbox");
+            Text_CreatorUrlFantia = GetResource("Text_CreatorUrlTagFantia");
+            Text_CreatorUrlPatreon = GetResource("Text_CreatorUrlTagPatreon");
+            Text_DefaultAName = GetResource("Text_DefaultName");
+            Text_FilePref = GetResource("Text_FilePrefix");
+            Text_ImagePref = GetResource("Text_ImagePrefix");
+            Text_LinkPref = GetResource("Text_LinkPrefix");
+            Text_AllStart = GetResource("Text_PlayButton");
+            Text_AllPause = GetResource("Text_PauseButton");
+            Text_FList = GetResource("Text_FileList");
+            Text_IList = GetResource("Text_ImageList");
+            Text_UnKnownSize = GetResource("Text_FileSize");
+            Text_FileCou = GetResource("Text_FileCount");
+            Text_FileImgCou = GetResource("Text_FICount");
+            Text_NoCov = GetResource("Text_NoCover");
+            Text_NeedLC = GetResource("Text_NeedLoad");
+            Text_UseBrowser = GetResource("Text_Browser");
 
-            Msg_ExitApp = Application.Current.TryFindResource("Msg_Exit").ToString();
-            Msg_StartConf = Application.Current.TryFindResource("Msg_StartConfirm").ToString();
-            Msg_SecondConf = Application.Current.TryFindResource("Msg_SecondConfirm").ToString();
-            Msg_IsDownload = Application.Current.TryFindResource("Msg_IsDownloading").ToString();
-            Msg_ChangeSP = Application.Current.TryFindResource("Msg_ChangeSavePath").ToString();
-            Msg_CheckSP = Application.Current.TryFindResource("Msg_CheckSavePath").ToString();
-            Msg_CreateSP = Application.Current.TryFindResource("Msg_CreateSavePathError").ToString();
-            Msg_CheckCk = Application.Current.TryFindResource("Msg_CheckCookies").ToString();
-            Msg_NoPosts = Application.Current.TryFindResource("Msg_NoPosts").ToString();
-            Msg_ErrorCookies = Application.Current.TryFindResource("Msg_CookieError").ToString();
-            Msg_ErrorCookiesAuto = Application.Current.TryFindResource("Msg_CookieErrorAuto").ToString();
-            Msg_ErrorCookiesMail = Application.Current.TryFindResource("Msg_CookieErrorMail").ToString();
-            Msg_ErrorIO = Application.Current.TryFindResource("Msg_IOError").ToString();
-            Msg_ErrorPath = Application.Current.TryFindResource("Msg_PathError").ToString();
-            Msg_ErrorSecurity = Application.Current.TryFindResource("Msg_SecurityError").ToString();
-            Msg_ErrorUnKnown = Application.Current.TryFindResource("Msg_UnKnownError").ToString();
-            Msg_ErrorUnSupported = Application.Current.TryFindResource("Msg_UnKnownErrorUnSupported").ToString();
-            Msg_ErrorWeb = Application.Current.TryFindResource("Msg_WebError").ToString();
-            Msg_ErrorWebProxy = Application.Current.TryFindResource("Msg_WebErrorProxy").ToString();
-            Msg_DLErrWeb = Application.Current.TryFindResource("Msg_DLErrorWeb").ToString();
-            Msg_DLErrPath = Application.Current.TryFindResource("Msg_DLErrorPath").ToString();
-            Msg_DLErrSecu = Application.Current.TryFindResource("Msg_DLErrorSecurity").ToString();
-            Msg_LoadCov = Application.Current.TryFindResource("Msg_LoadCover").ToString();
-            Msg_CoverErr = Application.Current.TryFindResource("Msg_CoverError").ToString();
-            Msg_Logout = Application.Current.TryFindResource("Msg_LogOutMsg").ToString();
+            Msg_ExitApp = GetResource("Msg_Exit");
+            Msg_StartConf = GetResource("Msg_StartConfirm");
+            Msg_SecondConf = GetResource("Msg_SecondConfirm");
+            Msg_IsDownload = GetResource("Msg_IsDownloading");
+            Msg_ChangeSP = GetResource("Msg_ChangeSavePath");
+            Msg_CheckSP = GetResource("Msg_CheckSavePath");
+            Msg_CreateSP = GetResource("Msg_CreateSavePathError");
+            Msg_CheckCk = GetResource("Msg_CheckCookies");
+            Msg_NoPosts = GetResource("Msg_NoPosts");
+            Msg_ErrorCookies = GetResource("Msg_CookieError");
+            Msg_ErrorCookiesAuto = GetResource("Msg_CookieErrorAuto");
+            Msg_ErrorCookiesMail = GetResource("Msg_CookieErrorMail");
+            Msg_ErrorIO = GetResource("Msg_IOError");
+            Msg_ErrorPath = GetResource("Msg_PathError");
+            Msg_ErrorSecurity = GetResource("Msg_SecurityError");
+            Msg_ErrorUnKnown = GetResource("Msg_UnKnownError");
+            Msg_ErrorUnSupported = GetResource("Msg_UnKnownErrorUnSupported");
+            Msg_ErrorWeb = GetResource("Msg_WebError");
+            Msg_ErrorWebProxy = GetResource("Msg_WebErrorProxy");
+            Msg_DLErrWeb = GetResource("Msg_DLErrorWeb");
+            Msg_DLErrPath = GetResource("Msg_DLErrorPath");
+            Msg_DLErrSecu = GetResource("Msg_DLErrorSecurity");
+            Msg_LoadCov = GetResource("Msg_LoadCover");
+            Msg_CoverErr = GetResource("Msg_CoverError");
+            Msg_Logout = GetResource("Msg_LogOutMsg");
+            Msg_NeedLogin = GetResource("Msg_NeedLoginMsg");
+            Msg_ChangeAccount = GetResource("Msg_ChangeAccountMsg");
         }
 
         public static void InitializeCulture()

@@ -69,7 +69,6 @@
         FantiaPlan,
         FantiaPostId,
         FantiaUrl,
-        FantiaDataImage,
-        FantiaCsrf
+        FantiaDataImage
     }
 }

@@ -32,7 +32,7 @@
     <sys:String x:Key="Msg_ChangeSavePath" xml:space="preserve">The change of Save Path&#13;Will takes effect in the next time</sys:String>
     <sys:String x:Key="Msg_CheckSavePath">Save Path can not be empty</sys:String>
     <sys:String x:Key="Msg_CreateSavePathError">Can not create Save Path</sys:String>
-    <sys:String x:Key="Msg_CheckCookies">Cookies can not be empty</sys:String>
+    <sys:String x:Key="Msg_CheckCookies">IDName can not be empty</sys:String>
     <sys:String x:Key="Msg_NoPosts">Does not have posts to read</sys:String>
 
     <sys:String x:Key="Msg_StartConfirm">Start synthesis?</sys:String>
@@ -44,6 +44,8 @@
     <sys:String x:Key="Msg_LoadCover">Loading...{0}%</sys:String>
     <sys:String x:Key="Msg_CoverError">Internet Error&#13;Please try again later</sys:String>
     <sys:String x:Key="Msg_LogOutMsg">Logout?</sys:String>
+    <sys:String x:Key="Msg_NeedLoginMsg">Need Login first</sys:String>
+    <sys:String x:Key="Msg_ChangeAccountMsg">Different Account</sys:String>
 
     <!--#endregion-->
 

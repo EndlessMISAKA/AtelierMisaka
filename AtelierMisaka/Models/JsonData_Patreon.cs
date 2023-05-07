@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AtelierMisaka.Models
+﻿namespace AtelierMisaka.Models
 {
     #region Artist
 
@@ -132,7 +126,7 @@ namespace AtelierMisaka.Models
         public int h { get; set; }
         public int w { get; set; }
     }
-    
+
     #endregion
 
 
@@ -183,6 +177,6 @@ namespace AtelierMisaka.Models
         public string name { get; set; }
         public string url { get; set; }
     }
-    
+
     #endregion
 }

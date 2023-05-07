@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using CefSharp.Wpf;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AtelierMisaka
@@ -22,13 +23,15 @@ namespace AtelierMisaka
             GlobalData.VM_MA = (ViewModels.VM_Main)DataContext;
             GlobalMethord.Init();
         }
-        
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            GlobalData.VM_MA.ShowLoad = true;
             GlobalCommand.BackCommand.Execute(BackType.Main);
             GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
 
+            GlobalData.VM_MA.PatreonCefBrowser = new ChromiumWebBrowser("about:blank");
             //for fantia test
             //FantiaUtils fu = new FantiaUtils();
             //GlobalData.DownLP = new Views.Downloader(new System.Collections.Generic.List<Models.BaseItem>());
@@ -39,6 +42,7 @@ namespace AtelierMisaka
                 System.Threading.Thread.Sleep(10000);
                 GlobalCommand.CheckVersionCommand.Execute(null);
             });
+            GlobalData.VM_MA.ShowLoad = false;
         }
 
         #region TitleButton

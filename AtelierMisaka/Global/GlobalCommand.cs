@@ -1,13 +1,23 @@
 ﻿using AtelierMisaka.Commands;
 using AtelierMisaka.Models;
+using CefSharp.Wpf;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka
 {
     public class GlobalCommand
     {
+        public static CommonCommand OpBrowserCommand = new CommonCommand(() =>
+        {
+            ((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser).Load(GlobalData.VM_MA.MainPage);
+            GlobalData.VM_MA.ShowLogin = true;
+        });
+
+        public static CommonCommand CloseBrowserCommand = new CommonCommand(() =>
+        {
+            GlobalData.VM_MA.ShowLogin = false;
+        });
 
         public static ParamCommand<BackType> BackCommand = new ParamCommand<BackType>((flag) =>
         {
@@ -117,7 +127,7 @@ namespace AtelierMisaka
                 System.Diagnostics.Process.Start(GlobalData.VM_MA.VersionLink);
             }
         },
-        () =>{ return !GlobalData.VM_MA.LatestVersion.Equals("Checking"); });
+        () => { return !GlobalData.VM_MA.LatestVersion.Equals("Checking"); });
 
         public static CommonCommand LikePostCommand = new CommonCommand(async () =>
         {

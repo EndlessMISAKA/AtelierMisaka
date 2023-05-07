@@ -13,14 +13,14 @@ namespace AtelierMisaka.Models
         private string _savePath = string.Empty;
         private string _fileName = string.Empty;
         private DateTime _dlTime = DateTime.Now;
-        
+
         [PrimaryKey, AutoIncrement]
         public int Id
         {
             get => _id;
             set { _id = value; }
         }
-        
+
         public SiteType Site
         {
             get => _site;

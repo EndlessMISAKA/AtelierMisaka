@@ -1,4 +1,6 @@
 ﻿using AtelierMisaka.Models;
+using AtelierMisaka.Utils;
+using CefSharp.Wpf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +25,7 @@ namespace AtelierMisaka.Views
         private ArtistInfo _tempArt = null;
         private SiteType _tempSite = SiteType.Fanbox;
         private string _tempProxy = string.Empty;
-        private string _tempCookies = string.Empty;
+        private string _tempID = string.Empty;
         private string _tempDate = string.Empty;
         private string _tempDate_end = string.Empty;
         private string _tempSP = string.Empty;
@@ -61,6 +63,7 @@ namespace AtelierMisaka.Views
             {
                 GlobalData.VM_MA.LastDate_End = DateTime.Now;
             }
+            await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
 
             if (!GlobalData.VM_MA.IsStarted)
             {
@@ -77,7 +80,7 @@ namespace AtelierMisaka.Views
                         PostUrl = GlobalData.VM_MA.Artist.PostUrl,
                     };
                     _tempSite = GlobalData.VM_MA.Site;
-                    _tempCookies = GlobalData.VM_MA.Cookies;
+                    _tempID = GlobalData.VM_MA.IDName;
                     _tempProxy = GlobalData.VM_MA.Proxy;
                     _tempDate = GlobalData.VM_MA.Date_Start;
                     _tempDate_end = GlobalData.VM_MA.Date_End;
@@ -102,7 +105,7 @@ namespace AtelierMisaka.Views
                         _second = false;
                         return;
                     }
-                    
+
                     if (await Begin())
                     {
                         _tempArt = new ArtistInfo()
@@ -114,7 +117,7 @@ namespace AtelierMisaka.Views
                             PostUrl = GlobalData.VM_MA.Artist.PostUrl,
                         };
                         _tempSite = GlobalData.VM_MA.Site;
-                        _tempCookies = GlobalData.VM_MA.Cookies;
+                        _tempID = GlobalData.VM_MA.IDName;
                         _tempProxy = GlobalData.VM_MA.Proxy;
                         _tempDate = GlobalData.VM_MA.Date_Start;
                         _tempDate_end = GlobalData.VM_MA.Date_End;
@@ -156,10 +159,7 @@ namespace AtelierMisaka.Views
                     {
                         GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
-                    if (null != GlobalData.VM_MA.PatreonCefBrowser)
-                    {
-                        await CefHelper.SetProxy((CefSharp.Wpf.ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
-                    }
+                    await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
                     _tempProxy = GlobalData.VM_MA.Proxy;
                 }
 
@@ -169,20 +169,21 @@ namespace AtelierMisaka.Views
                     {
                         GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
-                    if (GlobalData.VM_MA.UseProxy && null != GlobalData.VM_MA.PatreonCefBrowser)
+                    if (GlobalData.VM_MA.UseProxy)
                     {
-                        await CefHelper.SetProxy((CefSharp.Wpf.ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
+                        await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
                     }
                     _tempUP = GlobalData.VM_MA.UseProxy;
                 }
 
-                if (_tempCookies != GlobalData.VM_MA.Cookies)
+                if (_tempID != GlobalData.VM_MA.IDName)
                 {
                     GlobalData.VM_DL.DLClients.ForEach(x =>
                     {
                         GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
-                    _tempCookies = GlobalData.VM_MA.Cookies;
+                    _tempID = GlobalData.VM_MA.IDName;
+                    GlobalData.VM_MA.NeedCookie = true;
                 }
 
                 if (_tempDate != GlobalData.VM_MA.Date_Start || _tempDate_end != GlobalData.VM_MA.Date_End || _tempUD != GlobalData.VM_MA.UseDate)
@@ -222,7 +223,7 @@ namespace AtelierMisaka.Views
                                 PostUrl = GlobalData.VM_MA.Artist.PostUrl,
                             };
                             _tempSite = GlobalData.VM_MA.Site;
-                            _tempCookies = GlobalData.VM_MA.Cookies;
+                            _tempID = GlobalData.VM_MA.IDName;
                             _tempProxy = GlobalData.VM_MA.Proxy;
                             _tempDate = GlobalData.VM_MA.Date_Start;
                             _tempDate_end = GlobalData.VM_MA.Date_End;
@@ -243,7 +244,7 @@ namespace AtelierMisaka.Views
 
         private async Task<bool> Begin()
         {
-            if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
+            if (string.IsNullOrEmpty(GlobalData.VM_MA.IDName))
             {
                 await GetCheck(GlobalLanguage.Msg_CheckCk);
                 return false;
@@ -271,25 +272,31 @@ namespace AtelierMisaka.Views
             GlobalData.VM_MA.PostTitle = string.Empty;
             ResultMessage _ret = null;
             _utils = GlobalData.CaptureUtil;
-            if (_utils is PatreonUtils)
+            if (GlobalData.VM_MA.NeedCookie)
             {
-                _ret = await (_utils as PatreonUtils).InitBrowser();
+                _ret = await _utils.CheckCookies();
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
+                    ShowLoading(false);
                     return false;
                 }
-                else if ((bool)_ret.Result)
+                if (_ret.Result == null)
                 {
-                    while (GlobalData.VM_MA.ShowLogin)
-                    {
-                        await Task.Delay(1000);
-                    }
-                    if (!GlobalData.VM_MA.IsInitialized)
-                    {
-                        return false;
-                    }
+                    await GetCheck(GlobalLanguage.Msg_NeedLogin);
+                    ShowLoading(false);
+                    GlobalCommand.OpBrowserCommand.Execute(null);
+                    return false;
                 }
+                var flag = (bool)_ret.Result;
+                if (!flag)
+                {
+                    await GetCheck(GlobalLanguage.Msg_ChangeAccount);
+                    ShowLoading(false);
+                    GlobalCommand.OpBrowserCommand.Execute(null);
+                    return false;
+                }
+                GlobalData.VM_MA.NeedCookie = false;
             }
             _selectF = GlobalData.VM_MA.HasSelected;
             if (!_selectF)
@@ -401,7 +408,7 @@ namespace AtelierMisaka.Views
 
         private async void Btn_GetList_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(GlobalData.VM_MA.Cookies))
+            if (string.IsNullOrEmpty(GlobalData.VM_MA.IDName))
             {
                 await GetCheck(GlobalLanguage.Msg_CheckCk);
                 return;
@@ -411,27 +418,32 @@ namespace AtelierMisaka.Views
             ResultMessage _ret = null;
             GetSystemProxy();
             _utils = GlobalData.CaptureUtil;
-            if (_utils is PatreonUtils)
+            await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
+            if (GlobalData.VM_MA.NeedCookie)
             {
-                _ret = await (_utils as PatreonUtils).InitBrowser();
+                _ret = await _utils.CheckCookies();
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
                     ShowLoading(false);
                     return;
                 }
-                else if ((bool)_ret.Result)
+                if (_ret.Result == null)
                 {
-                    while (GlobalData.VM_MA.ShowLogin)
-                    {
-                        await Task.Delay(1000);
-                    }
-                    if (!GlobalData.VM_MA.IsInitialized)
-                    {
-                        ShowLoading(false);
-                        return;
-                    }
+                    await GetCheck(GlobalLanguage.Msg_NeedLogin);
+                    ShowLoading(false);
+                    GlobalCommand.OpBrowserCommand.Execute(null);
+                    return;
                 }
+                var flag = (bool)_ret.Result;
+                if (!flag)
+                {
+                    await GetCheck(GlobalLanguage.Msg_ChangeAccount);
+                    ShowLoading(false);
+                    GlobalCommand.OpBrowserCommand.Execute(null);
+                    return;
+                }
+                GlobalData.VM_MA.NeedCookie = false;
             }
             _ret = await _utils.GetArtistList();
             if (_ret.Error != ErrorType.NoError)
@@ -446,7 +458,10 @@ namespace AtelierMisaka.Views
             {
                 GlobalData.VM_MA.ArtistList.Add(ai);
             }
-            GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
+            if (GlobalData.VM_MA.ArtistList.Count > 0)
+            {
+                GlobalData.VM_MA.Artist = GlobalData.VM_MA.ArtistList.Last();
+            }
             await Task.Run(() => SaveSetting());
             ShowLoading(false);
         }
@@ -454,6 +469,16 @@ namespace AtelierMisaka.Views
         private void Btn_Back_Click(object sender, RoutedEventArgs e)
         {
             GlobalCommand.ExitCommand.Execute(null);
+        }
+
+        private async void Btn_OpenBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            if (GlobalData.VM_MA.MyProxy != null)
+            {
+                await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.MyProxy.Address.Authority);
+            }
+            GlobalCommand.OpBrowserCommand.Execute(null);
+            GlobalData.VM_MA.NeedCookie = true;
         }
 
         private bool CompareDate(string d1, string d2)
@@ -477,7 +502,7 @@ namespace AtelierMisaka.Views
                 mss += msgs[i];
             }
             GlobalData.VM_MA.Messages = mss;
-            
+
             GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
             while (GlobalData.VM_MA.ShowCheck)
@@ -504,10 +529,10 @@ namespace AtelierMisaka.Views
         {
             try
             {
-                string fn = $"Settings\\Artists_{GlobalData.VM_MA.Site.ToString()}.json";
-                File.WriteAllText(fn, GlobalMethord.ConverToJson(GlobalData.VM_MA.ArtistList));
-                fn = $"Settings\\Setting_{GlobalData.VM_MA.Site.ToString()}.ini";
-                File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.Cookies, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
+                string fn = $"Settings\\Artists_{GlobalData.VM_MA.Site}.json";
+                File.WriteAllText(fn, JsonHelper.ConverToJson(GlobalData.VM_MA.ArtistList));
+                fn = $"Settings\\Setting_{GlobalData.VM_MA.Site}.ini";
+                File.WriteAllLines(fn, new string[] { GlobalData.VM_MA.IDName, GlobalData.VM_MA.SavePath, GlobalData.VM_MA.Proxy, GlobalData.VM_MA.UseProxy.ToString() });
                 if (!string.IsNullOrEmpty(GlobalData.VM_MA.ArtistList.Last().Id))
                 {
                     Dispatcher.Invoke(() => GlobalData.VM_MA.ArtistList.Add(new ArtistInfo()));
@@ -529,7 +554,7 @@ namespace AtelierMisaka.Views
                 if (File.Exists("Settings\\Setting_Patreon.ini"))
                 {
                     var ms = File.ReadAllLines("Settings\\Setting_Patreon.ini");
-                    GlobalData.VM_MA.Cookies = ms[0];
+                    GlobalData.VM_MA.IDName = ms[0];
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
@@ -543,7 +568,7 @@ namespace AtelierMisaka.Views
                 if (File.Exists("Settings\\Setting_Fantia.ini"))
                 {
                     var ms = File.ReadAllLines("Settings\\Setting_Fantia.ini");
-                    GlobalData.VM_MA.Cookies = ms[0];
+                    GlobalData.VM_MA.IDName = ms[0];
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
@@ -557,7 +582,7 @@ namespace AtelierMisaka.Views
                 if (File.Exists("Settings\\Setting_Fanbox.ini"))
                 {
                     var ms = File.ReadAllLines("Settings\\Setting_Fanbox.ini");
-                    GlobalData.VM_MA.Cookies = ms[0];
+                    GlobalData.VM_MA.IDName = ms[0];
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
@@ -614,40 +639,6 @@ namespace AtelierMisaka.Views
             if (fs.ShowDialog(win) == System.Windows.Forms.DialogResult.OK)
             {
                 GlobalData.VM_MA.SavePath = fs.DirectoryPath;
-            }
-        }
-
-        private async void MouseDoubleClick_Logout(object sender, MouseButtonEventArgs e)
-        {
-            if (GlobalData.VM_MA.Site == SiteType.Patreon)
-            {
-                if (await GetCheck(GlobalLanguage.Msg_Logout))
-                {
-                    if (GlobalData.CheckResult == false)
-                    {
-                        return;
-                    }
-                }
-                ShowLoading(true);
-                await Task.Delay(100);
-                _utils = GlobalData.CaptureUtil;
-                var _ret = await (_utils as PatreonUtils).InitBrowser();
-                if (_ret.Error != ErrorType.NoError)
-                {
-                    await GetCheck(_ret.Msgs);
-                }
-                else
-                {
-                    if ((bool)_ret.Result)
-                    {
-                        GlobalData.VM_MA.Cookies = string.Empty;
-                    }
-                    else
-                    {
-                        await (_utils as PatreonUtils).Logout();
-                    }
-                }
-                ShowLoading(false);
             }
         }
 
