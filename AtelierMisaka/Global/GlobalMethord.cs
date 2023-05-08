@@ -93,12 +93,8 @@ namespace AtelierMisaka
 
         public static bool IsFileExist(string folder, string name)
         {
-            if (GlobalData.VM_MA.CheckFile)
-            {
-                var fp = Path.Combine(folder, name);
-                return File.Exists(fp);
-            }
-            return true;
+            var fp = Path.Combine(folder, name);
+            return File.Exists(fp);
         }
 
         public static void SaveNorSet()

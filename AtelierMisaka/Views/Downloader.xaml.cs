@@ -73,7 +73,7 @@ namespace AtelierMisaka.Views
                                 GlobalData.DLLogs.SetPId(bi.ID);
                                 if (!string.IsNullOrEmpty(bi.CoverPic))
                                 {
-                                    if (!GlobalData.DLLogs.HasLog(bi.CoverPic))
+                                    if (!GlobalData.DLLogs.HasLog(bi.CoverPic, sp, bi.CoverPicName))
                                     {
                                         di = new DownloadItem
                                         {
@@ -90,7 +90,7 @@ namespace AtelierMisaka.Views
                                 }
                                 for (int i = 0; i < bi.ContentUrls.Count; i++)
                                 {
-                                    if (!GlobalData.DLLogs.HasLog(bi.ContentUrls[i]))
+                                    if (!GlobalData.DLLogs.HasLog(bi.ContentUrls[i], sp, bi.FileNames[i]))
                                     {
                                         di = new DownloadItem
                                         {
@@ -107,7 +107,7 @@ namespace AtelierMisaka.Views
                                 }
                                 for (int i = 0; i < bi.MediaUrls.Count; i++)
                                 {
-                                    if (!GlobalData.DLLogs.HasLog(bi.MediaUrls[i]))
+                                    if (!GlobalData.DLLogs.HasLog(bi.MediaUrls[i], sp, bi.MediaNames[i]))
                                     {
                                         di = new DownloadItem
                                         {
@@ -255,7 +255,7 @@ namespace AtelierMisaka.Views
                                 GlobalData.DLLogs.SetPId(bi.ID);
                                 for (int i = 0; i < bi.ContentUrls.Count; i++)
                                 {
-                                    if (!GlobalData.DLLogs.HasLog(bi.ContentUrls[i]))
+                                    if (!GlobalData.DLLogs.HasLog(bi.ContentUrls[i], sp, bi.FileNames[i]))
                                     {
                                         di = new DownloadItem
                                         {

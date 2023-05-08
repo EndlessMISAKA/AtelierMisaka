@@ -643,7 +643,7 @@ namespace AtelierMisaka.ViewModels
                     GlobalData.DLLogs.SetPId(fi.ID);
                     if (!string.IsNullOrEmpty(fi.CoverPic))
                     {
-                        if (!GlobalData.DLLogs.HasLog(fi.CoverPic))
+                        if (!GlobalData.DLLogs.HasLog(fi.CoverPic, sp, fi.CoverPicName))
                         {
                             di = new DownloadItem
                             {
@@ -666,18 +666,18 @@ namespace AtelierMisaka.ViewModels
                         {
                             continue;
                         }
-                        if (!GlobalData.DLLogs.HasLog(fi.ContentUrls[i]))
+                        var nsp = $"{sp}\\{fi.PTitles[i]}";
+                        if (!Directory.Exists(nsp))
                         {
-                            var nsp = $"{sp}\\{fi.PTitles[i]}";
+                            Directory.CreateDirectory(nsp);
                             if (!Directory.Exists(nsp))
                             {
+                                sp = GlobalMethord.ReplacePath(nsp);
                                 Directory.CreateDirectory(nsp);
-                                if (!Directory.Exists(nsp))
-                                {
-                                    sp = GlobalMethord.ReplacePath(nsp);
-                                    Directory.CreateDirectory(nsp);
-                                }
                             }
+                        }
+                        if (!GlobalData.DLLogs.HasLog(fi.ContentUrls[i], nsp, fi.FileNames[i]))
+                        {
                             di = new DownloadItem
                             {
                                 FileName = fi.FileNames[i],
@@ -751,30 +751,27 @@ namespace AtelierMisaka.ViewModels
                     GlobalData.DLLogs.SetPId(fi_new.ID);
                     if (!string.IsNullOrEmpty(fi_new.CoverPic))
                     {
-                        if (!GlobalData.DLLogs.HasLog(fi_new.CoverPic))
+                        var keys = fi_new.CoverPic.Split('?').FirstOrDefault();
+                        if (GlobalData.RetryCounter.ContainsKey(keys))
                         {
-                            var keys = fi_new.CoverPic.Split('?').FirstOrDefault();
-                            if (GlobalData.RetryCounter.ContainsKey(keys))
-                            {
-                                GlobalData.RetryCounter[keys]++;
-                            }
-                            else
-                            {
-                                GlobalData.RetryCounter.Add(keys, 1);
-                            }
-                            var dtar = dler.Find(x => x.Link.Contains(keys));
-                            dtar.Link = fi_new.CoverPic;
-                            dtar.SourceDocu = fi_new;
-                            dtar.CheckTempFile();
-                            if (GlobalData.RetryCounter[keys] < 15)
-                            {
-                                dtar.DLStatus = DownloadStatus.Waiting;
-                            }
-                            else
-                            {
-                                dtar.ErrorMsg = "HTTP403";
-                                dtar.DLStatus = DownloadStatus.Cancel;
-                            }
+                            GlobalData.RetryCounter[keys]++;
+                        }
+                        else
+                        {
+                            GlobalData.RetryCounter.Add(keys, 1);
+                        }
+                        var dtar = dler.Find(x => x.Link.Contains(keys));
+                        dtar.Link = fi_new.CoverPic;
+                        dtar.SourceDocu = fi_new;
+                        dtar.CheckTempFile();
+                        if (GlobalData.RetryCounter[keys] < 15)
+                        {
+                            dtar.DLStatus = DownloadStatus.Waiting;
+                        }
+                        else
+                        {
+                            dtar.ErrorMsg = "HTTP403";
+                            dtar.DLStatus = DownloadStatus.Cancel;
                         }
                     }
                     for (int i = 0; i < fi_new.ContentUrls.Count; i++)
@@ -783,30 +780,27 @@ namespace AtelierMisaka.ViewModels
                         {
                             continue;
                         }
-                        if (!GlobalData.DLLogs.HasLog(fi_new.ContentUrls[i]))
+                        var keys = fi_new.ContentUrls[i].Split('?').FirstOrDefault();
+                        if (GlobalData.RetryCounter.ContainsKey(keys))
                         {
-                            var keys = fi_new.ContentUrls[i].Split('?').FirstOrDefault();
-                            if (GlobalData.RetryCounter.ContainsKey(keys))
-                            {
-                                GlobalData.RetryCounter[keys]++;
-                            }
-                            else
-                            {
-                                GlobalData.RetryCounter.Add(keys, 1);
-                            }
-                            var dtar = dler.Find(x => x.Link.Contains(keys));
-                            dtar.Link = fi_new.ContentUrls[i];
-                            dtar.SourceDocu = fi_new;
-                            dtar.CheckTempFile();
-                            if (GlobalData.RetryCounter[keys] < 15)
-                            {
-                                dtar.DLStatus = DownloadStatus.Waiting;
-                            }
-                            else
-                            {
-                                dtar.ErrorMsg = "HTTP403";
-                                dtar.DLStatus = DownloadStatus.Cancel;
-                            }
+                            GlobalData.RetryCounter[keys]++;
+                        }
+                        else
+                        {
+                            GlobalData.RetryCounter.Add(keys, 1);
+                        }
+                        var dtar = dler.Find(x => x.Link.Contains(keys));
+                        dtar.Link = fi_new.ContentUrls[i];
+                        dtar.SourceDocu = fi_new;
+                        dtar.CheckTempFile();
+                        if (GlobalData.RetryCounter[keys] < 15)
+                        {
+                            dtar.DLStatus = DownloadStatus.Waiting;
+                        }
+                        else
+                        {
+                            dtar.ErrorMsg = "HTTP403";
+                            dtar.DLStatus = DownloadStatus.Cancel;
                         }
                     }
                     if (!_isDownloading && QuestCommand.CanExecute(null))

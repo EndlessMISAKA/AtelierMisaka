@@ -41,14 +41,21 @@ namespace AtelierMisaka.Models
             IsExist = _selectedLogs.Count > 0;
         }
 
-        public bool HasLog(string link)
+        public bool HasLog(string link, string folder, string fn)
         {
-            if (IsExist)
+            if (GlobalData.VM_MA.CheckFile)
             {
-                var dl = _selectedLogs.Find(x => link.Contains(x.Url));
-                return dl == null ? false : GlobalMethord.IsFileExist(dl.SavePath, dl.FileName);
+                return GlobalMethord.IsFileExist(folder, fn);
             }
-            return false;
+            else
+            {
+                if (IsExist)
+                {
+                    var dd = _selectedLogs.Find(x => link.Contains(x.Url));
+                    return dd.SavePath == folder && dd.FileName == fn && GlobalMethord.IsFileExist(folder, fn);
+                }
+                return false;
+            }
         }
 
         public new bool Add(DownloadLog dl)
