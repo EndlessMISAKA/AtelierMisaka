@@ -127,9 +127,9 @@
                 </StackPanel>
             </Grid>
             <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="200"/>
+                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="250"/>
                 <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_StarButton}" Margin="20,0" Width="150"/>
-                <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_ExitButton}"/>
+                <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_ExitButton}" Width="150"/>
                 <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_CheckFile}" IsChecked="{Binding CheckFile}" Margin="20,0"/>
             </StackPanel>
         </StackPanel>
