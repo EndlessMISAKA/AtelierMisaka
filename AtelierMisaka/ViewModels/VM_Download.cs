@@ -353,7 +353,7 @@ namespace AtelierMisaka.ViewModels
                             }
                             else
                             {
-                                GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
+                                GlobalData.VM_MA.Date_Start = GlobalData.VM_MA.Date_End;
                                 GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
                             }
                         }

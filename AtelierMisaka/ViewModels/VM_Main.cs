@@ -732,7 +732,7 @@ namespace AtelierMisaka.ViewModels
                 if (_dateS != value)
                 {
                     _dateS = value;
-                    //RaisePropertyChanged();
+                    RaisePropertyChanged();
                     if (string.IsNullOrEmpty(_dateS))
                     {
                         LastDate = DateTime.Parse("2010/01/01");

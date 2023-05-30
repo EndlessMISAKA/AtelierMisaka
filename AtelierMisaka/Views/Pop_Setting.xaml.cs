@@ -61,7 +61,8 @@ namespace AtelierMisaka.Views
             GlobalData.StartTime = DateTime.Now;
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
             {
-                GlobalData.VM_MA.LastDate_End = DateTime.Now;
+                GlobalData.VM_MA.Date_End = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                //GlobalData.VM_MA.LastDate_End = DateTime.Now;
             }
             await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
 
