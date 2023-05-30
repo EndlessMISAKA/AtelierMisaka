@@ -72,8 +72,8 @@ namespace AtelierMisaka
                     return ResultHelper.PathError();
                 }
                 string cid = ma.Groups[1].Value;
-
-                var jfa = JsonHelper.ToObject<JsonData_Fantia_Artist>(await GetWebCodeAsync($"view-source:https://fantia.jp/api/v1/fanclubs/{cid}"));
+                var html = await GetWebCodeAsync($"https://fantia.jp/api/v1/fanclubs/{cid}");
+                var jfa = JsonHelper.ToObject<JsonData_Fantia_Artist>(html);
                 if (null != jfa.fanclub)
                 {
                     var ai = new ArtistInfo()
@@ -254,7 +254,8 @@ namespace AtelierMisaka
         {
             try
             {
-                var jfp = JsonHelper.ToObject<JsonData_Fantia_Post>(await GetApiCodeAsync($"https://fantia.jp/posts/{pid}"));
+                var html = await GetApiCodeAsync($"https://fantia.jp/posts/{pid}");
+                var jfp = JsonHelper.ToObject<JsonData_Fantia_Post>(html);
                 //var jfp = JsonHelper.ToObject<JsonData_Fantia_Post>(pid); //for test
                 if (null != jfp.post)
                 {
@@ -601,18 +602,12 @@ namespace AtelierMisaka
                 {
                     return _apiData.Dequeue();
                 }
-                if (++count == 30)
-                {
-                    return "";
-                }
                 if (!_cwb.IsLoading)
                 {
-                    if (_apiData.Count > 0)
+                    if (++count == 30)
                     {
-                        return _apiData.Dequeue();
+                        break;
                     }
-                    await Task.Delay(500);
-                    break;
                 }
             }
             if (_apiData.Count > 0)
@@ -621,7 +616,7 @@ namespace AtelierMisaka
             }
             else
             {
-                return "";
+                return "{}";
             }
         }
 
