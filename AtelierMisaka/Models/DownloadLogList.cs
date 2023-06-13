@@ -52,7 +52,7 @@ namespace AtelierMisaka.Models
                 if (IsExist)
                 {
                     var dd = _selectedLogs.Find(x => link.Contains(x.Url));
-                    return dd.SavePath == folder && dd.FileName == fn && GlobalMethord.IsFileExist(folder, fn);
+                    return dd != null && dd.SavePath == folder && dd.FileName == fn && GlobalMethord.IsFileExist(folder, fn);
                 }
                 return false;
             }
