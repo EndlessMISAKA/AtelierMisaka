@@ -161,6 +161,44 @@ namespace AtelierMisaka
             return title.Trim();
         }
 
+        public static void GetSystemProxy()
+        {
+            var proxyConfig = new WinHttpCurrentUserIEProxyConfig();
+            Win32Utils.WinHttpGetIEProxyConfigForCurrentUser(ref proxyConfig);
+            if (string.IsNullOrEmpty(proxyConfig.Proxy))
+            {
+                GlobalData.VM_MA.ProxySystem = string.Empty;
+            }
+            else
+            {
+                if (!proxyConfig.Proxy.Contains("="))
+                {
+                    GlobalData.VM_MA.ProxySystem = proxyConfig.Proxy;
+                }
+                else
+                {
+                    var settings = proxyConfig.Proxy.Split(';');
+                    foreach (var setting in settings)
+                    {
+                        var groups = GlobalRegex.ProxyPattern.Match(setting).Groups;
+                        if (groups.Count < 1) continue;
+                        switch (groups["scheme"].Value)
+                        {
+                            case "http":
+                                if (ushort.TryParse(groups["port"].Value, out var httpPort))
+                                {
+                                    GlobalData.VM_MA.ProxySystem = $"{groups["host"].Value}:{httpPort}";
+                                }
+                                return;
+                            default:
+                                break;
+                        }
+                    }
+                    GlobalData.VM_MA.ProxySystem = string.Empty;
+                }
+            }
+        }
+
 
 
         [DllImport("shell32.dll", ExactSpelling = true)]

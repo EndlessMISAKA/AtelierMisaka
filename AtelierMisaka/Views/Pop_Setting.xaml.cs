@@ -262,7 +262,10 @@ namespace AtelierMisaka.Views
                 await GetCheck(GlobalLanguage.Msg_CreateSP);
                 return false;
             }
-            GetSystemProxy();
+            if (GlobalData.VM_MA.UseProxy)
+            {
+                GlobalMethord.GetSystemProxy();
+            }
 
             if (null != GlobalData.DownLP)
             {
@@ -369,44 +372,6 @@ namespace AtelierMisaka.Views
             return true;
         }
 
-        private void GetSystemProxy()
-        {
-            var proxyConfig = new WinHttpCurrentUserIEProxyConfig();
-            Win32Utils.WinHttpGetIEProxyConfigForCurrentUser(ref proxyConfig);
-            if (string.IsNullOrEmpty(proxyConfig.Proxy))
-            {
-                GlobalData.VM_MA.ProxySystem = string.Empty;
-            }
-            else
-            {
-                if (!proxyConfig.Proxy.Contains("="))
-                {
-                    GlobalData.VM_MA.ProxySystem = proxyConfig.Proxy;
-                }
-                else
-                {
-                    var settings = proxyConfig.Proxy.Split(';');
-                    foreach (var setting in settings)
-                    {
-                        var groups = GlobalRegex.ProxyPattern.Match(setting).Groups;
-                        if (groups.Count < 1) continue;
-                        switch (groups["scheme"].Value)
-                        {
-                            case "http":
-                                if (ushort.TryParse(groups["port"].Value, out var httpPort))
-                                {
-                                    GlobalData.VM_MA.ProxySystem = $"{groups["host"].Value}:{httpPort}";
-                                }
-                                return;
-                            default:
-                                break;
-                        }
-                    }
-                    GlobalData.VM_MA.ProxySystem = string.Empty;
-                }
-            }
-        }
-
         private async void Btn_GetList_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(GlobalData.VM_MA.IDName))
@@ -417,7 +382,10 @@ namespace AtelierMisaka.Views
             ShowLoading(true);
             await Task.Delay(100);
             ResultMessage _ret = null;
-            GetSystemProxy();
+            if (GlobalData.VM_MA.UseProxy)
+            {
+                GlobalMethord.GetSystemProxy();
+            }
             _utils = GlobalData.CaptureUtil;
             await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
             if (GlobalData.VM_MA.NeedCookie)
@@ -474,9 +442,9 @@ namespace AtelierMisaka.Views
 
         private async void Btn_OpenBrowser_Click(object sender, RoutedEventArgs e)
         {
-            if (GlobalData.VM_MA.MyProxy != null)
+            if (GlobalData.VM_MA.UseProxy)
             {
-                await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.MyProxy.Address.Authority);
+                await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
             }
             GlobalCommand.OpBrowserCommand.Execute(null);
             GlobalData.VM_MA.NeedCookie = true;
