@@ -64,6 +64,17 @@ namespace AtelierMisaka
 
         public static async Task<bool> SetProxy(ChromiumWebBrowser cwb, string Address)
         {
+            if (string.IsNullOrEmpty(Address))
+            {
+                return await Cef.UIThreadTaskFactory.StartNew(delegate
+                {
+                    var rc = cwb.GetBrowser().GetHost().RequestContext;
+                    var v = new Dictionary<string, object>();
+                    v["mode"] = "direct";
+                    v["server"] = Address;
+                    return rc.SetPreference("proxy", v, out string error);
+                });
+            }
             if (!GlobalRegex.Regex_Proxy.IsMatch(Address))
             {
                 return false;

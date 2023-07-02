@@ -64,7 +64,7 @@ namespace AtelierMisaka.Views
                 GlobalData.VM_MA.Date_End = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 //GlobalData.VM_MA.LastDate_End = DateTime.Now;
             }
-            await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
+            await SetBrowserProxy();
 
             if (!GlobalData.VM_MA.IsStarted)
             {
@@ -160,7 +160,7 @@ namespace AtelierMisaka.Views
                     {
                         GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
-                    await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
+                    await SetBrowserProxy();
                     _tempProxy = GlobalData.VM_MA.Proxy;
                 }
 
@@ -170,10 +170,7 @@ namespace AtelierMisaka.Views
                     {
                         GlobalData.VM_DL.ReStartCommand.Execute(x);
                     });
-                    if (GlobalData.VM_MA.UseProxy)
-                    {
-                        await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
-                    }
+                    await SetBrowserProxy();
                     _tempUP = GlobalData.VM_MA.UseProxy;
                 }
 
@@ -387,7 +384,7 @@ namespace AtelierMisaka.Views
                 GlobalMethord.GetSystemProxy();
             }
             _utils = GlobalData.CaptureUtil;
-            await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
+            await SetBrowserProxy();
             if (GlobalData.VM_MA.NeedCookie)
             {
                 _ret = await _utils.CheckCookies();
@@ -442,12 +439,14 @@ namespace AtelierMisaka.Views
 
         private async void Btn_OpenBrowser_Click(object sender, RoutedEventArgs e)
         {
-            if (GlobalData.VM_MA.UseProxy)
-            {
-                await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.Proxy);
-            }
+            await SetBrowserProxy();
             GlobalCommand.OpBrowserCommand.Execute(null);
             GlobalData.VM_MA.NeedCookie = true;
+        }
+
+        private async Task SetBrowserProxy()
+        {
+            await CefHelper.SetProxy((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, GlobalData.VM_MA.UseProxy ? GlobalData.VM_MA.Proxy : "");
         }
 
         private bool CompareDate(string d1, string d2)

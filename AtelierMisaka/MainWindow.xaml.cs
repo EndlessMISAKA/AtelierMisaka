@@ -43,6 +43,7 @@ namespace AtelierMisaka
                 GlobalCommand.CheckVersionCommand.Execute(null);
             });
             GlobalData.VM_MA.ShowLoad = false;
+            GlobalMethord.GetSystemProxy();
         }
 
         #region TitleButton
