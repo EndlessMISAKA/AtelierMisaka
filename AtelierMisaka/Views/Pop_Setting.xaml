@@ -208,7 +208,7 @@
                 </TextBlock>
             </StackPanel>
         </Grid>
-        <Grid Visibility="{Binding ShowLogin, Converter={StaticResource btvc}}" Background="#10FFFFFF">
+        <Grid Visibility="{Binding ShowLogin, Converter={StaticResource btvc}}" Background="#20FFFFFF">
             <ContentControl Content="{Binding PatreonCefBrowser}" Margin="3,0,3,3"/>
             <Button HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Margin="10"
                     Height="27" ToolTip="{DynamicResource Text_ClosePost}" Cursor="Hand"

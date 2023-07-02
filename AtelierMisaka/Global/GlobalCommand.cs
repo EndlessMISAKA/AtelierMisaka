@@ -1,5 +1,6 @@
 ﻿using AtelierMisaka.Commands;
 using AtelierMisaka.Models;
+using CefSharp;
 using CefSharp.Wpf;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,8 +15,11 @@ namespace AtelierMisaka
             GlobalData.VM_MA.ShowLogin = true;
         });
 
-        public static CommonCommand CloseBrowserCommand = new CommonCommand(() =>
+        public static CommonCommand CloseBrowserCommand = new CommonCommand(async () =>
         {
+            var cwb = (ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser;
+            cwb.Load("about:blank");
+            await Task.Delay(300);
             GlobalData.VM_MA.ShowLogin = false;
         });
 
