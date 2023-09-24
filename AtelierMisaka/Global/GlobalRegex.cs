@@ -63,7 +63,7 @@ namespace AtelierMisaka
                 _regex_RemoveLastDot = @"\.+$";
                 _regex_ProxyString = @"^\d+\.\d+\.\d+\.\d+:\d+$";
 
-                _regex_PatreonCid = @"self"": ""https://www.patreon.com/api/campaigns/(\d+)";
+                _regex_PatreonCid = @"self"":\s?""https://www.patreon.com/api/campaigns/(\d+)";
                 _regex_PatreonEmail = @"email"": ""(.+?)""";
                 _regex_PatreonHtmlImg = @"<p><img.+?></p>";
 
