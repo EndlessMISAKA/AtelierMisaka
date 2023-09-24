@@ -234,6 +234,7 @@ namespace AtelierMisaka
                         {
                             throw new InvalidDataException(pid);
                         }
+                        await Task.Delay(new Random().Next(2, 5) * 1000);
                     }
                     ma = ma.NextMatch();
                 }

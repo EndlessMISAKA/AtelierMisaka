@@ -505,6 +505,7 @@ namespace AtelierMisaka.Models
                         if (++_reTryC < 10)
                         {
                             DLStatus = DownloadStatus.Waiting;
+                            await Task.Delay(1000);
                             Start();
                         }
                         else
